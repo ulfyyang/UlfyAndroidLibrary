@@ -1,0 +1,71 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
+
+publish {
+    userOrg = 'ulfyyang'
+    repoName = 'ulfy-maven'
+    groupId = 'com.ulfy.android'
+    artifactId = 'download-manager'
+    publishVersion = '0.2.1'
+    uploadName = 'ulfy-download-manager'
+    desc = '下载管理框架'
+    website = 'https://github.com/ulfyyang/ulfy-android-master'
+}
+
+android {
+    compileSdkVersion externalCompileSdkVersion
+    buildToolsVersion externalBuildToolsVersion
+
+    lintOptions {
+        abortOnError false
+    }
+
+    defaultConfig {
+        minSdkVersion externalMinSdkVersion
+        targetSdkVersion externalTargetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        consumerProguardFiles 'proguard-rules.pro'
+        testInstrumentationRunner externalRunner
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':ulfy-lib:ulfy-cache')                       // 对象缓存包
+    implementation project(':ulfy-lib:ulfy-bus')                         // 事件总线包
+    implementation project(':ulfy-lib:ulfy-task-extension')              // 任务扩展包
+    implementation externalOkDownload
+    implementation externalOkDownloadSqlite
+    implementation externalOkDownloadOkHttp
+
+    testImplementation externalJunit
+    testImplementation externalHamcrestLibrary
+    testImplementation externalMockito
+    androidTestImplementation externalMockitoAndroid
+    testImplementation externalRobolectic
+    androidTestImplementation externalAndroidTestRunner
+    androidTestImplementation externalAndroidTestRules
+    androidTestImplementation externalAndroidTestEspresso
+    androidTestImplementation externalAndroidTestSupport
+    debugImplementation externalAndroidTestSupportExtra
+    androidTestImplementation externalAndroidTestUiAutomator
+}

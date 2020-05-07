@@ -1,0 +1,56 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
+
+publish {
+    userOrg = 'ulfyyang'
+    repoName = 'ulfy-maven'
+    groupId = 'com.ulfy.android'
+    artifactId = 'bus'
+    publishVersion = '0.2.1'
+    uploadName = 'ulfy-bus'
+    desc = '事件总线框架'
+    website = 'https://github.com/ulfyyang/ulfy-android-master'
+}
+
+android {
+    compileSdkVersion externalCompileSdkVersion
+    buildToolsVersion externalBuildToolsVersion
+
+    lintOptions {
+        abortOnError false
+    }
+
+    defaultConfig {
+        minSdkVersion externalMinSdkVersion
+        targetSdkVersion externalTargetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        consumerProguardFiles 'proguard-rules.pro'
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation externalAndroidAppCompatV7
+    testImplementation externalJunit
+    testImplementation externalHamcrestLibrary
+    testImplementation externalMockito
+    testImplementation externalRobolectic
+    androidTestImplementation externalAndroidTestRunner
+    androidTestImplementation externalAndroidTestRules
+    androidTestImplementation externalAndroidTestEspresso
+}
