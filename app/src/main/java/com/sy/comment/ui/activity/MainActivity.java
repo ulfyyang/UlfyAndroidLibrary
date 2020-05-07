@@ -1,4 +1,5 @@
 package com.sy.comment.ui.activity;
+
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -16,6 +17,7 @@ import com.ulfy.android.system.AppUtils;
 import com.ulfy.android.ui_injection.Layout;
 import com.ulfy.android.ui_injection.ViewById;
 import com.ulfy.android.ui_linkage.TabPagerLinkage;
+
 @Layout(id = R.layout.activity_main)
 public class MainActivity extends BaseActivity {
     @ViewById(id = R.id.containerVP) private ViewPager containerVP;
@@ -38,10 +40,15 @@ public class MainActivity extends BaseActivity {
     private AppreciateFragment appreciateFragment = new AppreciateFragment();
     private NoticeFragment noticeFragment = new NoticeFragment();
     private MineFragment mineFragment = new MineFragment();
+
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        linkage.setTabLayout(tabTL).setContainer(containerVP).initViewTabs(homeLL, appreciateLL, noticeLL, mineLL).initFragmentPages(homeFragment, appreciateFragment, noticeFragment, mineFragment).build().select(0);
+        linkage.setTabLayout(tabTL).setContainer(containerVP)
+                .initViewTabs(homeLL, appreciateLL, noticeLL, mineLL)
+                .initFragmentPages(homeFragment, appreciateFragment, noticeFragment, mineFragment)
+                .build().select(0);
     }
+
     @Override public void onBackPressed() {
         AppUtils.exitTwice("再按一次退出 " + AppUtils.getAppName());
     }
