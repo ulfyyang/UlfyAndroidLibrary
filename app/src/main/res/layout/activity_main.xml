@@ -46,7 +46,7 @@
                 android:id="@+id/tabTL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#00FBF9F9"
+                android:background="#ffffff"
                 app:borderWidth="0dp"
                 app:tabGravity="fill"
                 app:tabIndicatorHeight="0dp"
@@ -73,15 +73,15 @@
 
                 <ImageView
                     android:id="@+id/homeIV"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:src="@drawable/selector_tab_home" />
 
                 <TextView
                     android:id="@+id/homeTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="2dp"
                     android:text="首页"
                     android:textColor="@color/selector_main_tab_text_color"
                     android:textSize="10sp" />
@@ -99,15 +99,15 @@
 
                 <ImageView
                     android:id="@+id/appreciateIV"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:src="@drawable/selector_tab_appreciate" />
 
                 <TextView
                     android:id="@+id/appreciateTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="2dp"
                     android:text="鉴赏"
                     android:textColor="@color/selector_main_tab_text_color"
                     android:textSize="10sp" />
@@ -125,15 +125,15 @@
 
                 <ImageView
                     android:id="@+id/noticeIV"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:src="@drawable/selector_tab_notice" />
 
                 <TextView
                     android:id="@+id/noticeTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="2dp"
                     android:text="消息"
                     android:textColor="@color/selector_main_tab_text_color"
                     android:textSize="10sp" />
@@ -151,15 +151,15 @@
 
                 <ImageView
                     android:id="@+id/mineIV"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:src="@drawable/selector_tab_mine" />
 
                 <TextView
                     android:id="@+id/mineTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="2dp"
                     android:text="我的"
                     android:textColor="@color/selector_main_tab_text_color"
                     android:textSize="10sp" />
