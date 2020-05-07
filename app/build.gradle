@@ -1,29 +1,122 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion externalCompileSdkVersion    // 指定最小编译版本号
+    buildToolsVersion externalBuildToolsVersion    // 指定编译工具版本号
+
     defaultConfig {
         applicationId "com.sy.comment"
-        minSdkVersion 15
-        targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        minSdkVersion externalMinSdkVersion        // 支持的最小设备版本号
+        targetSdkVersion externalTargetSdkVersion  // 编译为目标设备版本号
+        versionCode 1                              // 代码版本号，常常用于应用升级
+        versionName "1.0.0"                        // 代码版本号，常常用于显示使用
+        multiDexEnabled true                       // 允许分包打包，用于解决 64k 问题
+        testInstrumentationRunner externalRunner   // 单元测试执行器 Runner 版本
+        flavorDimensions "default"                 // 如果要配置 flavor 则必须要配置默认空间
+
+        // 指定最终打包中包含的 C 库平台版本，限制为一种可极大的缩小打包体积
+        ndk {
+            // abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
+            abiFilters 'armeabi-v7a'
+        }
+
+        // 预定义字段：用于定义访问后台接口的根地址。不要在最后添加 /，这个 / 会在业务代码中添加
+        buildConfigField("String", "HTTP_BASE", '"http://www.baidu.com"')
+    }
+
+    lintOptions {    // 编译检查出现错误后不停止编译
+        abortOnError false
+    }
+
+    compileOptions { // 指定项目使用的 java 版本为 1.8
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    signingConfigs {        // 配置签名配置，可以配置多个
+        release {
+            storeFile file('android.keystore')
+            keyAlias 'alias'
+            keyPassword 'hassgy1124'
+            storePassword 'hassgy1124'
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
     }
     buildTypes {
+        debug {
+            signingConfig signingConfigs.release
+        }
         release {
-            minifyEnabled false
+            signingConfig signingConfigs.release
+            zipAlignEnabled true
+            shrinkResources true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    productFlavors { // 定义风味包，刚开始可以不写这个配置，该配置通常用于后期的渠道打包
+        dev { }
+        product { }
+    }
+
+    // 其它全局配置，这里强制使用指定版本的依赖包，防止有些库依赖包错误
+    configurations.all {
+        resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
     }
 }
 
 dependencies {
+    // 一些常用的基础依赖，通常每个项目必选
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation externalAndroidAppCompatV7           // 组件支持库
+    implementation externalAndroidDesign                // material design 库
+    implementation externalAppBarLayoutBehavior         // 解决 AppBarLayout 上拉回弹问题
+    implementation externalAppBarLayout                 // 官方 AppBarLayout 升级版
+    implementation externalAndroidCardView              // 卡片布局
+    implementation externalConstraintLayout             // 约束布局
+
+    // ... 优菲相关依赖库，针对远程依赖和源码依赖的方式写到了下方，根据自己的集成方式选择即可
+    implementation project(':ulfy-lib:ulfy-cache')                       // 对象缓存
+    implementation project(':ulfy-lib:ulfy-bus')                         // 事件总线
+    implementation project(':ulfy-lib:ulfy-task')                        // 任务引擎
+    implementation project(':ulfy-lib:ulfy-task-extension')              // 任务扩展包
+    implementation project(':ulfy-lib:ulfy-mvvm')                        // MVVM协议规范
+    implementation project(':ulfy-lib:ulfy-ui-injection')                // 界面注入
+    implementation project(':ulfy-lib:ulfy-ui-linkage')                  // 界面联动
+    implementation project(':ulfy-lib:ulfy-task-transponder')            // 任务响应器
+    implementation project(':ulfy-lib:ulfy-task-transponder-smart')      // Smart下拉刷新响应器
+    implementation project(':ulfy-lib:ulfy-adapter')                     // 编辑适配器
+    implementation project(':ulfy-lib:ulfy-time')                        // 时间跟踪
+    implementation project(':ulfy-lib:ulfy-download-manager')            // 下载管理器
+    implementation project(':ulfy-lib:ulfy-multi-domain-picker')         // 多域名选择器
+    implementation project(':ulfy-lib:ulfy-data-pre-loader')             // 数据预加载
+    implementation project(':ulfy-lib:ulfy-views')                       // 自定义控件
+    implementation project(':ulfy-lib:ulfy-dialog')                      // 弹出框
+    implementation project(':ulfy-lib:ulfy-image')                       // 图片处理
+    implementation project(':ulfy-lib:ulfy-system')                      // 系统综合工具
+    implementation project(':ulfy-lib:ulfy-okhttp')                      // 网络访问工具
+    implementation project(':ulfy-lib:ulfy-utils')                       // 工具处理集合
+    implementation project(':ulfy-lib:ulfy-resource')                    // 公共资源
+    implementation project(':ulfy-lib:ulfy-umeng')                       // 友盟统计
+    implementation project(':ulfy-lib:ulfy-agentweb')                    // 网页加载
+    implementation project(':ulfy-lib:ulfy-smart-refresh-layout')        // Smart下拉刷器
+
+
+    // 一些常用的三方依赖，通常每个项目必选
+    implementation externalOKHTTP                       // 网络访问库
+    implementation externalFastJson                     // JSON解析库
+
+    // 单元测试相关库，如果没有这个需求可以不写这些依赖，但是建议写上
+    testImplementation externalJunit
+    testImplementation externalHamcrestLibrary
+    testImplementation externalMockito
+    androidTestImplementation externalMockitoAndroid
+    testImplementation externalRobolectic
+    androidTestImplementation externalAndroidTestRunner
+    androidTestImplementation externalAndroidTestRules
+    androidTestImplementation externalAndroidTestEspresso
+    androidTestImplementation externalAndroidTestSupport
+    debugImplementation externalAndroidTestSupportExtra
+    androidTestImplementation externalAndroidTestUiAutomator
 }

@@ -1,0 +1,72 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
+
+publish {
+    userOrg = 'ulfyyang'
+    repoName = 'ulfy-maven'
+    groupId = 'com.ulfy.android'
+    artifactId = 'image'
+    publishVersion = '0.2.2'
+    uploadName = 'ulfy-image'
+    desc = '图片处理'
+    website = 'https://github.com/ulfyyang/ulfy-android-master'
+}
+
+android {
+    compileSdkVersion externalCompileSdkVersion
+    buildToolsVersion externalBuildToolsVersion
+
+    lintOptions {
+        abortOnError false
+    }
+
+    defaultConfig {
+        minSdkVersion externalMinSdkVersion
+        targetSdkVersion externalTargetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        consumerProguardFiles 'proguard-rules.pro'
+        testInstrumentationRunner externalRunner
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation externalGlide
+//    implementation externalGlideOkHttp                    // 对于自建证书的 https 图片会加载失败，因此通过源码依赖修正这个问题
+    implementation externalGlideAnnotationProcessor
+    annotationProcessor externalGlideAnnotationProcessor
+    implementation externalOKHTTP
+    implementation externalImageWatcher
+    implementation project(':ulfy-lib:ulfy-cache')
+
+    testImplementation externalJunit
+    testImplementation externalHamcrestLibrary
+    testImplementation externalMockito
+    androidTestImplementation externalMockitoAndroid
+    testImplementation externalRobolectic
+    androidTestImplementation externalAndroidTestRunner
+    androidTestImplementation externalAndroidTestRules
+    androidTestImplementation externalAndroidTestEspresso
+    androidTestImplementation externalAndroidTestSupport
+    debugImplementation externalAndroidTestSupportExtra
+    androidTestImplementation externalAndroidTestUiAutomator
+}

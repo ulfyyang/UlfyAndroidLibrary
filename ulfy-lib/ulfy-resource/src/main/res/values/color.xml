@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 线条的颜色，该颜色值为ListView分割线的颜色-->
+    <color name="line">#D8D8D8</color>
+    <!-- 线条的颜色，浅色的线条颜色 -->
+    <color name="line_tint">#EFEFF4</color>
+    <!-- 分割条的颜色，该颜色为较粗的分割条的颜色 -->
+    <color name="divider">#F2F2F2</color>
+    <!-- 文字的颜色 -->
+    <color name="text">#454545</color>
+    <!-- 输入框提示文字的颜色 -->
+    <color name="text_hint">#DDDDDD</color>
+</resources>

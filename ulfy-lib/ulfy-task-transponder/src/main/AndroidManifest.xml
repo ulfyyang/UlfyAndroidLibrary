@@ -1,0 +1,18 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ulfy.android.task_transponder">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application>
+        <!--
+            网络状态监听会在在安卓7.0会失效。在5.0平台引入了一个新的监听方式
+            因此在5.0之前使用广播方式监听，在5.0及以后使用新的方式进行监听
+        -->
+        <receiver android:name=".NetStateListener">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
