@@ -16,7 +16,7 @@ android {
 
         // 指定最终打包中包含的 C 库平台版本，限制为一种可极大的缩小打包体积
         ndk {
-            // abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
+//             abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
             abiFilters 'armeabi-v7a'
         }
 

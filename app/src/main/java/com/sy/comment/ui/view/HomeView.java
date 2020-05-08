@@ -7,7 +7,7 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
+import com.sina.weibo.sdk.utils.UIUtils;
 import com.sy.comment.R;
 import com.sy.comment.application.vm.HomeVM;
 import com.sy.comment.ui.base.BaseView;
@@ -15,6 +15,7 @@ import com.ulfy.android.mvvm.IViewModel;
 import com.ulfy.android.ui_injection.Layout;
 import com.ulfy.android.ui_injection.ViewById;
 import com.ulfy.android.ui_linkage.TabPagerLinkage;
+import com.ulfy.android.utils.UiUtils;
 
 @Layout(id = R.layout.view_home)
 public class HomeView extends BaseView {
@@ -30,7 +31,6 @@ public class HomeView extends BaseView {
     @ViewById(id = R.id.followPageLL) private LinearLayout followPageLL;
     @ViewById(id = R.id.recommendPageLL) private LinearLayout recommendPageLL;
     @ViewById(id = R.id.prizePageLL) private LinearLayout prizePageLL;
-
     private HomeVM vm;
     private TabPagerLinkage linkage = new TabPagerLinkage();
 
@@ -45,17 +45,16 @@ public class HomeView extends BaseView {
     }
 
     private void init(Context context, AttributeSet attrs) {
-        linkage.setTabLayout(tabsTL)
-                .setContainer(containerVP)
-                .initViewTabs(followFL, recommendFL, prizeFL)
-                .initViewPages(followPageLL, recommendPageLL, prizePageLL)
+        linkage.setTabLayout(tabsTL).setContainer(containerVP)
                 .setLineWidth(TabPagerLinkage.LINE_WIDTH_WRAP_CONTENT)
                 .setAutoScrollMode(true)
-                .setUseWrapperOnScrollMode(true)
-                .build().select(0);
+                .setUseWrapperOnScrollMode(true);
     }
 
     @Override public void bind(IViewModel model) {
         vm = (HomeVM) model;
+        linkage.initStringTabs("关注","推荐","奖池")
+                .initViewPages(followPageLL, recommendPageLL, prizePageLL)
+                .build().select(0);
     }
 }
