@@ -2,7 +2,6 @@ package com.sy.comment.ui.fragment;
 
 import android.os.Bundle;
 import android.view.View;
-
 import com.sy.comment.application.vm.HomeVM;
 import com.sy.comment.ui.base.ContentFragment;
 import com.sy.comment.ui.view.HomeView;

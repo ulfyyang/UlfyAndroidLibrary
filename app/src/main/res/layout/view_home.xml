@@ -5,18 +5,155 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 页面内容 -->
-    <LinearLayout
+    <!-- 标签 -->
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="我是首页"/>
-    </LinearLayout>
+        <!-- 标签容器组件 -->
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabsTL"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            app:tabIndicatorColor="#FF0000"
+            app:tabIndicatorHeight="1dp" />
+
+        <!-- 具体的标签 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <!--关注标签-->
+            <FrameLayout
+                android:id="@+id/followFL"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#0f0">
+
+                <TextView
+                    android:id="@+id/followTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="关注" />
+
+            </FrameLayout>
+
+            <!--推荐标签-->
+            <FrameLayout
+                android:id="@+id/recommendFL"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#0f0">
+
+                <TextView
+                    android:id="@+id/recommendTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="推荐" />
+
+            </FrameLayout>
+
+            <!--奖池标签-->
+            <FrameLayout
+                android:id="@+id/prizeFL"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#0f0">
+
+                <TextView
+                    android:id="@+id/prizeTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="奖池" />
+
+            </FrameLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- 具体的标签页 -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- 存放标签的容器 -->
+        <!-- ViewPager容器必须和具体的标签分开排放，否则会崩溃 -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- 如果支持滑动，则使用该容器 -->
+            <android.support.v4.view.ViewPager
+                android:id="@+id/containerVP"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <!-- 如果不支持滑动，则使用该容器 -->
+            <FrameLayout
+                android:id="@+id/containerFL"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </FrameLayout>
+
+        <!-- 具体的标签 -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- 关注页 -->
+            <LinearLayout
+                android:id="@+id/followPageLL"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="关注页" />
+
+            </LinearLayout>
+
+            <!-- 推荐页 -->
+            <LinearLayout
+                android:id="@+id/recommendPageLL"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="推荐页" />
+
+            </LinearLayout>
+
+            <!-- 奖池页 -->
+            <LinearLayout
+                android:id="@+id/prizePageLL"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="奖池页" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </FrameLayout>
 
 </FrameLayout>
