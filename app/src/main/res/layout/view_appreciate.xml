@@ -15,6 +15,7 @@
             android:id="@+id/tabsTL"
             android:layout_width="match_parent"
             android:layout_height="30dp"
+            app:tabBackground="@android:color/transparent"
             app:tabIndicatorColor="#FF0000"
             app:tabIndicatorHeight="1dp" />
 
