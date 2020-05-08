@@ -1,4 +1,5 @@
 package com.sy.comment.ui.fragment;
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -9,6 +10,7 @@ import com.ulfy.android.task_transponder.OnReloadListener;
 import com.sy.comment.application.vm.MineVM;
 import com.sy.comment.ui.base.ContentFragment;
 import com.sy.comment.ui.view.MineView;
+
 public class MineFragment extends ContentFragment {
     private MineVM vm;
     private MineView view;

@@ -1,6 +1,6 @@
 package com.sy.comment;
-import android.support.multidex.MultiDexApplication;
 
+import android.support.multidex.MultiDexApplication;
 import com.sy.comment.ui.activity.MainActivity;
 import com.ulfy.android.bus.BusConfig;
 import com.ulfy.android.cache.CacheConfig;
@@ -14,8 +14,10 @@ import com.ulfy.android.task.TaskConfig;
 import com.ulfy.android.task_transponder.TaskTransponderConfig;
 import com.ulfy.android.time.TimeConfig;
 import com.ulfy.android.utils.UtilsConfig;
+
 public class MainApplication extends MultiDexApplication {
     public static MainApplication application;              // 对外提供全局的上下文访问，使用时要注意避免内存泄漏
+
     @Override public void onCreate() {
         super.onCreate();
         application = this;
