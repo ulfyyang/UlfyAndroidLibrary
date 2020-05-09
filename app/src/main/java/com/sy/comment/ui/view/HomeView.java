@@ -21,7 +21,6 @@ import com.ulfy.android.utils.UiUtils;
 @Layout(id = R.layout.view_home)
 public class HomeView extends BaseView {
     @ViewById(id = R.id.tabsTL) private TabLayout tabsTL;
-    @ViewById(id = R.id.line) private View line;
     @ViewById(id = R.id.followFL) private FrameLayout followFL;
     @ViewById(id = R.id.followTV) private TextView followTV;
     @ViewById(id = R.id.recommendFL) private FrameLayout recommendFL;
