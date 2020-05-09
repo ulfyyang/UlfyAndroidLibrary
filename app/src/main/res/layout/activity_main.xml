@@ -58,9 +58,9 @@
         <!-- 子Tab容器的宽度必须要是match_parent，否则会无法显示出来 -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:orientation="horizontal"
-            tools:background="#ffffff">
+            tools:background="#E6E6E6">
 
             <LinearLayout
                 android:id="@+id/homeLL"
@@ -73,8 +73,8 @@
 
                 <ImageView
                     android:id="@+id/homeIV"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:src="@drawable/selector_tab_home" />
 
                 <TextView
@@ -84,7 +84,7 @@
                     android:layout_marginTop="2dp"
                     android:text="首页"
                     android:textColor="@color/selector_main_tab_text_color"
-                    android:textSize="10sp" />
+                    android:textSize="11sp" />
 
             </LinearLayout>
 
@@ -99,8 +99,8 @@
 
                 <ImageView
                     android:id="@+id/appreciateIV"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:src="@drawable/selector_tab_appreciate" />
 
                 <TextView
@@ -110,7 +110,7 @@
                     android:layout_marginTop="2dp"
                     android:text="鉴赏"
                     android:textColor="@color/selector_main_tab_text_color"
-                    android:textSize="10sp" />
+                    android:textSize="11sp" />
 
             </LinearLayout>
 
@@ -125,8 +125,8 @@
 
                 <ImageView
                     android:id="@+id/noticeIV"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:src="@drawable/selector_tab_notice" />
 
                 <TextView
@@ -136,7 +136,7 @@
                     android:layout_marginTop="2dp"
                     android:text="消息"
                     android:textColor="@color/selector_main_tab_text_color"
-                    android:textSize="10sp" />
+                    android:textSize="11sp" />
 
             </LinearLayout>
 
@@ -151,8 +151,8 @@
 
                 <ImageView
                     android:id="@+id/mineIV"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:src="@drawable/selector_tab_mine" />
 
                 <TextView
@@ -162,7 +162,7 @@
                     android:layout_marginTop="2dp"
                     android:text="我的"
                     android:textColor="@color/selector_main_tab_text_color"
-                    android:textSize="10sp" />
+                    android:textSize="11sp" />
 
             </LinearLayout>
         </LinearLayout>

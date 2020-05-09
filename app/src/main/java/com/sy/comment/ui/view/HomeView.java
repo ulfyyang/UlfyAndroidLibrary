@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ import com.ulfy.android.utils.UiUtils;
 @Layout(id = R.layout.view_home)
 public class HomeView extends BaseView {
     @ViewById(id = R.id.tabsTL) private TabLayout tabsTL;
+    @ViewById(id = R.id.line) private View line;
     @ViewById(id = R.id.followFL) private FrameLayout followFL;
     @ViewById(id = R.id.followTV) private TextView followTV;
     @ViewById(id = R.id.recommendFL) private FrameLayout recommendFL;
@@ -33,6 +35,11 @@ public class HomeView extends BaseView {
     @ViewById(id = R.id.prizePageLL) private LinearLayout prizePageLL;
     private HomeVM vm;
     private TabPagerLinkage linkage = new TabPagerLinkage();
+    // 页面 - viewPager
+    private FollowView followView = new FollowView(getContext());
+    private RecommendView recommendView = new RecommendView(getContext());
+    private PrizeView prizeView = new PrizeView(getContext());
+
 
     public HomeView(Context context) {
         super(context);
@@ -54,7 +61,7 @@ public class HomeView extends BaseView {
     @Override public void bind(IViewModel model) {
         vm = (HomeVM) model;
         linkage.initStringTabs("关注","推荐","奖池")
-                .initViewPages(followPageLL, recommendPageLL, prizePageLL)
+                .initViewPages(followView,recommendView,prizeView)
                 .build().select(0);
     }
 }

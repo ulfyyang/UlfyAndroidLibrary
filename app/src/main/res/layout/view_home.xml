@@ -14,10 +14,13 @@
         <android.support.design.widget.TabLayout
             android:id="@+id/tabsTL"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="40dp"
             app:tabBackground="@android:color/transparent"
-            app:tabIndicatorColor="#FF0000"
-            app:tabIndicatorHeight="1dp" />
+            app:tabIndicatorColor="#3284FF"
+            app:tabSelectedTextColor="#3284FF"
+            app:tabTextColor="#333333"
+            app:tabIndicatorHeight="2dp"
+            app:tabTextAppearance="@style/TabLayoutTextSize" />
 
         <!-- 具体的标签 -->
         <LinearLayout
@@ -40,6 +43,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:textSize="14sp"
+                    android:textColor="#333333"
                     android:text="关注" />
 
             </FrameLayout>
@@ -57,6 +62,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:textSize="14sp"
+                    android:textColor="#333333"
                     android:text="推荐" />
 
             </FrameLayout>
@@ -74,6 +81,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:textSize="14sp"
+                    android:textColor="#333333"
                     android:text="奖池" />
 
             </FrameLayout>
@@ -123,7 +132,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="关注页" />
+                    android:text="" />
 
             </LinearLayout>
 
@@ -137,7 +146,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="推荐页" />
+                    android:text="" />
 
             </LinearLayout>
 
@@ -151,7 +160,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="奖池页" />
+                    android:text="" />
 
             </LinearLayout>
 
