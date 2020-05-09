@@ -5,6 +5,50 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!--搜索框-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="7dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_search_bar"
+                android:gravity="center_vertical"
+                android:paddingLeft="15dp"
+                android:paddingTop="8dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="8dp">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_search" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="搜索内容/用户/神评/资源"
+                    android:textColor="#ff999999" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
     <!-- 标签 -->
     <FrameLayout
         android:layout_width="match_parent"
@@ -17,7 +61,7 @@
             android:layout_height="40dp"
             app:tabBackground="@android:color/transparent"
             app:tabIndicatorColor="#000000"
-            app:tabIndicatorHeight="1.5dp" />
+            app:tabIndicatorHeight="2dp" />
 
         <!-- 具体的标签 -->
         <LinearLayout
@@ -140,8 +184,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="影视页" />
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
@@ -154,8 +197,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="文学页" />
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
@@ -168,8 +210,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="美图页" />
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
@@ -182,8 +223,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="有声页" />
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
