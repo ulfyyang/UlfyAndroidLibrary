@@ -14,10 +14,10 @@
         <android.support.design.widget.TabLayout
             android:id="@+id/tabsTL"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="40dp"
             app:tabBackground="@android:color/transparent"
-            app:tabIndicatorColor="#FF0000"
-            app:tabIndicatorHeight="1dp" />
+            app:tabIndicatorColor="#000000"
+            app:tabIndicatorHeight="1.5dp" />
 
         <!-- 具体的标签 -->
         <LinearLayout
@@ -39,8 +39,7 @@
                     android:id="@+id/movieTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="影视" />
+                    android:layout_gravity="center" />
 
             </FrameLayout>
 
@@ -56,8 +55,7 @@
                     android:id="@+id/literatureTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="文学" />
+                    android:layout_gravity="center" />
 
             </FrameLayout>
 
@@ -73,8 +71,7 @@
                     android:id="@+id/pictureTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="美图" />
+                    android:layout_gravity="center" />
 
             </FrameLayout>
 
@@ -90,14 +87,18 @@
                     android:id="@+id/soundTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="有声" />
+                    android:layout_gravity="center" />
 
             </FrameLayout>
 
         </LinearLayout>
 
     </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E8E8E8" />
 
     <!-- 具体的标签页 -->
     <FrameLayout
