@@ -6,43 +6,51 @@
     android:orientation="vertical">
 
     <!--搜索框-->
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="282dp"
-            android:layout_height="34dp"
-            android:layout_marginLeft="16dp"
-            android:background="@drawable/search_bar"
-            android:layout_gravity="center_vertical"
-            android:gravity="center_vertical">
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="14dp"
+            android:layout_weight="1">
 
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_marginLeft="18.5dp"
-                android:src="@drawable/search"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/search_bar"
+                android:gravity="center_vertical"
+                android:paddingLeft="15dp"
+                android:paddingTop="8dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="8dp">
 
-            <TextView
-                android:layout_width="175dp"
-                android:layout_height="18dp"
-                android:text="搜索内容/用户/神评/资源"
-                android:textColor="#ff999999"
-                android:textSize="14sp"
-                android:layout_marginLeft="11.5dp"/>
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/search" />
 
-        </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="搜索内容/用户/神评/资源"
+                    android:textColor="#ff999999" />
+
+            </LinearLayout>
+
+        </FrameLayout>
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/release"
-            android:layout_marginRight="20dp"
-            android:layout_gravity="center_vertical|right"/>
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="14dp"
+            android:src="@drawable/release" />
 
-
-    </FrameLayout>
+    </LinearLayout>
 
     <!-- 标签 -->
     <FrameLayout
@@ -56,10 +64,10 @@
             android:layout_height="40dp"
             app:tabBackground="@android:color/transparent"
             app:tabIndicatorColor="#3284FF"
-            app:tabSelectedTextColor="#3284FF"
-            app:tabTextColor="#333333"
             app:tabIndicatorHeight="2dp"
-            app:tabTextAppearance="@style/TabLayoutTextSize" />
+            app:tabSelectedTextColor="#3284FF"
+            app:tabTextAppearance="@style/TabLayoutTextSize"
+            app:tabTextColor="#333333" />
 
         <!-- 具体的标签 -->
         <LinearLayout
@@ -82,9 +90,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:textSize="14sp"
+                    android:text="关注"
                     android:textColor="#333333"
-                    android:text="关注" />
+                    android:textSize="14sp" />
 
             </FrameLayout>
 
@@ -101,9 +109,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:textSize="14sp"
+                    android:text="推荐"
                     android:textColor="#333333"
-                    android:text="推荐" />
+                    android:textSize="14sp" />
 
             </FrameLayout>
 
@@ -120,9 +128,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:textSize="14sp"
+                    android:text="奖池"
                     android:textColor="#333333"
-                    android:text="奖池" />
+                    android:textSize="14sp" />
 
             </FrameLayout>
 
