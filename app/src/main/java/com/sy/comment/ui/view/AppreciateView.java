@@ -36,10 +36,10 @@ public class AppreciateView extends BaseView {
     private AppreciateVM vm;
     private TabPagerLinkage linkage = new TabPagerLinkage();
     // 页面 - viewPager
-    private MovieView movieView = new MovieView(getContext());
-    private LiteratureView literatureView = new LiteratureView(getContext());
-    private PictureView pictureView = new PictureView(getContext());
-    private SoundView soundView = new SoundView(getContext());
+    private MovieContentView movieContentView = new MovieContentView(getContext());
+    private LiteratureContentView literatureContentView = new LiteratureContentView(getContext());
+    private PictureContentView pictureContentView = new PictureContentView(getContext());
+    private SoundContentView soundContentView = new SoundContentView(getContext());
 
     public AppreciateView(Context context) {
         super(context);
@@ -61,7 +61,7 @@ public class AppreciateView extends BaseView {
     @Override public void bind(IViewModel model) {
         vm = (AppreciateVM) model;
         linkage.initStringTabs("影视","文学","美图","有声")
-                .initViewPages(movieView,literatureView,pictureView,soundView)
+                .initViewPages(movieContentView,literatureContentView,pictureContentView,soundContentView)
                 .build().select(0);
     }
 }

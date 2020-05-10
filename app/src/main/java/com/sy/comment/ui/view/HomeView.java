@@ -35,9 +35,9 @@ public class HomeView extends BaseView {
     private HomeVM vm;
     private TabPagerLinkage linkage = new TabPagerLinkage();
     // 页面 - viewPager
-    private FollowView followView = new FollowView(getContext());
-    private RecommendView recommendView = new RecommendView(getContext());
-    private PrizeView prizeView = new PrizeView(getContext());
+    private FollowContentView followContentView = new FollowContentView(getContext());
+    private RecommendContentView recommendContentView = new RecommendContentView(getContext());
+    private PrizeContentView prizeContentView = new PrizeContentView(getContext());
 
 
     public HomeView(Context context) {
@@ -60,7 +60,7 @@ public class HomeView extends BaseView {
     @Override public void bind(IViewModel model) {
         vm = (HomeVM) model;
         linkage.initStringTabs("关注","推荐","奖池")
-                .initViewPages(followView,recommendView,prizeView)
+                .initViewPages(followContentView,recommendContentView,prizeContentView)
                 .build().select(0);
     }
 }

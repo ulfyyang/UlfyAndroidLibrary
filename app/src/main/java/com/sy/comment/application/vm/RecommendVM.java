@@ -1,23 +1,28 @@
 package com.sy.comment.application.vm;
 
+import com.sy.comment.application.cm.FollowCM;
+import com.sy.comment.application.cm.RecommendCM;
 import com.ulfy.android.mvvm.IView;
 import com.ulfy.android.task.LoadDataUiTask;
+import com.ulfy.android.task.LoadListPageUiTask;
 import com.ulfy.android.utils.LogUtils;
 import com.sy.comment.application.base.BaseVM;
 import com.sy.comment.ui.view.RecommendView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RecommendVM extends BaseVM {
 
-    public LoadDataUiTask.OnExecute loadDataOnExe() {
-        return new LoadDataUiTask.OnExecute() {
-            @Override public void onExecute(LoadDataUiTask task) {
-                try {
-                    task.notifyStart("正在加载...");
+    public List<RecommendCM> recommendCMList = new ArrayList<>();
+    public LoadListPageUiTask.LoadListPageUiTaskInfo<RecommendCM> recommendTaskInfo = new LoadListPageUiTask.LoadListPageUiTaskInfo<>(recommendCMList);
 
-                    task.notifySuccess("加载完成");
-                } catch (Exception e) {
-                    LogUtils.log("加载失败", e);
-                    task.notifyFail(e);
+    public LoadListPageUiTask.OnLoadListPage loadContentDataPerPageOnExe() {
+        return new LoadListPageUiTask.OnLoadSimpleListPage() {
+            @Override protected void loadSimplePage(LoadListPageUiTask task, List<Object> modelList, List<Object> tempList, int page, int pageSize) throws Exception {
+                Thread.sleep(1000);
+                for (int i = 0; i < 30; i++) {
+                    tempList.add(new FollowCM((page - 1) * 30 + i));
                 }
             }
         };

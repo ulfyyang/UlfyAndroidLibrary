@@ -3,13 +3,11 @@ package com.sy.comment.ui.view;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-
 import com.sy.comment.application.vm.FollowVM;
 import com.sy.comment.ui.base.ContentView;
 import com.ulfy.android.task.TaskUtils;
 import com.ulfy.android.task_transponder.ContentDataLoader;
 import com.ulfy.android.task_transponder.OnReloadListener;
-
 
 public class FollowContentView extends ContentView {
     private FollowVM vm;
@@ -32,7 +30,7 @@ public class FollowContentView extends ContentView {
      * 初始化界面的数据
      */
     private void initContent(final Bundle savedInstanceState) {
-        TaskUtils.loadData(getContext(), vm.loadDataOnExe(), new ContentDataLoader(contentFL, vm, false) {
+        TaskUtils.loadData(getContext(), vm.followTaskInfo, vm.loadContentDataPerPageOnExe(), new ContentDataLoader(contentFL, vm, false) {
                     @Override protected void onCreatView(ContentDataLoader loader, View createdView) {
                         view = (FollowView) createdView;
                     }
