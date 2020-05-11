@@ -12,7 +12,6 @@ import com.sy.comment.ui.base.BaseView;
 
 @Layout(id = R.layout.view_literature)
 public class LiteratureView extends BaseView {
-    
     private LiteratureVM vm;
 
     public LiteratureView(Context context) {

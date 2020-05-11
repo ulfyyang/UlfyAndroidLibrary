@@ -60,7 +60,7 @@ public class HomeView extends BaseView {
     @Override public void bind(IViewModel model) {
         vm = (HomeVM) model;
         linkage.initStringTabs("关注","推荐","奖池")
-                .initViewPages(followContentView,recommendContentView,prizeContentView)
+                .initViewPages(followContentView, recommendContentView, prizeContentView)
                 .build().select(0);
     }
 }

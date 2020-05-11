@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.ulfy.android.mvvm.IViewModel;
 import com.ulfy.android.ui_injection.Layout;
 import com.sy.comment.R;
@@ -61,7 +60,7 @@ public class AppreciateView extends BaseView {
     @Override public void bind(IViewModel model) {
         vm = (AppreciateVM) model;
         linkage.initStringTabs("影视","文学","美图","有声")
-                .initViewPages(movieContentView,literatureContentView,pictureContentView,soundContentView)
+                .initViewPages(movieContentView, literatureContentView, pictureContentView, soundContentView)
                 .build().select(0);
     }
 }

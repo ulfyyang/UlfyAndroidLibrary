@@ -12,6 +12,7 @@ public class FollowCM extends BaseCM {
     public FollowCM(int index) {
         this.index = index;
     }
+
     @Override public Class<? extends IView> getViewClass() {
         return FollowCell.class;
     }

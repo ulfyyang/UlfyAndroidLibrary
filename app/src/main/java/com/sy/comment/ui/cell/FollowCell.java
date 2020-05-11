@@ -31,6 +31,5 @@ public class FollowCell extends BaseCell {
 
     @Override public void bind(IViewModel model) {
         cm = (FollowCM) model;
-
     }
 }

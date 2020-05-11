@@ -12,7 +12,6 @@ import com.sy.comment.ui.base.BaseView;
 
 @Layout(id = R.layout.view_movie)
 public class MovieView extends BaseView {
-    
     private MovieVM vm;
 
     public MovieView(Context context) {

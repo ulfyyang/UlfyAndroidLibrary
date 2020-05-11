@@ -12,7 +12,6 @@ import com.sy.comment.ui.base.BaseView;
 
 @Layout(id = R.layout.view_sound)
 public class SoundView extends BaseView {
-    
     private SoundVM vm;
 
     public SoundView(Context context) {

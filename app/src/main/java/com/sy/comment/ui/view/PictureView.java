@@ -12,7 +12,6 @@ import com.sy.comment.ui.base.BaseView;
 
 @Layout(id = R.layout.view_picture)
 public class PictureView extends BaseView {
-    
     private PictureVM vm;
 
     public PictureView(Context context) {

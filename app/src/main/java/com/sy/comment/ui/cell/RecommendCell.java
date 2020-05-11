@@ -31,6 +31,5 @@ public class RecommendCell extends BaseCell {
 
     @Override public void bind(IViewModel model) {
         cm = (RecommendCM) model;
-
     }
 }

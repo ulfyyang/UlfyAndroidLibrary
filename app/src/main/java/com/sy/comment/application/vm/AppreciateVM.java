@@ -13,7 +13,6 @@ public class AppreciateVM extends BaseVM {
             @Override public void onExecute(LoadDataUiTask task) {
                 try {
                     task.notifyStart("正在加载...");
-
                     task.notifySuccess("加载完成");
                 } catch (Exception e) {
                     LogUtils.log("加载失败", e);

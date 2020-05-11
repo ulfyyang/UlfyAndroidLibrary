@@ -31,6 +31,5 @@ public class PrizeCell extends BaseCell {
 
     @Override public void bind(IViewModel model) {
         cm = (PrizeCM) model;
-
     }
 }
