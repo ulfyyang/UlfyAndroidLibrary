@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/vk_grey_color"
     android:orientation="vertical">
 
     <!-- 纯文字动态 -->
@@ -21,11 +20,17 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical">
 
-            <ImageView
-                android:layout_width="39dp"
-                android:layout_height="39dp"
-                android:src="@drawable/ic_head_img"
-                android:background="@drawable/shape_head_img"/>
+            <com.ulfy.android.views.ShapeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_shape="circle">
+
+                <ImageView
+                    android:layout_width="39dp"
+                    android:layout_height="39dp"
+                    android:src="@drawable/ic_head_img"/>
+
+            </com.ulfy.android.views.ShapeLayout>
 
             <TextView
                 android:layout_width="match_parent"
@@ -41,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:text="@string/article"
+            android:text="随便聊一聊目前的一些感受《这就是街舞》前2季，队长相对固定，尤其是罗志祥、易烊千玺两名流量担..."
             android:lineSpacingExtra="4dp"
             android:textColor="#ff333333" />
 
@@ -109,10 +114,17 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical">
 
-            <ImageView
-                android:layout_width="39dp"
-                android:layout_height="39dp"
-                android:src="@drawable/ic_head_img" />
+            <com.ulfy.android.views.ShapeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_shape="circle">
+
+                <ImageView
+                    android:layout_width="39dp"
+                    android:layout_height="39dp"
+                    android:src="@drawable/ic_head_img"/>
+
+            </com.ulfy.android.views.ShapeLayout>
 
             <TextView
                 android:layout_width="match_parent"
@@ -128,7 +140,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:text="@string/article"
+            android:text="随便聊一聊目前的一些感受《这就是街舞》前2季，队长相对固定，尤其是罗志祥、易烊千玺两名流量担..."
             android:lineSpacingExtra="4dp"
             android:textColor="#ff333333" />
 
@@ -232,10 +244,17 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical">
 
-            <ImageView
-                android:layout_width="39dp"
-                android:layout_height="39dp"
-                android:src="@drawable/ic_head_img" />
+            <com.ulfy.android.views.ShapeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_shape="circle">
+
+                <ImageView
+                    android:layout_width="39dp"
+                    android:layout_height="39dp"
+                    android:src="@drawable/ic_head_img"/>
+
+            </com.ulfy.android.views.ShapeLayout>
 
             <TextView
                 android:layout_width="match_parent"
@@ -251,7 +270,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:text="@string/article"
+            android:text="随便聊一聊目前的一些感受《这就是街舞》前2季，队长相对固定，尤其是罗志祥、易烊千玺两名流量担..."
             android:lineSpacingExtra="2dp"
             android:textColor="#ff333333" />
         

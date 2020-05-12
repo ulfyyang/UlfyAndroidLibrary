@@ -1,15 +1,16 @@
 package com.sy.comment.ui.view;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.sy.comment.application.cm.FollowCM;
 import com.sy.comment.application.cm.RecommendCM;
 import com.ulfy.android.adapter.RecyclerAdapter;
+import com.ulfy.android.image.ImageUtils;
 import com.ulfy.android.mvvm.IViewModel;
 import com.ulfy.android.task_transponder.RecyclerViewPageLoader;
 import com.ulfy.android.task_transponder_smart.SmartRefresher;
@@ -19,6 +20,7 @@ import com.sy.comment.R;
 import com.sy.comment.application.vm.FollowVM;
 import com.sy.comment.ui.base.BaseView;
 import com.ulfy.android.utils.RecyclerViewUtils;
+import com.ulfy.android.views.ShapeLayout;
 
 @Layout(id = R.layout.view_follow)
 public class FollowView extends BaseView {

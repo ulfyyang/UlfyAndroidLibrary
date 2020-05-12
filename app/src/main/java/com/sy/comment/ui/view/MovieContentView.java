@@ -3,6 +3,7 @@ package com.sy.comment.ui.view;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+
 import com.sy.comment.application.vm.MovieVM;
 import com.sy.comment.ui.base.ContentView;
 import com.ulfy.android.task.TaskUtils;

@@ -51,7 +51,7 @@ public class AppreciateView extends BaseView {
     }
 
     private void init(Context context, AttributeSet attrs) {
-        linkage.setTabLayout(tabsTL).setContainer(containerVP)
+        linkage.setTabLayout(tabsTL).setContainer(containerFL)
                 .setLineWidth(TabPagerLinkage.LINE_WIDTH_WRAP_CONTENT)
                 .setAutoScrollMode(true)
                 .setUseWrapperOnScrollMode(true);
@@ -59,7 +59,7 @@ public class AppreciateView extends BaseView {
 
     @Override public void bind(IViewModel model) {
         vm = (AppreciateVM) model;
-        linkage.initStringTabs("影视","文学","美图","有声")
+        linkage.initStringTabs("影视", "文学", "美图", "有声")
                 .initViewPages(movieContentView, literatureContentView, pictureContentView, soundContentView)
                 .build().select(0);
     }
