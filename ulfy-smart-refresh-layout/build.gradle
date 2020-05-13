@@ -1,0 +1,55 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
+
+publish {
+    userOrg = 'ulfyyang'
+    repoName = 'ulfy-maven'
+    groupId = 'com.ulfy.android'
+    artifactId = 'smart-refresh-layout'
+    publishVersion = '1.1.0'
+    uploadName = 'ulfy-smart-refresh-layout'
+    desc = 'SmartRefreshLayout的改进版，版本号跟随官方版本'
+    website = 'https://github.com/ulfyyang/ulfy-android-master'
+}
+
+android {
+    compileSdkVersion externalCompileSdkVersion
+    buildToolsVersion externalBuildToolsVersion
+
+    lintOptions {
+        abortOnError false
+    }
+
+    defaultConfig {
+        minSdkVersion externalMinSdkVersion
+        targetSdkVersion externalTargetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        consumerProguardFiles 'proguard-rules.pro'
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation externalAppBarLayout                 // 官方AppBarLayout升级版
+    //noinspection GradleDependency
+    compileOnly 'com.android.support:support-annotations:25.1.0'
+    //noinspection GradleDependency,GradleCompatible
+//    compileOnly 'com.android.support:support-v4:22.1.0'
+    //noinspection GradleDependency,GradleCompatible
+    compileOnly 'com.android.support:recyclerview-v7:21.0.0'
+    //noinspection GradleDependency,GradleCompatible
+    compileOnly 'com.android.support:design:23.0.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+}
