@@ -39,6 +39,10 @@
             android:layout_height="wrap_content"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
+            <View
+                style="@style/HLine"
+                android:background="#E8E8E8" />
+
             <!-- 该容器用于管理具体的点击Tab组件 -->
             <!-- tabIndicatorHeight用于指定下方滑动条的高度 -->
             <!-- tabMode用于指定容器的宽度是否等于屏幕的长度 -->
@@ -60,7 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:orientation="horizontal"
-            tools:background="#E6E6E6">
+            tools:background="#ffffff">
 
             <LinearLayout
                 android:id="@+id/homeLL"
