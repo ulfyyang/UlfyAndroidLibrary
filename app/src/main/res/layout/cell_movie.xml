@@ -64,6 +64,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
             android:paddingLeft="3dp"
             android:text="该片讲述在高考前夕,被一场校园意外改变命运的两个少年,如何守护彼此成为想成为的成年人的故事。"
             android:textSize="12sp"
