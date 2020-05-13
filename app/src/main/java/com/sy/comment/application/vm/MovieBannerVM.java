@@ -17,10 +17,10 @@ public class MovieBannerVM extends BaseVM {
             @Override public void onExecute(LoadDataUiTask task) {
                 try {
                     task.notifyStart("正在加载...");
-                    movieBannerList.add(new Banner("drawable-xhdpi/drawable_banner_default.png"));
-                    movieBannerList.add(new Banner("drawable-xhdpi/drawable_banner_default.png"));
-                    movieBannerList.add(new Banner("drawable-xhdpi/drawable_banner_default.png"));
-                    movieBannerList.add(new Banner("drawable-xhdpi/drawable_banner_default.png"));
+//                    movieBannerList.add(new Banner("drawable-xhdpi/drawable_banner_default.png"));
+//                    movieBannerList.add(new Banner("drawable-xhdpi/drawable_banner_default.png"));
+//                    movieBannerList.add(new Banner("drawable-xhdpi/drawable_banner_default.png"));
+//                    movieBannerList.add(new Banner("drawable-xhdpi/drawable_banner_default.png"));
                     task.notifySuccess("加载完成");
                 } catch (Exception e) {
                     LogUtils.log("加载失败", e);

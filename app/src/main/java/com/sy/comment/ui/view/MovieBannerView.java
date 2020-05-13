@@ -12,7 +12,7 @@ import com.sy.comment.ui.base.BaseView;
 
 @Layout(id = R.layout.cell_movie)
 public class MovieBannerView extends BaseView {
-    @ViewById(id = R.id.movieBanner) private XBanner movieBanner;
+//    @ViewById(id = R.id.movieBanner) private XBanner movieBanner;
     private MovieBannerVM vm;
 
     public MovieBannerView(Context context) {
@@ -31,7 +31,7 @@ public class MovieBannerView extends BaseView {
 
     @Override public void bind(IViewModel model) {
         vm = (MovieBannerVM) model;
-        movieBanner.setAutoPlayAble(vm.movieBannerList.size() > 1);
-        movieBanner.setBannerData(vm.movieBannerList);
+//        movieBanner.setAutoPlayAble(vm.movieBannerList.size() > 1);
+//        movieBanner.setBannerData(vm.movieBannerList);
     }
 }

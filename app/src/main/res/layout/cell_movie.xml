@@ -20,17 +20,17 @@
                 android:layout_height="128dp"
                 android:src="@drawable/drawable_img_default" />
 
-            <com.stx.xhb.xbanner.XBanner
-                android:id="@+id/movieBanner"
-                android:layout_width="0dp"
-                android:layout_height="128dp"
-                android:layout_marginLeft="10dp"
-                android:layout_weight="1"
-                app:AutoPlayTime="3000"
-                app:pageChangeDuration="800"
-                app:pointNormal="@drawable/shape_poiter_false"
-                app:pointSelect="@drawable/shape_poiter_true"
-                app:pointsPosition="LEFT" />
+            <!--<com.stx.xhb.xbanner.XBanner-->
+                <!--android:id="@+id/movieBanner"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="128dp"-->
+                <!--android:layout_marginLeft="10dp"-->
+                <!--android:layout_weight="1"-->
+                <!--app:AutoPlayTime="3000"-->
+                <!--app:pageChangeDuration="800"-->
+                <!--app:pointNormal="@drawable/shape_poiter_false"-->
+                <!--app:pointSelect="@drawable/shape_poiter_true"-->
+                <!--app:pointsPosition="LEFT" />-->
 
         </LinearLayout>
 

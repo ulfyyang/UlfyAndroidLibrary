@@ -13,7 +13,7 @@ import com.ulfy.android.ui_injection.ViewById;
 
 @Layout(id = R.layout.cell_movie)
 public class MovieCell extends BaseCell {
-    @ViewById(id = R.id.movieBanner) private XBanner movieBanner;
+//    @ViewById(id = R.id.movieBanner) private XBanner movieBanner;
     private MovieCM cm;
 
     public MovieCell(Context context) {
