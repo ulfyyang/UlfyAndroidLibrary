@@ -1,14 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <!-- 页面内容 -->
-    <ImageView
-        android:layout_width="102.5dp"
-        android:layout_height="128dp"
-        android:src="@drawable/drawable_movie_img"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-</LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="102.5dp"
+                android:layout_height="128dp"
+                android:src="@drawable/drawable_img_default" />
+
+            <com.stx.xhb.xbanner.XBanner
+                android:id="@+id/movieBanner"
+                android:layout_width="0dp"
+                android:layout_height="128dp"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                app:AutoPlayTime="3000"
+                app:pageChangeDuration="800"
+                app:pointNormal="@drawable/shape_poiter_false"
+                app:pointSelect="@drawable/shape_poiter_true"
+                app:pointsPosition="LEFT" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="少年的你 (2019)"
+            android:textSize="16sp"
+            android:textColor="#333333"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- 评分栏 -->
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="8.1"
+                android:textSize="11sp"
+                android:textColor="#666666"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="该片讲述在高考前夕,被一场校园意外改变命运的两个少年,如何守护彼此成为想成为的成年人的故事。"
+            android:textSize="12sp"
+            android:textColor="#999999"/>
+
+    </LinearLayout>
+
+
+
+</FrameLayout>

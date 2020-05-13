@@ -1,33 +1,26 @@
 package com.sy.comment.application.vm;
 
-import android.graphics.Movie;
-import com.sy.comment.application.cm.FollowCM;
-import com.sy.comment.application.cm.MovieCM;
-import com.sy.comment.application.cm.PopularMovieCM;
 import com.sy.comment.domain.entity.Banner;
 import com.ulfy.android.mvvm.IView;
 import com.ulfy.android.task.LoadDataUiTask;
 import com.ulfy.android.utils.LogUtils;
 import com.sy.comment.application.base.BaseVM;
-import com.sy.comment.ui.view.MovieView;
+import com.sy.comment.ui.view.MovieBannerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieVM extends BaseVM {
-    public List<MovieCM> movieCMList = new ArrayList<>();
-    public List<PopularMovieCM> popularMovieCMList = new ArrayList<>();
+public class MovieBannerVM extends BaseVM {
+    public List<Banner> movieBannerList = new ArrayList<>();
 
     public LoadDataUiTask.OnExecute loadDataOnExe() {
         return new LoadDataUiTask.OnExecute() {
             @Override public void onExecute(LoadDataUiTask task) {
                 try {
                     task.notifyStart("正在加载...");
-                    popularMovieCMList.clear();
-                    movieCMList.clear();
-                    for (int i = 0; i < 6; i++) {
-                        popularMovieCMList.add(new PopularMovieCM(i));
-                        movieCMList.add(new MovieCM(i));
-                    }
+                    movieBannerList.add(new Banner("drawable-xhdpi/drawable_banner_default.png"));
+                    movieBannerList.add(new Banner("drawable-xhdpi/drawable_banner_default.png"));
+                    movieBannerList.add(new Banner("drawable-xhdpi/drawable_banner_default.png"));
+                    movieBannerList.add(new Banner("drawable-xhdpi/drawable_banner_default.png"));
                     task.notifySuccess("加载完成");
                 } catch (Exception e) {
                     LogUtils.log("加载失败", e);
@@ -38,6 +31,6 @@ public class MovieVM extends BaseVM {
     }
 
     @Override public Class<? extends IView> getViewClass() {
-        return MovieView.class;
+        return MovieBannerView.class;
     }
 }

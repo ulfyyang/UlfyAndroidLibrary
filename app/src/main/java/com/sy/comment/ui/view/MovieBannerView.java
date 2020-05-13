@@ -1,27 +1,26 @@
-package com.sy.comment.ui.cell;
+package com.sy.comment.ui.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import com.stx.xhb.xbanner.XBanner;
-import com.sy.comment.application.vm.MovieVM;
 import com.ulfy.android.mvvm.IViewModel;
 import com.ulfy.android.ui_injection.Layout;
-import com.sy.comment.R;
-import com.sy.comment.application.cm.MovieCM;
-import com.sy.comment.ui.base.BaseCell;
 import com.ulfy.android.ui_injection.ViewById;
+import com.sy.comment.R;
+import com.sy.comment.application.vm.MovieBannerVM;
+import com.sy.comment.ui.base.BaseView;
 
 @Layout(id = R.layout.cell_movie)
-public class MovieCell extends BaseCell {
+public class MovieBannerView extends BaseView {
     @ViewById(id = R.id.movieBanner) private XBanner movieBanner;
-    private MovieCM cm;
+    private MovieBannerVM vm;
 
-    public MovieCell(Context context) {
+    public MovieBannerView(Context context) {
         super(context);
         init(context, null);
     }
 
-    public MovieCell(Context context, AttributeSet attrs) {
+    public MovieBannerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
@@ -31,6 +30,8 @@ public class MovieCell extends BaseCell {
     }
 
     @Override public void bind(IViewModel model) {
-        cm = (MovieCM) model;
+        vm = (MovieBannerVM) model;
+        movieBanner.setAutoPlayAble(vm.movieBannerList.size() > 1);
+        movieBanner.setBannerData(vm.movieBannerList);
     }
 }

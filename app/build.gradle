@@ -102,6 +102,7 @@ dependencies {
     implementation project(':ulfy-lib:ulfy-agentweb')                    // 网页加载
     implementation project(':ulfy-lib:ulfy-smart-refresh-layout')        // Smart下拉刷器
 
+    implementation externalXBanner                              // 轮播图
 
     // 一些常用的三方依赖，通常每个项目必选
     implementation externalOKHTTP                       // 网络访问库

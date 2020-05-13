@@ -42,6 +42,8 @@ public class MovieView extends BaseView {
     private void init(Context context, AttributeSet attrs) {
         RecyclerViewUtils.gridLayout(popularRV).vertical(3).dividerDp(Color.alpha(00), 10, 10, 0, 0);
         RecyclerViewUtils.linearLayout(movieRV).vertical().dividerDp(Color.alpha(00), 10, 0, 0);
+        movieRV.setNestedScrollingEnabled(false);
+        popularRV.setNestedScrollingEnabled(false);
         movieRV.setAdapter(movieAdapter);
         popularRV.setAdapter(popularAdapter);
         movieRefresher = new SmartRefresher(movieSRL, new SmartRefresher.OnRefreshSuccessListener() {
