@@ -39,13 +39,15 @@
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
+            android:paddingLeft="3dp"
             android:text="少年的你 (2019)"
             android:textSize="16sp"
             android:textColor="#333333"/>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingLeft="3dp">
 
             <!-- 评分栏 -->
 
@@ -62,6 +64,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingLeft="3dp"
             android:text="该片讲述在高考前夕,被一场校园意外改变命运的两个少年,如何守护彼此成为想成为的成年人的故事。"
             android:textSize="12sp"
             android:textColor="#999999"/>

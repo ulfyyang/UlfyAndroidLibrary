@@ -51,7 +51,7 @@ public class AppreciateView extends BaseView {
     }
 
     private void init(Context context, AttributeSet attrs) {
-        linkage.setTabLayout(tabsTL).setContainer(containerFL)
+        linkage.setTabLayout(tabsTL).setContainer(containerVP)
                 .setLineWidth(TabPagerLinkage.LINE_WIDTH_WRAP_CONTENT)
                 .setAutoScrollMode(true)
                 .setUseWrapperOnScrollMode(true);
