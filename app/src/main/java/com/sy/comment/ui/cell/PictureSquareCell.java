@@ -3,7 +3,6 @@ package com.sy.comment.ui.cell;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
-
 import com.sy.comment.R;
 import com.sy.comment.application.cm.PictureSquareCM;
 import com.sy.comment.ui.base.BaseCell;

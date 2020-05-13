@@ -1,10 +1,7 @@
 package com.sy.comment.application.vm;
 
-import android.graphics.Movie;
-import com.sy.comment.application.cm.FollowCM;
 import com.sy.comment.application.cm.MovieCM;
 import com.sy.comment.application.cm.PopularMovieCM;
-import com.sy.comment.domain.entity.Banner;
 import com.ulfy.android.mvvm.IView;
 import com.ulfy.android.task.LoadDataUiTask;
 import com.ulfy.android.utils.LogUtils;

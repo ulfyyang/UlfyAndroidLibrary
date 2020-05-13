@@ -7,7 +7,7 @@ import android.util.AttributeSet;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.sy.comment.R;
-import com.sy.comment.application.cm.FollowCM;
+import com.sy.comment.application.cm.MomentCM;
 import com.sy.comment.application.vm.RecommendVM;
 import com.sy.comment.ui.base.BaseView;
 import com.ulfy.android.adapter.RecyclerAdapter;
@@ -22,7 +22,7 @@ import com.ulfy.android.utils.RecyclerViewUtils;
 public class RecommendView extends BaseView {
     @ViewById(id = R.id.recommendSRL) private SmartRefreshLayout recommendSRL;
     @ViewById(id = R.id.recommendRV) private RecyclerView recommendRV;
-    private RecyclerAdapter<FollowCM> recommendAdapter = new RecyclerAdapter<>();
+    private RecyclerAdapter<MomentCM> recommendAdapter = new RecyclerAdapter<>();
     private SmartRefresher recommendRefresher;
     private RecyclerViewPageLoader recommendLoader;
     private RecommendVM vm;

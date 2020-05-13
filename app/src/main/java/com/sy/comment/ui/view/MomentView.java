@@ -7,7 +7,7 @@ import android.util.AttributeSet;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.sy.comment.R;
-import com.sy.comment.application.cm.FollowCM;
+import com.sy.comment.application.cm.MomentCM;
 import com.sy.comment.application.vm.FollowVM;
 import com.sy.comment.ui.base.BaseView;
 import com.ulfy.android.adapter.RecyclerAdapter;
@@ -19,20 +19,20 @@ import com.ulfy.android.ui_injection.ViewById;
 import com.ulfy.android.utils.RecyclerViewUtils;
 
 @Layout(id = R.layout.view_follow)
-public class FollowView extends BaseView {
+public class MomentView extends BaseView {
     @ViewById(id = R.id.followSRL) private SmartRefreshLayout followSRL;
     @ViewById(id = R.id.followRV) private RecyclerView followRV;
-    private RecyclerAdapter<FollowCM> followAdapter = new RecyclerAdapter<>();
+    private RecyclerAdapter<MomentCM> followAdapter = new RecyclerAdapter<>();
     private SmartRefresher followRefresher;
     private RecyclerViewPageLoader followLoader;
     private FollowVM vm;
 
-    public FollowView(Context context) {
+    public MomentView(Context context) {
         super(context);
         init(context, null);
     }
 
-    public FollowView(Context context, AttributeSet attrs) {
+    public MomentView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }

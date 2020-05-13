@@ -66,11 +66,13 @@
         app:tabTextAppearance="@style/TabLayoutTextSize"
         app:tabTextColor="#333333" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_marginTop="10dp"
-        android:background="#E8E8E8" />
+    <!--<View-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0.5dp"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:background="#E8E8E8" />-->
+
+    <include layout="@layout/view_line"/>
 
     <!-- 存放标签的容器 -->
     <!-- ViewPager容器必须和具体的标签分开排放，否则会崩溃 -->

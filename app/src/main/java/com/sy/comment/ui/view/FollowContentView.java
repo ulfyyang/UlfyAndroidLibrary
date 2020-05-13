@@ -11,7 +11,7 @@ import com.ulfy.android.task_transponder.OnReloadListener;
 
 public class FollowContentView extends ContentView {
     private FollowVM vm;
-    private FollowView view;
+    private MomentView view;
 
     public FollowContentView(Context context) {
         super(context);
@@ -32,7 +32,7 @@ public class FollowContentView extends ContentView {
     private void initContent(final Bundle savedInstanceState) {
         TaskUtils.loadData(getContext(), vm.followTaskInfo, vm.loadContentDataPerPageOnExe(), new ContentDataLoader(contentFL, vm, false) {
                     @Override protected void onCreatView(ContentDataLoader loader, View createdView) {
-                        view = (FollowView) createdView;
+                        view = (MomentView) createdView;
                     }
                 }.setOnReloadListener(new OnReloadListener() {
                     @Override public void onReload() {
