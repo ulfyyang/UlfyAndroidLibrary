@@ -36,16 +36,12 @@ public class MainActivity extends BaseActivity {
     @ViewById(id = R.id.mineIV) private ImageView mineIV;
     @ViewById(id = R.id.mineTV) private TextView mineTV;
     private TabPagerLinkage linkage = new TabPagerLinkage();
-    private HomeFragment homeFragment = new HomeFragment();
-    private AppreciateFragment appreciateFragment = new AppreciateFragment();
-    private NoticeFragment noticeFragment = new NoticeFragment();
-    private MineFragment mineFragment = new MineFragment();
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         linkage.setTabLayout(tabTL).setContainer(containerVP)
                 .initViewTabs(homeLL, appreciateLL, noticeLL, mineLL)
-                .initFragmentPages(homeFragment, appreciateFragment, noticeFragment, mineFragment)
+                .initFragmentPages(new HomeFragment(), new AppreciateFragment(), new NoticeFragment(), new MineFragment())
                 .build().select(0);
     }
 

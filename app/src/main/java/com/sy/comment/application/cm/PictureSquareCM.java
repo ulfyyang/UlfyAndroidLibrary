@@ -4,16 +4,11 @@ import com.ulfy.android.mvvm.IView;
 import com.ulfy.android.task.LoadDataUiTask;
 import com.ulfy.android.utils.LogUtils;
 import com.sy.comment.application.base.BaseCM;
-import com.sy.comment.ui.cell.RecommendCell;
+import com.sy.comment.ui.cell.PictureSquareCell;
 
-public class RecommendCM extends BaseCM {
-    public int index;
-
-    public RecommendCM(int index) {
-        this.index = index;
-    }
+public class PictureSquareCM extends BaseCM {
 
     @Override public Class<? extends IView> getViewClass() {
-        return RecommendCell.class;
+        return PictureSquareCell.class;
     }
 }

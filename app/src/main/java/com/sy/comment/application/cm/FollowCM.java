@@ -1,16 +1,24 @@
 package com.sy.comment.application.cm;
 
-import com.ulfy.android.mvvm.IView;
-import com.ulfy.android.task.LoadDataUiTask;
-import com.ulfy.android.utils.LogUtils;
 import com.sy.comment.application.base.BaseCM;
 import com.sy.comment.ui.cell.FollowCell;
+import com.ulfy.android.mvvm.IView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class FollowCM extends BaseCM {
-    public int index;
+    public List<PictureSquareCM> pictureCMList = new ArrayList<>();
+    public boolean showPicture;     // 是否显示图片
 
-    public FollowCM(int index) {
-        this.index = index;
+    public FollowCM() {
+        // 模拟添加图片的过程
+        int number = new Random().nextInt(5);
+        for (int i = 0; i < number; i++) {
+            pictureCMList.add(new PictureSquareCM());
+        }
+        showPicture = new Random().nextBoolean();
     }
 
     @Override public Class<? extends IView> getViewClass() {
