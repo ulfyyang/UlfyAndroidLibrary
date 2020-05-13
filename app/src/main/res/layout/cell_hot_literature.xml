@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="">
+
+        <ImageView
+            android:layout_width="82dp"
+            android:layout_height="128dp"
+            android:src="@drawable/drawable_literary_img" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="3dp"
+            android:text="少年的你"
+            android:textColor="#333333"/>
+
+        <TextView
+            android:layout_width="99dp"
+            android:layout_height="wrap_content"
+            android:paddingLeft="3dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="该小说讲述在高考前夕,被一场校园意外..."
+            android:textSize="11sp"
+            android:lineHeight="15dp"
+            android:textColor="#999999"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingLeft="3dp"
+            android:text="365 人看过"
+            android:textSize="12sp"
+            android:textColor="#333333"/>
+
+    </LinearLayout>
+
+
+</FrameLayout>
