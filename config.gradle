@@ -76,7 +76,7 @@ ext {
     /**
      * 三方控件
      */
-    externalXBanner = 'com.github.xiaohaibin:XBanner:1.6.4'                                         // 轮播图
+    externalXBanner = 'com.github.xiaohaibin:XBanner:1.7.4'                                         // 轮播图
     externalPhotoView = 'com.github.chrisbanes:PhotoView:2.1.3'                                     // 图片放大预览
     externalImageWatcher = 'com.github.iielse:ImageWatcher:1.1.5'                                   // 仿微信大图预览
     externalIosSwitch = 'com.github.zcweng:switch-button:0.0.3@aar'                                 // 仿ISO开关
