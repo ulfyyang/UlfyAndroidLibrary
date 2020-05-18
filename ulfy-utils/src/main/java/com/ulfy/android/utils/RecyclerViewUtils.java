@@ -192,7 +192,7 @@ public final class RecyclerViewUtils {
          *      headerCount、footerCount必须设置，否则布局会错乱
          *      添加了RecyclerView版的上拉加载会自动添加一个footer，因此需要把这个footer也算在其中
          */
-        public LinearLayoutConfig dividerDp(int color, int height, int headerCount, int footerCount) {
+        public LinearLayoutConfig dividerDp(int color, float height, int headerCount, int footerCount) {
             return dividerPx(color, UiUtils.dp2px(height), headerCount, footerCount);
         }
 
@@ -240,7 +240,7 @@ public final class RecyclerViewUtils {
          *      headerCount、footerCount必须设置，否则布局会错乱
          *      添加了RecyclerView版的上拉加载会自动添加一个footer，因此需要把这个footer也算在其中
          */
-        public GridLayoutConfig dividerDp(int color,  int horizonLineHeight, int verticalLineHeight, int headerCount, int footerCount) {
+        public GridLayoutConfig dividerDp(int color,  float horizonLineHeight, float verticalLineHeight, int headerCount, int footerCount) {
             return dividerPx(color, UiUtils.dp2px(horizonLineHeight), UiUtils.dp2px(verticalLineHeight), headerCount, footerCount);
         }
 
