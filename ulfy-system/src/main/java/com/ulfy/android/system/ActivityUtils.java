@@ -19,7 +19,7 @@ import com.ulfy.android.system.event.OnCropPictureEvent;
 import com.ulfy.android.system.event.OnPickMediaEvent;
 import com.ulfy.android.system.event.OnPickPictureEvent;
 import com.ulfy.android.system.event.OnReceiveDataEvent;
-import com.ulfy.android.system.event.OnTackPhotoEvent;
+import com.ulfy.android.system.event.OnTakePhotoEvent;
 import com.ulfy.android.system.event.OnTakePhotoOrPickPictureEvent;
 import com.ulfy.android.system.media_picker.MediaEntity;
 import com.ulfy.android.system.media_picker.MediaPickerActivity;
@@ -80,7 +80,7 @@ public final class ActivityUtils {
 			processReceiveDataResult(receiveDataState, activity, requestCode, data);
 		} else if (receiveDataState.state == ReceiveDataState.PICK_PICTURE) {
 			processReceivePictureThenCropIfCan(receiveDataState, activity, requestCode, data);
-		} else if (receiveDataState.state == ReceiveDataState.TACK_PICTURE) {
+		} else if (receiveDataState.state == ReceiveDataState.TAKE_PICTURE) {
 			processTakePictureThenCropIfCan(receiveDataState, activity, requestCode, data);
 		} else if (receiveDataState.state == ReceiveDataState.CROP_PICTURE) {
 			processCropPicture(receiveDataState, activity, requestCode);
@@ -107,7 +107,7 @@ public final class ActivityUtils {
 
 	private static void processTakePictureThenCropIfCan(ReceiveDataState receiveDataState, Activity target, int requestCode, Intent data) {
 		if (cropImageParam == null) {
-			BusUtils.post(target, new OnTackPhotoEvent(requestCode, OUTPUT_FILE));
+			BusUtils.post(target, new OnTakePhotoEvent(requestCode, OUTPUT_FILE));
 			BusUtils.post(target, new OnTakePhotoOrPickPictureEvent(requestCode, OUTPUT_FILE));
 			initActivityState(receiveDataState);
 		} else {
@@ -297,14 +297,14 @@ public final class ActivityUtils {
     /**
      * 弹出选择图片或拍照窗口
      */
-    public static void showTackPhotoOrPickPictureDialog(int requestCode) {
-        showTackPhotoOrPickPictureDialog(requestCode, null);
+    public static void showTakePhotoOrPickPictureDialog(int requestCode) {
+        showTakePhotoOrPickPictureDialog(requestCode, null);
     }
 
     /**
      * 弹出一个选择图片的弹窗
      */
-    public static void showTackPhotoOrPickPictureDialog(int requestCode, CropImageParam cropImageParam) {
+    public static void showTakePhotoOrPickPictureDialog(int requestCode, CropImageParam cropImageParam) {
         TakePhotoOrPickPictureView contentView = new TakePhotoOrPickPictureView(ActivityUtils.getTopActivity(), requestCode, cropImageParam);
         new NormalDialog.Builder(ActivityUtils.getTopActivity(), contentView)
                 .setDialogId(TakePhotoOrPickPictureView.ULFY_MAIN_TAKE_PHOTO_PICK_PICTURE_ID)
@@ -377,14 +377,14 @@ public final class ActivityUtils {
 				// 构造意图
 				Intent intent = new Intent();
 				intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-				OUTPUT_FILE = new File(SystemConfig.getTackPhotoPictureCacheDir(), UUID.randomUUID().toString() + ".jpeg");
+				OUTPUT_FILE = new File(SystemConfig.getTakePhotoPictureCacheDir(), UUID.randomUUID().toString() + ".jpeg");
 				Uri outputUri = AppUtils.getUriFromFile(OUTPUT_FILE);
 				intent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
 				grantUriPermission(intent, outputUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 				intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 				// 发送意图
 				try {
-					state.state = ReceiveDataState.TACK_PICTURE;
+					state.state = ReceiveDataState.TAKE_PICTURE;
 					topActivity.startActivityForResult(intent, requestCode);
 					cropImageParam = param;
 				} catch (ActivityNotFoundException e) {
@@ -425,7 +425,7 @@ public final class ActivityUtils {
 				if (param.outputY > 0) {
 					intent.putExtra("outputY", param.outputY);
 				}
-				OUTPUT_FILE = new File(SystemConfig.getTackPhotoPictureCacheDir(), UUID.randomUUID().toString() + ".jpeg");		// 设置裁切后的图片地址
+				OUTPUT_FILE = new File(SystemConfig.getTakePhotoPictureCacheDir(), UUID.randomUUID().toString() + ".jpeg");		// 设置裁切后的图片地址
 				Uri outputUri = AppUtils.getUriFromFile(OUTPUT_FILE);
 				grantUriPermission(intent, outputUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 				intent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);

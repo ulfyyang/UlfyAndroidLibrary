@@ -11,7 +11,7 @@ public final class ReceiveDataState {
 	/** 选择图库图片 */
 	public static final int PICK_PICTURE = 2;
 	/** 选择拍照图片 */
-	public static final int TACK_PICTURE = 3;
+	public static final int TAKE_PICTURE = 3;
 	/** 对图片进行裁切 */
 	public static final int CROP_PICTURE = 4;
 	/** 选择媒体 **/

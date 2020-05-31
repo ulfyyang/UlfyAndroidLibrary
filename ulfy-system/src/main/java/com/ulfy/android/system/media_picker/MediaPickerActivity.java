@@ -19,7 +19,7 @@ import com.ulfy.android.mvvm.IView;
 import com.ulfy.android.system.ActivityUtils;
 import com.ulfy.android.system.AppUtils;
 import com.ulfy.android.system.R;
-import com.ulfy.android.system.event.OnTackPhotoEvent;
+import com.ulfy.android.system.event.OnTakePhotoEvent;
 
 import java.io.Serializable;
 import java.util.List;
@@ -136,8 +136,7 @@ public final class MediaPickerActivity extends Activity {
     }
 
     private class OnClickImpl implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
+        @Override public void onClick(View v) {
             if (v == backFL || v == cancelTV) {
                 onBackPressed();
             } else if (v == completeTV) {
@@ -191,7 +190,7 @@ public final class MediaPickerActivity extends Activity {
         DialogUtils.showDialog(this, view);
     }
 
-    @Subscribe public void onTackPhoto(OnTackPhotoEvent event) {
+    @Subscribe public void onTakePhoto(OnTakePhotoEvent event) {
         if (event.requestCode != REQUEST_CODE_TAKE_PHOTO) {
             return;
         }

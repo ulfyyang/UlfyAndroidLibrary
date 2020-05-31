@@ -42,7 +42,7 @@ public final class SystemConfig {
     /**
      * 获得拍照图片缓存目录
      */
-    static File getTackPhotoPictureCacheDir() {
+    static File getTakePhotoPictureCacheDir() {
         File dir = new File(SystemConfig.context.getFilesDir(), "tack_photo_cache");
         if(!dir.exists()) {
             dir.mkdirs();
