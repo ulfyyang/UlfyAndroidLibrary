@@ -41,9 +41,9 @@ public class TabPagerLinkage {
     private List<View> viewPageList;
     private List<Fragment> fragmentPageList;
     private int lineWidth = LINE_WIDTH_MATCH_PARENT;      // 分割线宽度：包裹内容、填充父控件、指定宽度
-    private boolean autoScrollMode;                         // 当内容显示不下时是否自动切换到滚动模式
-    private boolean useWrapperOnScrollMode;                // 在滚动模式下使用包裹方案显示下划线
-    private int dividerWidth = 0;                            // 间距
+    private boolean autoScrollMode;                       // 当内容显示不下时是否自动切换到滚动模式
+    private boolean useWrapperOnScrollMode;               // 在滚动模式下使用包裹方案显示下划线
+    private float dividerWidth = 0;                       // 间距
     // 辅助属性
     private List<OnTabSelectedListener> onTabSelectedListenerList = new ArrayList<>();
     // 用于记录容器的初始宽度
@@ -123,7 +123,7 @@ public class TabPagerLinkage {
         return this;
     }
 
-    public TabPagerLinkage setDividerWidth(int dividerWidth) {
+    public TabPagerLinkage setDividerWidth(float dividerWidth) {
         this.dividerWidth = dividerWidth;
         return this;
     }
@@ -305,8 +305,8 @@ public class TabPagerLinkage {
                         View tabViewContainer = mTabStrip.getChildAt(i);
                         tabViewContainer.setPadding(0, 0, 0, 0);
                         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) tabViewContainer.getLayoutParams();
-                        layoutParams.leftMargin = i == 0 ? 0 : dividerWidth / 2;
-                        layoutParams.rightMargin = i == mTabStrip.getChildCount() - 1 ? 0 : dividerWidth / 2;
+                        layoutParams.leftMargin = i == 0 ? 0 : (int) (dividerWidth / 2);
+                        layoutParams.rightMargin = i == mTabStrip.getChildCount() - 1 ? 0 : (int) (dividerWidth / 2);
                         tabViewContainer.invalidate();
                     }
                 }
@@ -364,8 +364,8 @@ public class TabPagerLinkage {
                             if (useWrapperOnScrollMode) {
                                 wrapTabViewFromTabViewContainer(tabViewContainer, i, tabViewWidth);
                             } else {
-                                tabViewContainer.setPadding(dividerWidth / 2, 0, dividerWidth / 2, 0);
-                                tabViewContainerLayoutParams.width = tabViewWidth + dividerWidth;
+                                tabViewContainer.setPadding((int) (dividerWidth / 2), 0, (int) (dividerWidth / 2), 0);
+                                tabViewContainerLayoutParams.width = (int) (tabViewWidth + dividerWidth);
                                 tabViewContainerLayoutParams.leftMargin =  0;
                                 tabViewContainerLayoutParams.rightMargin = 0;
                             }
@@ -398,8 +398,8 @@ public class TabPagerLinkage {
 
                         LinearLayout.LayoutParams tabViewContainerLayoutParams = (LinearLayout.LayoutParams) tabViewContainer.getLayoutParams();
 
-                        tabViewContainer.setPadding(dividerWidth / 2, 0, dividerWidth / 2, 0);
-                        tabViewContainerLayoutParams.width = tabViewWidth + dividerWidth;
+                        tabViewContainer.setPadding((int) (dividerWidth / 2), 0, (int) (dividerWidth / 2), 0);
+                        tabViewContainerLayoutParams.width = (int) (tabViewWidth + dividerWidth);
                         tabViewContainerLayoutParams.leftMargin =  0;
                         tabViewContainerLayoutParams.rightMargin = 0;
                     }
@@ -464,8 +464,8 @@ public class TabPagerLinkage {
                         int tabViewWidth = tabView.getMeasuredWidth();
 
                         LinearLayout.LayoutParams tabViewContainerLayoutParams = (LinearLayout.LayoutParams) tabViewContainer.getLayoutParams();
-                        tabViewContainer.setPadding(dividerWidth / 2, 0, dividerWidth / 2, 0);
-                        tabViewContainerLayoutParams.width = tabViewWidth + dividerWidth;
+                        tabViewContainer.setPadding((int) (dividerWidth / 2), 0, (int) (dividerWidth / 2), 0);
+                        tabViewContainerLayoutParams.width = (int) (tabViewWidth + dividerWidth);
                         tabViewContainerLayoutParams.leftMargin =  0;
                         tabViewContainerLayoutParams.rightMargin = 0;
                         tabViewContainer.invalidate();

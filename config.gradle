@@ -89,7 +89,6 @@ ext {
     externalSmartRefreshLayout = 'com.ulfy.android:smart-refresh-layout:1.1.0'                      // 下拉刷新：smart版 兼容性较好建议使用
     externalSmartRefreshHeader = 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0'                 // 下拉刷新：smart版 内置的一些header样式
     externalQuickSlideBar = 'com.bigkoo:quicksidebar:1.0.3'                                         // 联系人选择器右侧的字母列表控件
-    externalStickListHeader = 'se.emilsjolander:stickylistheaders:2.7.0'                            // 联系人选择器中间的提示控件
 
     /**
      * 核心功能库
@@ -106,6 +105,7 @@ ext {
     externalGSON = 'com.google.code.gson:gson:2.8.0'                                                // JSON解析库：谷歌
     externalGuava = 'com.google.guava:guava:24.0-android'                                           // 谷歌基础工具包
     externalJodaTime = 'joda-time:joda-time:2.9.9'                                                  // 日期处理库
+    externalTinyPinyin = 'com.github.promeg:tinypinyin:2.0.3'                                       // 汉字转拼音
     externalPermission = 'com.yanzhenjie:permission:1.1.2'                                          // 动态权限申请
 
     /**

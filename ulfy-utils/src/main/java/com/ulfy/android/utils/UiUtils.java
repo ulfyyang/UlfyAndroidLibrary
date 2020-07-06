@@ -2,6 +2,7 @@ package com.ulfy.android.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Paint;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
@@ -43,15 +44,38 @@ public final class UiUtils {
 	/**
 	 * dp转px
 	 */
-	public static int dp2px(float dp) {
-		return (int) (dp * Resources.getSystem().getDisplayMetrics().density + 0.5f);
+	public static float dp2px(float dp) {
+		return dp * Resources.getSystem().getDisplayMetrics().density;
 	}
 
 	/**
 	 * px转dp
 	 */
-	public static int px2dp(float px) {
-		return (int) (px / Resources.getSystem().getDisplayMetrics().density + 0.5f);
+	public static float px2dp(float px) {
+		return px / Resources.getSystem().getDisplayMetrics().density;
+	}
+
+	/**
+	 * sp转px
+	 */
+	public static float sp2px(float sp) {
+		return sp * Resources.getSystem().getDisplayMetrics().scaledDensity;
+	}
+
+	/**
+	 * px转sp
+	 */
+	public static float px2sp(float px) {
+		return px / Resources.getSystem().getDisplayMetrics().scaledDensity;
+	}
+
+	/**
+	 * 根据指定的字号大小测量文字的长度
+	 */
+	public static float measureText(String content, float sp) {
+		Paint paint = new Paint();
+		paint.setTextSize(sp2px(sp));
+		return paint.measureText(content);
 	}
 
 	/**

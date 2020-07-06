@@ -23,7 +23,7 @@ class UiUtils {
     /**
      * 判断一个view是否可以重复使用
      */
-    private static boolean isViewCanReuse(View view, IViewModel model) {
+    static boolean isViewCanReuse(View view, IViewModel model) {
         return view != null && model != null && view.getClass() == model.getViewClass();
     }
 

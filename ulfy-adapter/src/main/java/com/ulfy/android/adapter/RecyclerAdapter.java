@@ -20,7 +20,7 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
     private List<M> modelList;
     private List<View> viewList = new ArrayList<>();
     private View headerView, footerView, emptyView, loadingView;
-    private OnItemClickListener itemClickListener;
+    private OnItemClickListener<M> itemClickListener;
 
     public RecyclerAdapter() {
         setHasStableIds(true);
@@ -45,10 +45,18 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
         return this;
     }
 
+    public View getHeaderView() {
+        return headerView;
+    }
+
     public RecyclerAdapter setFooterView(View footerView) {
         UiUtils.clearParent(footerView);
         this.footerView = footerView;
         return this;
+    }
+
+    public View getFooterView() {
+        return footerView;
     }
 
     public RecyclerAdapter setEmptyView(View emptyView) {
@@ -72,22 +80,42 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
         return this;
     }
 
-    private void registerItemClickListenerIfNeed() {
+    /**
+     * 根据条件 shouldRegisterItemClickListener() 来执行是否注册单击事件的回调
+     *      该方法可以在子类中手动触发
+     */
+    void registerItemClickListenerIfNeed() {
         for (int i = 0; i < viewList.size(); i++) {
-            if (itemClickListener == null) {
-                UiUtils.setViewClickListener(viewList.get(i), null);
-            } else {
+            if (shouldRegisterItemClickListener()) {
                 UiUtils.setViewClickListener(viewList.get(i), new OnClickListenerImpl());
+            } else {
+                UiUtils.setViewClickListener(viewList.get(i), null);
             }
         }
+    }
+
+    /**
+     * 判断是否应该注册单击事件，在本类中，设置了单击监听事件时表示应该注册。
+     *      该方法可以在子类中加入判定条件
+     */
+    protected boolean shouldRegisterItemClickListener() {
+        return itemClickListener != null;
     }
 
     private class OnClickListenerImpl implements View.OnClickListener {
         public void onClick(View v) {
             int clickIndex = (int) v.getTag(ViewHolder.TAG_CLICK_INDEX);
-            itemClickListener.onItemClick((ViewGroup) v.getParent(), v, clickIndex, modelList.get(clickIndex));
+            if (itemClickListener != null) {
+                itemClickListener.onItemClick((ViewGroup) v.getParent(), v, clickIndex, modelList.get(clickIndex));
+            }
+            dispatchOnItemClick((ViewGroup) v.getParent(), v, clickIndex, modelList.get(clickIndex));
         }
     }
+
+    /**
+     * 在单击事件触发的时候执行这个派发方法，让子类可以有自己的对应处理逻辑
+     */
+    protected void dispatchOnItemClick(ViewGroup parent, View view, int position, M model) { }
 
     @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (headerView != null && viewType == headerView.hashCode()) {
@@ -180,38 +208,36 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
         return headerView == null ? position : position - 1;
     }
 
-    @Override public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
-        // 将GridLayoutManager中的header和footer铺满
-        if(layoutManager instanceof GridLayoutManager) {
-            final GridLayoutManager gridLayoutManager = ((GridLayoutManager) layoutManager);
+    @Override public void onAttachedToRecyclerView(RecyclerView recyclerView) {         // 将 GridLayoutManager 单行 View 铺满
+        if(recyclerView.getLayoutManager() instanceof GridLayoutManager) {
+            final GridLayoutManager gridLayoutManager = ((GridLayoutManager) recyclerView.getLayoutManager());
             gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override public int getSpanSize(int position) {
-                    int itemViewType = getItemViewType(position);
-                    return ((loadingView != null && itemViewType == loadingView.hashCode()) ||
-                            (headerView != null && itemViewType == headerView.hashCode()) ||
-                            (footerView != null && itemViewType == footerView.hashCode()) ||
-                            (emptyView != null && itemViewType == emptyView.hashCode())) ?
-                            gridLayoutManager.getSpanCount() : 1;
+                    return  shouldFullSpanForGridLayout(position) ? gridLayoutManager.getSpanCount() : 1;
                 }
             });
         }
     }
 
-    @Override public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
-        // 将StaggeredGridLayoutManager中的header和footer铺满
-        ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
-        if(layoutParams != null && layoutParams instanceof StaggeredGridLayoutManager.LayoutParams) {
+    protected boolean shouldFullSpanForGridLayout(int position) {
+        int itemViewType = getItemViewType(position);
+        return (loadingView != null && itemViewType == loadingView.hashCode()) || (headerView != null && itemViewType == headerView.hashCode()) ||
+                (footerView != null && itemViewType == footerView.hashCode()) || (emptyView != null && itemViewType == emptyView.hashCode());
+    }
+
+    @Override public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {      // 将 StaggeredGridLayoutManager 单行 View 铺满
+        if(holder.itemView.getLayoutParams() != null && holder.itemView.getLayoutParams() instanceof StaggeredGridLayoutManager.LayoutParams) {
+            StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
             if (loadingView != null) {
-                (((StaggeredGridLayoutManager.LayoutParams) layoutParams)).setFullSpan(holder.getLayoutPosition() == 0);
+                layoutParams.setFullSpan(holder.getLayoutPosition() == 0);
             } else if (emptyView != null && (modelList == null || modelList.size() == 0)) {
-                (((StaggeredGridLayoutManager.LayoutParams) layoutParams)).setFullSpan(holder.getLayoutPosition() == 0);
+                layoutParams.setFullSpan(holder.getLayoutPosition() == 0);
             } else {
                 if (headerView != null) {
-                    (((StaggeredGridLayoutManager.LayoutParams) layoutParams)).setFullSpan(holder.getLayoutPosition() == 0);
+                    layoutParams.setFullSpan(holder.getLayoutPosition() == 0);
                 }
                 if (footerView != null) {
-                    (((StaggeredGridLayoutManager.LayoutParams) layoutParams)).setFullSpan(holder.getLayoutPosition() == getItemCount() - 1);
+                    layoutParams.setFullSpan(holder.getLayoutPosition() == getItemCount() - 1);
                 }
             }
         }

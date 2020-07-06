@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.ulfy.android.adapter.RecyclerAdapter;
+import com.ulfy.android.adapter.RecyclerGroupAdapter;
 
 import java.lang.reflect.Field;
 
@@ -201,7 +202,7 @@ public final class RecyclerViewUtils {
          *      headerCount、footerCount必须设置，否则布局会错乱
          *      添加了RecyclerView版的上拉加载会自动添加一个footer，因此需要把这个footer也算在其中
          */
-        public LinearLayoutConfig dividerPx(int color, int height, int headerCount, int footerCount) {
+        public LinearLayoutConfig dividerPx(int color, float height, int headerCount, int footerCount) {
             recyclerView.addItemDecoration(new LinearItemDecoration(
                     DrawableUtils.gradientBuilder().shapeRectangle().sizePx(height, height).color(color).build(),
                     orientation, headerCount, footerCount));
@@ -240,7 +241,7 @@ public final class RecyclerViewUtils {
          *      headerCount、footerCount必须设置，否则布局会错乱
          *      添加了RecyclerView版的上拉加载会自动添加一个footer，因此需要把这个footer也算在其中
          */
-        public GridLayoutConfig dividerDp(int color,  float horizonLineHeight, float verticalLineHeight, int headerCount, int footerCount) {
+        public GridLayoutConfig dividerDp(int color, float horizonLineHeight, float verticalLineHeight, int headerCount, int footerCount) {
             return dividerPx(color, UiUtils.dp2px(horizonLineHeight), UiUtils.dp2px(verticalLineHeight), headerCount, footerCount);
         }
 
@@ -249,7 +250,7 @@ public final class RecyclerViewUtils {
          *      headerCount、footerCount必须设置，否则布局会错乱
          *      添加了RecyclerView版的上拉加载会自动添加一个footer，因此需要把这个footer也算在其中
          */
-        public GridLayoutConfig dividerPx(int color,  int horizonLineHeight, int verticalLineHeight, int headerCount, int footerCount) {
+        public GridLayoutConfig dividerPx(int color, float horizonLineHeight, float verticalLineHeight, int headerCount, int footerCount) {
             // 添加横线
             recyclerView.addItemDecoration(new DividerGridViewItemDecoration(
                     DrawableUtils.gradientBuilder().shapeRectangle().sizePx(horizonLineHeight, horizonLineHeight).color(color).build(),
@@ -453,133 +454,27 @@ public final class RecyclerViewUtils {
     static class LinearItemDecoration extends RecyclerView.ItemDecoration {
         public static final int HORIZONTAL = LinearLayout.HORIZONTAL;
         public static final int VERTICAL = LinearLayout.VERTICAL;
-        private Drawable diviter;
+        private Drawable divider;
         private int orientation;
         private int headerCount, footerCount;
 
         LinearItemDecoration(Drawable divider, int orientation, int headerCount, int footerCount) {
-            this.diviter = divider;
+            this.divider = divider;
             this.orientation = orientation;
             this.headerCount = headerCount;
             this.footerCount = footerCount;
-        }
-
-        @Override public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-            if (parent.getLayoutManager() != null && diviter != null) {
-                if (orientation == VERTICAL) {
-                    drawVerticalLayoutLine(c, parent, state);
-                } else {
-                    drawHorizontalLayoutLine(c, parent, state);
-                }
-            }
-        }
-
-        /**
-         * 绘制纵向布局的横线
-         */
-        private void drawVerticalLayoutLine(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
-            canvas.save();
-
-            // 定义横线的左右位置
-            int left, right;
-            if (parent.getClipToPadding()) {
-                left = parent.getPaddingLeft();
-                right = parent.getWidth() - parent.getPaddingRight();
-                canvas.clipRect(left, parent.getPaddingTop(), right, parent.getHeight() - parent.getPaddingBottom());
-            } else {
-                left = 0;
-                right = parent.getWidth();
-            }
-
-            // 循环定义线条的上下位置并绘制分割线
-            int top, bottom;
-            Rect viewBounds = new Rect();
-            for (int i = 0; i < parent.getChildCount(); i++) {
-                final View view = parent.getChildAt(i);
-                if (shouldDrawLayoutLine(view, parent, state)) {
-                    parent.getDecoratedBoundsWithMargins(view, viewBounds);
-                    bottom = viewBounds.bottom + Math.round(view.getTranslationY());
-                    top = bottom - diviter.getIntrinsicHeight();
-                    diviter.setBounds(left, top, right, bottom);
-                    diviter.draw(canvas);
-                }
-            }
-
-            canvas.restore();
-        }
-
-        /**
-         * 绘制横向布局的分割线
-         */
-        private void drawHorizontalLayoutLine(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
-            canvas.save();
-
-            // 定义竖线的上下位置
-            int top, bottom;
-            if (parent.getClipToPadding()) {
-                top = parent.getPaddingTop();
-                bottom = parent.getHeight() - parent.getPaddingBottom();
-                canvas.clipRect(parent.getPaddingLeft(), top, parent.getWidth() - parent.getPaddingRight(), bottom);
-            } else {
-                top = 0;
-                bottom = parent.getHeight();
-            }
-
-            // 循环定义线条的左右位置并绘制分割线
-            int left, right;
-            Rect viewBounds = new Rect();
-            for (int i = 0; i < parent.getChildCount(); i++) {
-                final View view = parent.getChildAt(i);
-                if (shouldDrawLayoutLine(view, parent, state)) {
-                    parent.getLayoutManager().getDecoratedBoundsWithMargins(view, viewBounds);
-                    right = viewBounds.right + Math.round(view.getTranslationX());
-                    left = right - diviter.getIntrinsicWidth();
-                    diviter.setBounds(left, top, right, bottom);
-                    diviter.draw(canvas);
-                }
-            }
-
-            canvas.restore();
         }
 
         @Override public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
             if (shouldDrawLayoutLine(view, parent, state)) {
                 if (orientation == LinearLayoutManager.VERTICAL) {
-                    outRect.set(0, 0, 0, diviter.getIntrinsicHeight());
+                    outRect.set(0, 0, 0, divider.getIntrinsicHeight());
                 } else {
-                    outRect.set(0, 0, diviter.getIntrinsicWidth(), 0);
+                    outRect.set(0, 0, divider.getIntrinsicWidth(), 0);
                 }
             } else {
                 outRect.set(0, 0, 0, 0);
             }
-        }
-
-        /**
-         * 是否应该绘制纵向布局的横线
-         */
-        private boolean shouldDrawLayoutLine(View view, RecyclerView parent, RecyclerView.State state) {
-            // 不绘制header、footer分割线，不绘制最后一行的分割线
-            return parent.getChildAdapterPosition(view) > headerCount - 1
-                    && parent.getChildAdapterPosition(view) < state.getItemCount() - footerCount - 1;
-        }
-
-    }
-
-    /**
-     * Grid布局的分割线
-     */
-    static class DividerGridViewItemDecoration extends RecyclerView.ItemDecoration {
-        public static final int HORIZONTAL = LinearLayout.HORIZONTAL;
-        public static final int VERTICAL = LinearLayout.VERTICAL;
-        private Drawable divider;
-        private int orientation;
-        private int headerCount, footerCount;
-
-        DividerGridViewItemDecoration(Drawable divider, int orientation, int headerCount, int footerCount) {
-            this.divider = divider;
-            this.orientation = orientation;
-            this.headerCount = headerCount;
-            this.footerCount = footerCount;
         }
 
         @Override public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
@@ -598,59 +493,23 @@ public final class RecyclerViewUtils {
         private void drawVerticalLayoutLine(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
             canvas.save();
 
-            // 定义横线的左右位置。去除内边距
-            int left, right;
-            // 没有header和footer时设置的默认值
+            int left, right;        // 定义横线的左右位置
             if (parent.getClipToPadding()) {
-                left = parent.getPaddingLeft();
-                right = parent.getWidth() - parent.getPaddingRight();
+                left = parent.getPaddingLeft(); right = parent.getWidth() - parent.getPaddingRight();
                 canvas.clipRect(left, parent.getPaddingTop(), right, parent.getHeight() - parent.getPaddingBottom());
             } else {
-                left = 0;
-                right = parent.getWidth();
-            }
-            // 当GridLayoutManager布局方向为横向时：有header和footer时采用第一列的左侧和最后一列的右侧作为新的范围
-            if (((GridLayoutManager) parent.getLayoutManager()).getOrientation() == GridLayoutManager.HORIZONTAL) {
-                if (headerCount > 0) {
-                    left = getFirstLineTop(parent);
-                }
-                if (footerCount > 0) {
-                    right = getLastLineBottom(parent);
-                }
+                left = 0; right = parent.getWidth();
             }
 
-            // 循环绘制每个子View的分割线
-            int top, bottom;
-            Rect viewBounds = new Rect();
+            // 循环定义线条的上下位置并绘制分割线
+            int top, bottom; Rect viewBounds = new Rect();
             for (int i = 0; i < parent.getChildCount(); i++) {
-                final View view = parent.getChildAt(i);
-                if (shouldDrawVerticalLayoutLine(view, parent, state)) {
+                View view = parent.getChildAt(i);
+                if (shouldDrawLayoutLine(view, parent, state)) {
                     parent.getDecoratedBoundsWithMargins(view, viewBounds);
-
-                    if (((GridLayoutManager) parent.getLayoutManager()).getOrientation() == GridLayoutManager.VERTICAL) {
-                        bottom = viewBounds.bottom + Math.round(view.getTranslationY());
-                        top = bottom - divider.getIntrinsicHeight();
-                        divider.setBounds(left, top, right, bottom);
-                        divider.draw(canvas);
-                    } else {
-                        // 获取总行数和当前行数
-                        int spanCount = getSpanCount(parent);
-                        int viewSpanIndex = getViewSpanIndex(view, parent);
-                        // 绘制上半边
-                        top = viewBounds.top + Math.round(view.getTranslationY());
-                        bottom = top + divider.getIntrinsicHeight() * (viewSpanIndex - 1) / spanCount;
-                        if (left != right) {
-                            divider.setBounds(left, top, right, bottom);
-                            divider.draw(canvas);
-                        }
-                        // 绘制下半边
-                        bottom = viewBounds.bottom + Math.round(view.getTranslationY());
-                        top = bottom - divider.getIntrinsicHeight() * (spanCount - viewSpanIndex) / spanCount;
-                        if (left != right) {
-                            divider.setBounds(left, top, right, bottom);
-                            divider.draw(canvas);
-                        }
-                    }
+                    bottom = viewBounds.bottom + Math.round(view.getTranslationY());
+                    top = bottom - divider.getIntrinsicHeight();
+                    divider.setBounds(left, top, right, bottom); divider.draw(canvas);
                 }
             }
 
@@ -663,54 +522,192 @@ public final class RecyclerViewUtils {
         private void drawHorizontalLayoutLine(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
             canvas.save();
 
-            // 定义竖线的上下位置。去除内边距
-            int top, bottom;
-            // 没有header和footer时设置的默认值
+            int top, bottom;        // 定义竖线的上下位置
             if (parent.getClipToPadding()) {
-                top = parent.getPaddingTop();
-                bottom = parent.getHeight() - parent.getPaddingBottom();
+                top = parent.getPaddingTop(); bottom = parent.getHeight() - parent.getPaddingBottom();
                 canvas.clipRect(parent.getPaddingLeft(), top, parent.getWidth() - parent.getPaddingRight(), bottom);
             } else {
-                top = 0;
-                bottom = parent.getHeight();
-            }
-            // 当GridLayoutManager布局方向为纵向时：有header和footer时采用第一行的顶点和最后一行的底点作为新的范围
-            if (((GridLayoutManager) parent.getLayoutManager()).getOrientation() == GridLayoutManager.VERTICAL) {
-                if (headerCount > 0) {
-                    top = getFirstLineTop(parent);
-                }
-                if (footerCount > 0) {
-                       bottom = getLastLineBottom(parent);
-                }
+                top = 0; bottom = parent.getHeight();
             }
 
             // 循环定义线条的左右位置并绘制分割线
-            int left, right;
-            Rect viewBounds = new Rect();
+            int left, right; Rect viewBounds = new Rect();
             for (int i = 0; i < parent.getChildCount(); i++) {
                 View view = parent.getChildAt(i);
-                if (shouldDrawHorizontalLayoutLine(view, parent, state)) {
-                    parent.getLayoutManager().getDecoratedBoundsWithMargins(view, viewBounds);
+                if (shouldDrawLayoutLine(view, parent, state)) {
+                    parent.getDecoratedBoundsWithMargins(view, viewBounds);
+                    right = viewBounds.right + Math.round(view.getTranslationX());
+                    left = right - divider.getIntrinsicWidth();
+                    divider.setBounds(left, top, right, bottom); divider.draw(canvas);
+                }
+            }
 
-                    if (((GridLayoutManager) parent.getLayoutManager()).getOrientation() == GridLayoutManager.VERTICAL) {
-                        // 获取总列数和当前列数
-                        int totalColumNumber = getSpanCount(parent);
-                        int currentColumNumber = getViewSpanIndex(view, parent);
-                        // 绘制左半边
-                        left = viewBounds.left + Math.round(view.getTranslationX());
-                        right = left + divider.getIntrinsicWidth() * (currentColumNumber - 1) / totalColumNumber;
-                        if (left != right) {
-                            divider.setBounds(left, top, right, bottom);
-                            divider.draw(canvas);
+            canvas.restore();
+        }
+
+        /**
+         * 是否应该绘制 item 的分割线（横向时绘制 item 右侧线条，纵向时绘制 item 下方线条）
+         *      不绘制 header、footer 的分割线，不绘制最后一行的分割线，不绘制分组的分割线
+         *      分组涉及到两条线，一个是分组之前一项的分割线，一个是分组自身的分割线
+         */
+        private boolean shouldDrawLayoutLine(View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view); boolean nearGroup = false;
+            if (parent.getAdapter() instanceof RecyclerGroupAdapter) {
+                RecyclerGroupAdapter adapter = (RecyclerGroupAdapter) parent.getAdapter();
+                nearGroup = adapter.isGroupForPosition(position - headerCount) || adapter.isGroupForPosition(position - headerCount + 1);
+            }
+            return !nearGroup && position > headerCount - 1 && position < state.getItemCount() - footerCount - 1;
+        }
+    }
+
+    /**
+     * Grid布局的分割线
+     */
+    static class DividerGridViewItemDecoration extends RecyclerView.ItemDecoration {
+        public static final int HORIZONTAL = LinearLayout.HORIZONTAL;
+        public static final int VERTICAL = LinearLayout.VERTICAL;
+        private Drawable divider;
+        private int orientation;                // 这里表示的是在布局方向中的线条方向，例如值 VERTICAL 在纵向布局中表示横线，在横向布局中表示竖线
+        private int headerCount, footerCount;
+
+        DividerGridViewItemDecoration(Drawable divider, int orientation, int headerCount, int footerCount) {
+            this.divider = divider;
+            this.orientation = orientation;
+            this.headerCount = headerCount;
+            this.footerCount = footerCount;
+        }
+
+        @Override public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            if (orientation == LinearLayoutManager.VERTICAL) {
+                setVerticalLayoutItemOffset(outRect, view, parent, state);
+            } else {
+                setHorizontalLayoutItemOffset(outRect, view, parent, state);
+            }
+        }
+
+        /**
+         * 设置纵向上元素的偏移量：在外部纵向上就是横线，在外部横向上就是竖线
+         */
+        private void setVerticalLayoutItemOffset(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            if (((GridLayoutManager) parent.getLayoutManager()).getOrientation() == GridLayoutManager.VERTICAL) {
+                if (shouldDrawVerticalLayoutLine(view, parent, state)) {
+                    outRect.set(0, 0, 0, divider.getIntrinsicHeight());
+                } else {
+                    outRect.set(0, 0, 0, 0);
+                }
+            } else {
+                if (shouldDrawVerticalLayoutLine(view, parent, state)) {
+                    outRect.set(0, 0, divider.getIntrinsicHeight(), 0);
+                } else {
+                    outRect.set(0, 0, 0, 0);
+                }
+            }
+        }
+
+        /**
+         * 设置横向元素上的偏移量：在外部纵向时就是竖线，在外部横向时就是横线
+         */
+        private void setHorizontalLayoutItemOffset(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            if (((GridLayoutManager) parent.getLayoutManager()).getOrientation() == GridLayoutManager.VERTICAL) {
+                if (shouldDrawHorizontalLayoutLine(view, parent, state)) {
+                    int totalColum = getSpanCount(parent);
+                    int currentColum = findColumnIndexForView(view, parent);
+                    int left = divider.getIntrinsicWidth() * (currentColum - 1) / totalColum;
+                    int right = divider.getIntrinsicWidth() * (totalColum - currentColum) / totalColum;
+                    /*
+                    在分割线大小设置不为 0 的情况下：中间的分割线最少保证分割线有 1 像素
+                            第一个奇数位放右边，最后一个奇数放左边，剩余奇数位放两边
+                            或者：不是第一个奇数放左边、不是最后一个奇数放右边
+                     */
+                    if (divider.getIntrinsicWidth() != 0 && left == 0 && right == 0) {
+                        if (currentColum == 1) {
+                            right = 1;
+                        } else if (currentColum == totalColum && currentColum % 2 == 1) {
+                            left = 1;
+                        } else if (currentColum % 2 == 1) {
+                            left = right = 1;
                         }
-                        // 绘制右半边
-                        right = viewBounds.right + Math.round(view.getTranslationX());
-                        left = right - divider.getIntrinsicWidth() * (totalColumNumber - currentColumNumber) / totalColumNumber;
-                        if (left != right) {
-                            divider.setBounds(left, top, right, bottom);
-                            divider.draw(canvas);
+                    }
+                    outRect.set(left, 0, right, 0);
+                } else {
+                    outRect.set(0, 0, 0, 0);
+                }
+            } else {
+                if (shouldDrawHorizontalLayoutLine(view, parent, state)) {
+                    int totalColum = getSpanCount(parent);
+                    int currentColum = findColumnIndexForView(view, parent);
+                    int top = divider.getIntrinsicWidth() * (currentColum - 1) / totalColum;
+                    int bottom = divider.getIntrinsicWidth() * (totalColum - currentColum) / totalColum;
+                    /*
+                    在分割线大小设置不为 0 的情况下：中间的分割线最少保证分割线有 1 像素
+                            第一个奇数位放下边，最后一个奇数放上边，剩余奇数位放两边
+                            或者：不是第一个奇数放下边、不是最后一个奇数放上边
+                     */
+                    if (divider.getIntrinsicWidth() != 0 && top == 0 && bottom == 0) {
+                        if (currentColum == 1) {
+                            bottom = 1;
+                        } else if (currentColum == totalColum && currentColum % 2 == 1) {
+                            top = 1;
+                        } else if (currentColum % 2 == 1) {
+                            top = bottom = 1;
                         }
-                    } else {
+                    }
+                    outRect.set(0, top, 0, bottom);
+                } else {
+                    outRect.set(0, 0, 0, 0);
+                }
+            }
+        }
+
+        @Override public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+            if (parent.getLayoutManager() != null && divider != null) {
+                if (orientation == VERTICAL) {
+                    drawVerticalLayoutLine(c, parent, state);
+                } else {
+                    drawHorizontalLayoutLine(c, parent, state);
+                }
+            }
+        }
+
+        /**
+         * 绘制纵向布局的线条：在外部纵向时就是横线，在外部横向时就是竖线
+         */
+        private void drawVerticalLayoutLine(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
+            canvas.save();
+            if (((GridLayoutManager) parent.getLayoutManager()).getOrientation() == GridLayoutManager.VERTICAL) {
+                int left, right;        // 定义横线的左右位置。去除内边距
+                if (parent.getClipToPadding()) {
+                    left = parent.getPaddingLeft();
+                    right = parent.getWidth() - parent.getPaddingRight();
+                    canvas.clipRect(left, parent.getPaddingTop(), right, parent.getHeight() - parent.getPaddingBottom());
+                } else {
+                    left = 0; right = parent.getWidth();
+                }
+                int top, bottom; Rect viewBounds = new Rect();      // 循环绘制每个子 View 的分割线
+                for (int i = 0; i < parent.getChildCount(); i++) {
+                    View view = parent.getChildAt(i);
+                    if (shouldDrawVerticalLayoutLine(view, parent, state)) {
+                        parent.getDecoratedBoundsWithMargins(view, viewBounds);
+                        bottom = viewBounds.bottom + Math.round(view.getTranslationY());
+                        top = bottom - divider.getIntrinsicHeight();
+                        divider.setBounds(left, top, right, bottom); divider.draw(canvas);
+                    }
+                }
+            } else {
+                int top, bottom;        // 定义竖线的上下位置。去除内边距
+                if (parent.getClipToPadding()) {
+                    top = parent.getPaddingTop();
+                    bottom = parent.getHeight() - parent.getPaddingBottom();
+                    canvas.clipRect(parent.getPaddingLeft(), top, parent.getWidth() - parent.getPaddingRight(), bottom);
+                } else {
+                    top = 0;
+                    bottom = parent.getHeight();
+                }
+                int left, right; Rect viewBounds = new Rect();      // 循环绘制每个子 View 的分割线
+                for (int i = 0; i < parent.getChildCount(); i++) {
+                    View view = parent.getChildAt(i);
+                    if (shouldDrawVerticalLayoutLine(view, parent, state)) {
+                        parent.getDecoratedBoundsWithMargins(view, viewBounds);
                         right = viewBounds.right + Math.round(view.getTranslationX());
                         left = right - divider.getIntrinsicWidth();
                         divider.setBounds(left, top, right, bottom);
@@ -718,147 +715,262 @@ public final class RecyclerViewUtils {
                     }
                 }
             }
-
             canvas.restore();
         }
 
-        @Override public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            /*
-                当GridLayoutManager布局方向为纵向时
-                    横线使用纵向的空间。可用的空间是无限的，因此每条横线的高度都可以固定写死
-                    竖线使用横向的空间。可用空间为每一项空出来的，因此需要按照比例进行分配
-                当GridLayoutManager布局方向为横向时
-                    横线使用横向的空间。可用空间为每一项空出来的，因此需要按照比例进行分配
-                    竖线使用纵向的空间。可用的空间是无限的，因此每条横线的高度都可以固定写死
-             */
+        /**
+         * 绘制横向布局的线条：在外部纵向时就是竖线，在外部横向时就是横线
+         */
+        private void drawHorizontalLayoutLine(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
+            canvas.save();
             if (((GridLayoutManager) parent.getLayoutManager()).getOrientation() == GridLayoutManager.VERTICAL) {
-                if (orientation == LinearLayoutManager.VERTICAL) {                  // 横线
-                    if (shouldDrawVerticalLayoutLine(view, parent, state)) {
-                        outRect.set(0, 0, 0, divider.getIntrinsicHeight());
-                    } else {
-                        outRect.set(0, 0, 0, 0);
+                int top, bottom;        // 定义竖线的上下位置。去除内边距
+                if (parent.getClipToPadding()) {
+                    top = parent.getPaddingTop();
+                    bottom = parent.getHeight() - parent.getPaddingBottom();
+                    canvas.clipRect(parent.getPaddingLeft(), top, parent.getWidth() - parent.getPaddingRight(), bottom);
+                } else {
+                    top = 0;
+                    bottom = parent.getHeight();
+                }
+                if (parent.getAdapter() instanceof RecyclerAdapter) {
+                    RecyclerAdapter adapter = (RecyclerAdapter) parent.getAdapter();
+                    if (parent.indexOfChild(adapter.getHeaderView()) != -1) {
+                        top = getFirstLineTop(parent);
                     }
-                } else {                                                            // 竖线
+                    if (parent.indexOfChild(adapter.getFooterView()) != -1) {
+                        bottom = getLastLineBottom(parent);
+                    }
+                }
+                int left, right; Rect viewBounds = new Rect();      // 循环绘制每个子 View 的分割线
+                for (int i = 0; i < parent.getChildCount(); i++) {
+                    View view = parent.getChildAt(i);
                     if (shouldDrawHorizontalLayoutLine(view, parent, state)) {
-                        int totalColumNumber = getSpanCount(parent);
-                        int currentColumNumber = getViewSpanIndex(view, parent);
-                        int left = divider.getIntrinsicWidth() * (currentColumNumber - 1) / totalColumNumber;
-                        int right = divider.getIntrinsicWidth() * (totalColumNumber - currentColumNumber) / totalColumNumber;
-                        outRect.set(left, 0, right, 0);
-                    } else {
-                        outRect.set(0, 0, 0, 0);
+                        parent.getDecoratedBoundsWithMargins(view, viewBounds);
+                        int totalColum = getSpanCount(parent);
+                        int currentColum = findColumnIndexForView(view, parent);
+                        // 绘制左半边
+                        left = viewBounds.left + Math.round(view.getTranslationX());
+                        right = left + divider.getIntrinsicWidth() * (currentColum - 1) / totalColum;
+                        if (left == right && divider.getIntrinsicWidth() != 0) {
+                            if (currentColum != 1 && currentColum % 2 == 1) {
+                                right = left + 1;
+                            }
+                        }
+                        divider.setBounds(left, top, right, bottom); divider.draw(canvas);
+                        // 绘制右半边
+                        right = viewBounds.right + Math.round(view.getTranslationX());
+                        left = right - divider.getIntrinsicWidth() * (totalColum - currentColum) / totalColum;
+                        if (left == right && divider.getIntrinsicWidth() != 0) {
+                            if (currentColum != totalColum && currentColum % 2 == 1) {
+                                left = right - 1;
+                            }
+                        }
+                        divider.setBounds(left, top, right, bottom); divider.draw(canvas);
                     }
                 }
             } else {
-                if (orientation == LinearLayoutManager.HORIZONTAL) {                // 竖线
-                    if (shouldDrawVerticalLayoutLine(view, parent, state)) {
-                        outRect.set(0, 0, divider.getIntrinsicHeight(), 0);
-                    } else {
-                        outRect.set(0, 0, 0, 0);
+                int left, right;        // 定义横线的左右位置。去除内边距
+                if (parent.getClipToPadding()) {
+                    left = parent.getPaddingLeft();
+                    right = parent.getWidth() - parent.getPaddingRight();
+                    canvas.clipRect(left, parent.getPaddingTop(), right, parent.getHeight() - parent.getPaddingBottom());
+                } else {
+                    left = 0; right = parent.getWidth();
+                }
+                if (parent.getAdapter() instanceof RecyclerAdapter) {
+                    RecyclerAdapter adapter = (RecyclerAdapter) parent.getAdapter();
+                    if (parent.indexOfChild(adapter.getHeaderView()) != -1) {
+                        left = getFirstLineTop(parent);
                     }
-                } else {                                                            // 横线
+                    if (parent.indexOfChild(adapter.getFooterView()) != -1) {
+                        right = getLastLineBottom(parent);
+                    }
+                }
+                int top, bottom; Rect viewBounds = new Rect();      // 循环绘制每个子 View 的分割线
+                for (int i = 0; i < parent.getChildCount(); i++) {
+                    View view = parent.getChildAt(i);
                     if (shouldDrawHorizontalLayoutLine(view, parent, state)) {
-                        int totalColumNumber = getSpanCount(parent);
-                        int currentColumNumber = getViewSpanIndex(view, parent);
-                        int top = divider.getIntrinsicWidth() * (currentColumNumber - 1) / totalColumNumber;
-                        int bottom = divider.getIntrinsicWidth() * (totalColumNumber - currentColumNumber) / totalColumNumber;
-                        outRect.set(0, top, 0, bottom);
-                    } else {
-                        outRect.set(0, 0, 0, 0);
+                        parent.getDecoratedBoundsWithMargins(view, viewBounds);
+                        int totalLine = getSpanCount(parent);
+                        int currentLine = findColumnIndexForView(view, parent);
+                        // 绘制上半边
+                        top = viewBounds.top + Math.round(view.getTranslationY());
+                        bottom = top + divider.getIntrinsicHeight() * (currentLine - 1) / totalLine;
+                        if (top == bottom && divider.getIntrinsicHeight() != 0) {
+                            if (currentLine != 1 && currentLine % 2 == 1) {
+                                bottom = top + 1;
+                            }
+                        }
+                        divider.setBounds(left, top, right, bottom); divider.draw(canvas);
+                        // 绘制下半边
+                        bottom = viewBounds.bottom + Math.round(view.getTranslationY());
+                        top = bottom - divider.getIntrinsicHeight() * (totalLine - currentLine) / totalLine;
+                        if (top == bottom && divider.getIntrinsicHeight() != 0) {
+                            if (currentLine != totalLine && currentLine % 2 == 1) {
+                                top = bottom - 1;
+                            }
+                        }
+                        divider.setBounds(left, top, right, bottom); divider.draw(canvas);
                     }
                 }
             }
+            canvas.restore();
         }
 
         /**
-         * 当有header时，会取第一行的顶部位置。该方法是相对于LayoutManager来说的
+         * 排除 header 以后，从最前一排中找到最顶的位置
          *      如果布局是纵向的则返回顶部位置
          *      如果布局是横向的则返回左侧位置
          */
         private int getFirstLineTop(RecyclerView parent) {
-            if (parent.getChildCount() > headerCount) {
-                Rect childViewBound = new Rect();
-                View headerView = parent.getChildAt(headerCount);
-                parent.getLayoutManager().getDecoratedBoundsWithMargins(headerView, childViewBound);
-                if (((GridLayoutManager) parent.getLayoutManager()).getOrientation() == GridLayoutManager.VERTICAL) {
-                    return Math.round(childViewBound.top + headerView.getTranslationY());
-                } else {
-                    return Math.round(childViewBound.left + headerView.getTranslationX());
-                }
-            } else {
-                return 0;
+            // 需要预先准备好的状态：header、footer 是否正在显示中，内容中最前一行有几个
+            boolean headerShowing = false, footerShowing = false; int firstRowCount = 0;
+            if (parent.getAdapter() instanceof RecyclerAdapter) {
+                RecyclerAdapter adapter = (RecyclerAdapter) parent.getAdapter();
+                headerShowing = parent.indexOfChild(adapter.getHeaderView()) != -1;
+                footerShowing = parent.indexOfChild(adapter.getFooterView()) != -1;
             }
+            if (parent.getAdapter() instanceof RecyclerGroupAdapter) {
+                RecyclerGroupAdapter adapter = (RecyclerGroupAdapter) parent.getAdapter();
+                firstRowCount = adapter.getFirstRowCountInAllGroup(getSpanCount(parent));
+            } else {
+                firstRowCount = getSpanCount(parent);
+            }
+
+            // 计算循环的开始位置和结束位置
+            int startIndex = 0;
+            if (headerShowing) {
+                startIndex ++;
+            }
+            int endIndex = startIndex + firstRowCount;
+            if (footerShowing && endIndex > parent.getChildCount() - 1) {
+                endIndex = parent.getChildCount() - 1;
+            }
+
+            // 循环最前一行，找到最顶的值
+            int topY = 0; Rect childViewBounds = new Rect();
+            for (int i = startIndex; i < endIndex; i++) {
+                View view = parent.getChildAt(i);
+                if (view != null) {
+                    parent.getDecoratedBoundsWithMargins(view, childViewBounds);
+                    if (((GridLayoutManager) parent.getLayoutManager()).getOrientation() == GridLayoutManager.VERTICAL) {
+                        topY = (int) Math.max(topY, childViewBounds.top + view.getTranslationY());
+                    } else {
+                        topY = (int) Math.max(topY, childViewBounds.left + view.getTranslationX());
+                    }
+                }
+            }
+            return topY;
         }
 
         /**
-         * 当有footer时，会取最后一行的底部位置。该方法是相对于LayoutManager来说的
+         * 排除 footer 以后，从最后一排中找到最底的位置
          *      如果布局是纵向的则返回底部位置
          *      如果布局是横向的则返回右侧位置
          */
         private int getLastLineBottom(RecyclerView parent) {
-            int bottomY = 0;
-            Rect childViewBounds = new Rect();
-            for (int i = parent.getChildCount() - footerCount - 1; i >= parent.getChildCount() - footerCount - ((GridLayoutManager)parent.getLayoutManager()).getSpanCount() && i >= headerCount; i--) {
-                parent.getLayoutManager().getDecoratedBoundsWithMargins(parent.getChildAt(i), childViewBounds);
-                if (((GridLayoutManager) parent.getLayoutManager()).getOrientation() == GridLayoutManager.VERTICAL) {
-                    bottomY = (int) Math.max(bottomY, childViewBounds.bottom + parent.getChildAt(i).getTranslationY());
-                } else {
-                    bottomY = (int) Math.max(bottomY, childViewBounds.right + parent.getChildAt(i).getTranslationX());
+            // 需要预先准备好的状态：header、footer 是否正在显示中，内容中最后一行有几个
+            boolean headerShowing = false, footerShowing = false; int lastRowCount = 0;
+            if (parent.getAdapter() instanceof RecyclerAdapter) {
+                RecyclerAdapter adapter = (RecyclerAdapter) parent.getAdapter();
+                headerShowing = parent.indexOfChild(adapter.getHeaderView()) != -1;
+                footerShowing = parent.indexOfChild(adapter.getFooterView()) != -1;
+            }
+            if (parent.getAdapter() instanceof RecyclerGroupAdapter) {
+                RecyclerGroupAdapter adapter = (RecyclerGroupAdapter) parent.getAdapter();
+                lastRowCount = adapter.getLastRowCountInAllGroup(getSpanCount(parent));
+            } else {
+                lastRowCount = getSpanCount(parent);
+            }
+
+            // 计算循环的开始位置和结束位置
+            int startIndex = parent.getChildCount() - 1;
+            if (footerShowing) {
+                startIndex --;
+            }
+            int endIndex = startIndex - lastRowCount;
+            if (headerShowing && endIndex < 0) {
+                endIndex = 0;
+            }
+
+            // 循环最后一行，找到最底的值
+            int bottomY = 0; Rect childViewBounds = new Rect();
+            for (int i = startIndex; i > endIndex; i--) {
+                View view = parent.getChildAt(i);
+                if (view != null) {
+                    parent.getDecoratedBoundsWithMargins(view, childViewBounds);
+                    if (((GridLayoutManager) parent.getLayoutManager()).getOrientation() == GridLayoutManager.VERTICAL) {
+                        bottomY = (int) Math.max(bottomY, childViewBounds.bottom + view.getTranslationY());
+                    } else {
+                        bottomY = (int) Math.max(bottomY, childViewBounds.right + view.getTranslationX());
+                    }
                 }
             }
             return bottomY;
         }
 
         /**
-         * 是否应该绘制纵向布局的线。该方法是相对于LayoutManager来说的
-         *      如果布局是纵向的则这里判断的就是是否绘制横线
-         *      如果布局是横向的则这里判断的就是是否回执竖线
+         * 是否应该绘制 item 的分割线（纵向时绘制 item 下方线条，横向时绘制 item 右侧线条；纵向布局绘制横线，横向布局绘制竖线）
+         *      不绘制 header、footer 的分割线，不绘制最后一行的分割线，不绘制分组的分割线
+         *      分组涉及到两条线，一个是分组自身的分割线，另一个是当前组最后一排的分割线
          */
         private boolean shouldDrawVerticalLayoutLine(View view, RecyclerView parent, RecyclerView.State state) {
-            // 不绘制header、footer分割线，不绘制最后一行的分割线
-            return parent.getChildAdapterPosition(view) > headerCount - 1
-                    && parent.getChildAdapterPosition(view) < state.getItemCount() - footerCount
-                    && !isLastRow(view, parent, state);
+            int position = parent.getChildAdapterPosition(view); boolean nearGroup = false;
+            if (parent.getAdapter() instanceof RecyclerGroupAdapter) {
+                RecyclerGroupAdapter adapter = (RecyclerGroupAdapter) parent.getAdapter();
+                nearGroup = adapter.isGroupForPosition(position - headerCount) || adapter.isLastRowInItsGroup(position - headerCount, getSpanCount(parent));
+            }
+            return !nearGroup && position > headerCount - 1 && position < state.getItemCount() - footerCount && !isLastRowInContent(view, parent, state);
         }
 
         /**
-         * 是否应该绘制横向布局的线。该方法是相对于LayoutManager来说的
-         *      如果布局是纵向的则这里判断的就是是否绘制竖线
-         *      如果布局是横向的则这里判断的就是是否回执横线
+         * 是否应该绘制 item 的分割线（纵向时绘制 item 右侧线条，横向时绘制 item 下方线条；纵向布局绘制竖线，横向布局绘制横线）
+         *      不绘制 header、footer 的分割线，不绘制最后一行的分割线，不绘制分组的分割线
+         *      分组涉及到两条线，一个是分组自身的分割线，另一个是当前组最后一排的分割线
          */
         private boolean shouldDrawHorizontalLayoutLine(View view, RecyclerView parent, RecyclerView.State state) {
-            // 不绘制header、footer分割线
-            return parent.getChildAdapterPosition(view) > headerCount - 1
-                    && parent.getChildAdapterPosition(view) < state.getItemCount() - footerCount;
+            int position = parent.getChildAdapterPosition(view); boolean isGroup = false;
+            if (parent.getAdapter() instanceof RecyclerGroupAdapter) {
+                RecyclerGroupAdapter adapter = (RecyclerGroupAdapter) parent.getAdapter();
+                isGroup = adapter.isGroupForPosition(position - headerCount);         // 对于竖线来说，组的最后一行是允许画线的
+            }
+            return !isGroup && position > headerCount - 1 && position < state.getItemCount() - footerCount;
         }
 
         /**
-         * 是否是最后一行
+         * 是否是内容区域的最后一行（排除掉 header 和 footer）
          */
-        private boolean isLastRow(View view, RecyclerView parent, RecyclerView.State state) {
-            int itemPosition = parent.getChildAdapterPosition(view);
+        private boolean isLastRowInContent(View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view) - headerCount;      // 计算时去除 header 的数量
             int spanCount = getSpanCount(parent);
-            int totalCount = state.getItemCount();
-            // 计算时去除header的数量
-            itemPosition-=headerCount;
-            // 计算时去除footer的数量
-            totalCount-=footerCount;
-            int totalLineCount = totalCount % spanCount > 0 ? totalCount / spanCount + 1 : totalCount / spanCount;
-            int itemLineNumber = (itemPosition + 1) % spanCount > 0 ? (itemPosition + 1) / spanCount + 1 : (itemPosition + 1) / spanCount;
-            return itemLineNumber == totalLineCount;
+            if (parent.getAdapter() instanceof RecyclerGroupAdapter) {
+                RecyclerGroupAdapter adapter = (RecyclerGroupAdapter) parent.getAdapter();
+                return adapter.isLastRowInAllGroup(position, spanCount);
+            } else {
+                int totalCount = state.getItemCount() - headerCount - footerCount;      // 计算时去除 header、footer 的数量
+                int totalRow = totalCount / spanCount; if (totalCount % spanCount > 0) totalRow ++;
+                int positionRow = (position + 1) / spanCount; if ((position + 1) % spanCount > 0) positionRow ++;
+                return positionRow == totalRow;
+            }
         }
 
         /**
-         * 获取当前View所在Span的位置
+         * 获取当前 View 所在 Span 中的位置，在纵向上就表现为当前的 item 在当前行中处于第几列，从 1 开始算起
          */
-        private int getViewSpanIndex(View view, RecyclerView parent) {
-            int itemPosition = parent.getChildAdapterPosition(view);
+        private int findColumnIndexForView(View view, RecyclerView parent) {
+            int position = parent.getChildAdapterPosition(view) - headerCount;   // 计算时去除 header 的数量
             int spanCount = getSpanCount(parent);
-            // 计算时去除header的数量
-            itemPosition-=headerCount;
-            int columNumber = (itemPosition + 1) % spanCount;
-            // 如果是最后一列会为零，需要矫正一下
-            return columNumber == 0 ? spanCount : columNumber;
+            if (parent.getAdapter() instanceof RecyclerGroupAdapter) {
+                RecyclerGroupAdapter adapter = (RecyclerGroupAdapter) parent.getAdapter();
+                return adapter.findColumnIndexForPosition(position, spanCount);
+            } else {
+                int column = position % spanCount + 1;  // +1 是为了从 1 开始计数
+                if (column == 0) {                      // 如果是最后一项，则这时候取余会等于零，这种情况应该矫正为最后一项
+                    column = spanCount;
+                }
+                return column;
+            }
         }
 
         /**

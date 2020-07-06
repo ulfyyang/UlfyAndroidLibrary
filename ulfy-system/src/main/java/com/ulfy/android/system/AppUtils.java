@@ -378,7 +378,7 @@ public final class AppUtils {
     /**
      * 获取App包名
      */
-    public static String packageName() {
+    public static String getPackageName() {
         return SystemConfig.context.getPackageName();
     }
 

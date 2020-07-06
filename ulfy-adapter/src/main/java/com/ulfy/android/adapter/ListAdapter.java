@@ -9,6 +9,7 @@ import android.widget.ListView;
 import com.ulfy.android.mvvm.IViewModel;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 简单适配器，该适配器用于简单地列表数据展示
@@ -39,27 +40,25 @@ public final class ListAdapter<M extends IViewModel> extends UlfyBaseAdapter {
 	private OnItemClickListener<M> onItemClickListener;    		// 单击事件
 	private OnItemLongClickListener<M> onItemLongClickListener;	// 长按事件
 
-	public ListAdapter() {}
+	public ListAdapter() { }
 
 	public ListAdapter(List<M> modelList) {
 		setData(modelList);
 	}
 
-	public ListAdapter setData(List<M> modelList) {
-		if (modelList == null) {
-			throw new NullPointerException("model list cannot be null");
-		}
+	public ListAdapter<M> setData(List<M> modelList) {
+		Objects.requireNonNull(modelList, "model list can not be null");
 		this.modelList = modelList;
 		return this;
 	}
 
-	public ListAdapter removeItem(int position) {
+	public ListAdapter<M> removeItem(int position) {
 		modelList.remove(position);
 		notifyDataSetChanged();
 		return this;
 	}
 
-	public ListAdapter removeItem(M model) {
+	public ListAdapter<M> removeItem(M model) {
 		modelList.remove(model);
 		notifyDataSetChanged();
 		return this;

@@ -130,7 +130,7 @@ class BounceBottomSheetDialog extends AppCompatDialog implements IDialog {
     public void setContentView(View view) {
         UiUtils.clearParent(view);
         view.setVisibility(View.VISIBLE);
-        super.setContentView(wrapInBottomSheet(0, view, null));
+        super.setContentView(wrapInBottomSheet(0, view, view.getLayoutParams()));
     }
 
     @Override

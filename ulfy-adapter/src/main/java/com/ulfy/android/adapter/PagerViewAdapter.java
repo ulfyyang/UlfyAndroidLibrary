@@ -4,41 +4,40 @@ import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
- * 简单的ViewPager适配器，用于适配非动态生成的View
+ * ViewPager 适配器：该适配器用于简单的 View 列表，可以快速的将 View 和 ViewPager 连接起来
  */
-public class ViewPagerAdapter extends PagerAdapter {
-    private List<View> viewList = new ArrayList<>();
+public class PagerViewAdapter extends PagerAdapter {
+    private List<View> viewList;
 
-    public ViewPagerAdapter() { }
+    public PagerViewAdapter() { }
 
-    public ViewPagerAdapter(View... views) {
-        this(Arrays.asList(views));
+    public PagerViewAdapter(View... views) {
+        setViewList(views);
     }
 
-    public ViewPagerAdapter(List<View> viewList) {
+    public PagerViewAdapter(List<View> viewList) {
         setViewList(viewList);
     }
 
-    public ViewPagerAdapter setViewList(View... views) {
+    public PagerViewAdapter setViewList(View... views) {
+        Objects.requireNonNull(views, "view list can not be null");
         setViewList(Arrays.asList(views));
         return this;
     }
 
-    public ViewPagerAdapter setViewList(List<View> viewList) {
-        this.viewList = viewList;
-        if (viewList != null && !viewList.isEmpty()) {
-            for (View view : viewList) {
-                UiUtils.clearParent(view);
-            }
+    public PagerViewAdapter setViewList(List<View> viewList) {
+        Objects.requireNonNull(viewList, "view list can not be null");
+        for (View view : viewList) {
+            UiUtils.clearParent(view);
         }
+        this.viewList = viewList;
         return this;
     }
-
 
     @Override public Object instantiateItem(ViewGroup container, int position) {
         View view = viewList.get(position);
@@ -48,7 +47,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     }
 
     @Override public void destroyItem(ViewGroup container, int position, Object object) {
-        container.removeView(viewList.get(position));
+        container.removeView((View) object);
     }
 
     @Override public int getCount() {
@@ -58,5 +57,4 @@ public class ViewPagerAdapter extends PagerAdapter {
     @Override public boolean isViewFromObject(View view, Object object) {
         return view == object;
     }
-
 }

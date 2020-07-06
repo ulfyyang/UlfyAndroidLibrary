@@ -41,8 +41,8 @@ public final class DrawableUtils {
         public GradientBuilder sizeDp(float width, float height) {
             return sizePx(UiUtils.dp2px(width), UiUtils.dp2px(height));
         }
-        public GradientBuilder sizePx(int width, int height) {
-            gradientDrawable.setSize(width, height);
+        public GradientBuilder sizePx(float width, float height) {
+            gradientDrawable.setSize((int)width, (int)height);
             return this;
         }
         public GradientBuilder strokeDp(float width, String color) {
@@ -51,11 +51,11 @@ public final class DrawableUtils {
         public GradientBuilder strokeDp(float width, int color) {
             return strokePx(UiUtils.dp2px(width), color);
         }
-        public GradientBuilder strokePx(int width, String color) {
+        public GradientBuilder strokePx(float width, String color) {
             return strokePx(width, Color.parseColor(color));
         }
-        public GradientBuilder strokePx(int width, int color) {
-            gradientDrawable.setStroke(width, color);
+        public GradientBuilder strokePx(float width, int color) {
+            gradientDrawable.setStroke((int)width, color);
             return this;
         }
         public GradientBuilder cornerDp(float corner) {
