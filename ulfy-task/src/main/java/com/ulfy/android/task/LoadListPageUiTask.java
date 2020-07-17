@@ -27,7 +27,6 @@ public final class LoadListPageUiTask extends UiTask {
 
 	public LoadListPageUiTask(Context context, LoadListPageUiTaskInfo taskInfo, OnLoadListPage loadListPageBody, Transponder transponder) {
 		super(context);
-		Objects.requireNonNull(taskInfo, "task info can not be null");
 		this.taskInfo = taskInfo;
 		this.loadListPageBody = loadListPageBody;
 		this.transponder = transponder;
@@ -52,6 +51,7 @@ public final class LoadListPageUiTask extends UiTask {
 		if (loadListPageBody == null) {
 			notifySuccess(TaskConfig.Config.LOAD_DATA_SUCCESS_TIP);
 		} else {
+			Objects.requireNonNull(taskInfo, "task info can not be null");
 			loadListPageBody.onLoadListPage(this, taskInfo.getDataList(), taskInfo.getTempList(), taskInfo.getLoadFromPage(), taskInfo.getLoadToPage(), taskInfo.getPageSize());
 		}
 	}
