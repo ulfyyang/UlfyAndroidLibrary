@@ -28,7 +28,7 @@ import static okhttp3.internal.Util.discard;
  * post缓存，从应用拦截器层，拦截
  * 		具体可参照CacheInterceptor.java类
  */
-class PostCacheInterceptor implements Interceptor {
+final class PostCacheInterceptor implements Interceptor {
 	final NetPostCache cache;
 
 	PostCacheInterceptor(NetPostCache cache) {

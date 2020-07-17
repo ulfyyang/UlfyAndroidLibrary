@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class TaskRepository {
+final class TaskRepository {
     private static final TaskRepository instance = new TaskRepository();
     private Map<Context, List<UiTask>> uiTaskMap = new HashMap<>();
 
@@ -37,7 +37,7 @@ class TaskRepository {
     }
 
     synchronized void releaseUiTaskOnActivityDestoryed(Context context) {
-        List<UiTask> uiTaskList = uiTaskMap.get(context);
+        List<UiTask> uiTaskList = uiTaskMap.remove(context);
         if (uiTaskList != null) {
             for (UiTask uiTask : uiTaskList) {
                 uiTask.setCancelUiHandler(true);

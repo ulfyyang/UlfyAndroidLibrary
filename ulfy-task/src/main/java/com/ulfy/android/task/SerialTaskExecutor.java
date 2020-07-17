@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 /**
  * 顺序执行任务的执行器
  */
-class SerialTaskExecutor implements ITaskExecutor {
+final class SerialTaskExecutor implements ITaskExecutor {
 	private Executor executor = Executors.newSingleThreadExecutor();
 
 	@Override public void post(Task task) {

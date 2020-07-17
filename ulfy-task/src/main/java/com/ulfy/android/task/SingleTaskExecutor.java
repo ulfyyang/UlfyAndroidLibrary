@@ -6,12 +6,12 @@ import java.util.concurrent.Executors;
 /**
  * 单一任务执行器，在当前任务没有执行完毕之后其它的任务将被丢弃
  */
-class SingleTaskExecutor implements ITaskExecutor {
+final class SingleTaskExecutor implements ITaskExecutor {
     private Executor executor = Executors.newSingleThreadExecutor();
     private Task task;
 
     @Override public void post(Task task) {
-        initTask(task);
+        postTask(task);
     }
 
     private class TaskLifecycle implements Task.LifecycleCallback {
@@ -21,10 +21,11 @@ class SingleTaskExecutor implements ITaskExecutor {
         }
     }
 
-    private synchronized void initTask(Task task) {
+    private synchronized void postTask(Task task) {
         if (this.task == null) {
             this.task = task;
-            executor.execute(task.setLifecycleCallback(new TaskLifecycle()));
+            task.setLifecycleCallback(new TaskLifecycle());
+            executor.execute(task);
         }
     }
 

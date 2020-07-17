@@ -4,9 +4,11 @@ import android.content.Context;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
- * 分页加载列表数据的UI任务
+ * 分页加载列表数据的 ui 任务，通过传入执行体代码块与响应器即可拼装成一个
+ * 完整的任务。任务在执行过程中会在任务的不同阶段通过响应器来响应。
  */
 public final class LoadListPageUiTask extends UiTask {
 	public static final int LOAD_START_PAGE = 1;				// 当前状态为加载第一页的状态
@@ -15,9 +17,9 @@ public final class LoadListPageUiTask extends UiTask {
 	public static int DEFAULT_START_PAGE = 1;					// 起始页默认为1
 	public static int DEFAULT_PAGE_SIZE = 20;					// 每页默认大小为20
 
-	private LoadListPageUiTaskInfo taskInfo;					// 任务处理的信息
-	private OnLoadListPage loadListPageBody;
-	private Transponder transponder;
+	private LoadListPageUiTaskInfo taskInfo;					// 任务处理的信息（不能为空）
+	private OnLoadListPage loadListPageBody;					// 任务执行代码块，如果没有则会执行执行成功
+	private Transponder transponder;							// 任务执行过程中的应答器，没有则不执行响应
 
 	public LoadListPageUiTask(Context context, Transponder transponder) {
 		this(context, null, null, transponder);
@@ -25,25 +27,32 @@ public final class LoadListPageUiTask extends UiTask {
 
 	public LoadListPageUiTask(Context context, LoadListPageUiTaskInfo taskInfo, OnLoadListPage loadListPageBody, Transponder transponder) {
 		super(context);
+		Objects.requireNonNull(taskInfo, "task info can not be null");
 		this.taskInfo = taskInfo;
 		this.loadListPageBody = loadListPageBody;
 		this.transponder = transponder;
 	}
 
-	/**
-	 * 设置任务执行的信息
-	 */
-	public void setTaskInfo(LoadListPageUiTaskInfo taskInfo) {
+	public final void setTaskInfo(LoadListPageUiTaskInfo taskInfo) {
 		this.taskInfo = taskInfo;
 	}
 
+	public final LoadListPageUiTaskInfo getTaskInfo() {
+		return taskInfo;
+	}
+
+	public final void setLoadListPageBody(OnLoadListPage loadListPageBody) {
+		this.loadListPageBody = loadListPageBody;
+	}
+
 	@Override protected final void run(Task task) {
-		if (!isCancelUiHandler()) {
-			if (loadListPageBody == null) {
-				notifySuccess(TaskConfig.Config.LOAD_DATA_SUCCESS_TIP);
-			} else {
-				loadListPageBody.onLoadListPage(this, taskInfo.getDataList(), taskInfo.getTempList(), taskInfo.getLoadFromPage(), taskInfo.getLoadToPage(), taskInfo.getPageSize());
-			}
+		if (isCancelUiHandler()) {		// 不执行已经取消更新 ui 的任务
+			return;
+		}
+		if (loadListPageBody == null) {
+			notifySuccess(TaskConfig.Config.LOAD_DATA_SUCCESS_TIP);
+		} else {
+			loadListPageBody.onLoadListPage(this, taskInfo.getDataList(), taskInfo.getTempList(), taskInfo.getLoadFromPage(), taskInfo.getLoadToPage(), taskInfo.getPageSize());
 		}
 	}
 
@@ -51,8 +60,11 @@ public final class LoadListPageUiTask extends UiTask {
 	 * 通知任务启动了
 	 */
 	public final void notifyStart(final Object tipData) {
+		if (transponder == null) {		// 没有设置响应器则不执行
+			return;
+		}
 		runOnUiThread(new Runnable() {
-			public void run() {
+			@Override public void run() {
 				transponder.onTranspondMessage(new Message(Message.TYPE_START, tipData));
 			}
 		});
@@ -63,10 +75,12 @@ public final class LoadListPageUiTask extends UiTask {
 	 */
 	public final void notifySuccess(final Object tipData) {
 		runOnUiThread(new Runnable() {
-			public void run() {
+			@Override public void run() {
 				taskInfo.combileData();
-				transponder.onTranspondMessage(new Message(Message.TYPE_SUCCESS, tipData));
-				transponder.onTranspondMessage(new Message(Message.TYPE_FINISH, tipData));
+				if (transponder != null) {
+					transponder.onTranspondMessage(new Message(Message.TYPE_SUCCESS, tipData));
+					transponder.onTranspondMessage(new Message(Message.TYPE_FINISH, tipData));
+				}
 			}
 		});
 	}
@@ -83,55 +97,39 @@ public final class LoadListPageUiTask extends UiTask {
 	 */
 	public final void notifyFail(final Object tipData) {
 		runOnUiThread(new Runnable() {
-			public void run() {
+			@Override public void run() {
 				taskInfo.clearTemp();
-				transponder.onTranspondMessage(new Message(Message.TYPE_FAIL, tipData));
-				transponder.onTranspondMessage(new Message(Message.TYPE_FINISH, tipData));
+				if (transponder != null) {
+					transponder.onTranspondMessage(new Message(Message.TYPE_FAIL, tipData));
+					transponder.onTranspondMessage(new Message(Message.TYPE_FINISH, tipData));
+				}
 			}
 		});
-	}
-
-	/**
-	 * 获取任务执行的信息
-	 */
-	public LoadListPageUiTaskInfo getTaskInfo() {
-		return taskInfo;
-	}
-
-	/**
-	 * 设置任务执行的执行体
-	 */
-	public void setLoadListPageBody(OnLoadListPage loadListPageBody) {
-		this.loadListPageBody = loadListPageBody;
 	}
 
 	/**
 	 * 将加载分页任务中需要持久维护的信息抽象到外部中
 	 * 隔绝客户端于人物的直接依赖，使得客户端只需要知道一个任务必要的信息
 	 */
-	public static class LoadListPageUiTaskInfo<D> {
+	public final static class LoadListPageUiTaskInfo<D> {
+		// 在没有设置最后一页的情况下可以考虑以 tempList 大小是否为 0 来默认判断是否到底了
+		private static final int END_PAGE_NO_POINT = -1;				// 尾页未指定（这时会自动判断是否到底了）
 		private List<D> dataList;										// 真正的数据容器
-		private List<D> tempList;										// 临时存储结果的容器
-		private static final int END_PAGE_NO_POINT = -1;				// 尾页未指定
+		private List<D> tempList;										// 临时存储结果的容器（加载完毕后会合并到真实数据中）
+
 		private int startPage = DEFAULT_START_PAGE;						// 起始页
 		private int pageSize = DEFAULT_PAGE_SIZE;						// 每页大小
-		// 在没有设置最后一页的情况下可以考虑以tempList大小是否为0来默认判断是否到底了
-		private int currentPage;										// 当前页码指针
-		private int toPagePointer;										// 加载至页码指针
+
 		private int loadingStatus;										// 当前所处的加载状态
-		private int endPage = END_PAGE_NO_POINT;						// 最后一页的页码，这个也可以不设置。-1表示没有设置结束页做小设置为0
+		private int currentPage;										// 当前已经加载的页码指针（初始状态下为起始页的前一页）
+		private int toPagePointer;										// 加载至页码指针
+		private int endPage = END_PAGE_NO_POINT;						// 最后一页的页码，这个也可以不设置。-1 表示没有设置结束页做小设置为 0
 		private boolean isLoadTempListEmpty;							// 是否加载了一个空的临时列表，如果没有最后页码设置，则已该边变量作为是否到底的依据
+
 		private OnPageCombineListener<D> onPageCombineListener;			// 当分页合并后的回调
 
-		/**
-		 * 当分页合并后的回调
-		 * 只有在当前分页有数据时才会回调
-		 */
-		public interface OnPageCombineListener<D> {
-			void onPageCombined(LoadListPageUiTaskInfo<D> loadListPageUiTaskInfo, List<D> dataList);
-		}
-
 		public LoadListPageUiTaskInfo(List<D> dataList) {
+			Objects.requireNonNull(dataList, "data list can not be null");
 			this.dataList = dataList;
 			this.tempList = new ArrayList<>();
 			loadStartPage();					// 新的任务默认为加载起始页状态
@@ -167,7 +165,7 @@ public final class LoadListPageUiTask extends UiTask {
 		数据合并与清除
 		 */
 
-		void combileData() {
+		final void combileData() {
 			// 加载起始页或者重新加载
 			if (loadingStatus == LOAD_START_PAGE || loadingStatus == LOAD_RELOAD_ALL) {
 				dataList.clear();
@@ -187,7 +185,7 @@ public final class LoadListPageUiTask extends UiTask {
 			currentPage = toPagePointer;
 		}
 
-		void clearTemp() {
+		final void clearTemp() {
 			tempList.clear();
 		}
 
@@ -208,7 +206,7 @@ public final class LoadListPageUiTask extends UiTask {
 			return this;
 		}
 
-		public int getPageSize() {
+		public final int getPageSize() {
 			return pageSize;
 		}
 
@@ -223,7 +221,7 @@ public final class LoadListPageUiTask extends UiTask {
 			return this;
 		}
 
-		public int getCurrentPage() {
+		public final int getCurrentPage() {
 			return currentPage;
 		}
 
@@ -242,7 +240,7 @@ public final class LoadListPageUiTask extends UiTask {
 			}
 		}
 
-		public LoadListPageUiTaskInfo setOnPageCombineListener(OnPageCombineListener<D> onPageCombineListener) {
+		public final LoadListPageUiTaskInfo setOnPageCombineListener(OnPageCombineListener<D> onPageCombineListener) {
 			this.onPageCombineListener = onPageCombineListener;
 			return this;
 		}
@@ -256,8 +254,7 @@ public final class LoadListPageUiTask extends UiTask {
 		}
 
 		/**
-		 * 设置末尾页的页码
-		 * 该方法将会自动计算出最后一页的页码
+		 * 设置末尾页的页码，该方法将会自动计算出最后一页的页码
 		 */
 		public final LoadListPageUiTaskInfo setEndIndex(int endIndex) {
 			endPage = (int) (startPage + Math.ceil(endIndex * 1.0f / pageSize) - 1);
@@ -280,11 +277,11 @@ public final class LoadListPageUiTask extends UiTask {
 		获取内部存储数据
 		 */
 
-		public List<D> getDataList() {
+		public final List<D> getDataList() {
 			return dataList;
 		}
 
-		List<D> getTempList() {
+		final List<D> getTempList() {
 			return tempList;
 		}
 
@@ -292,11 +289,11 @@ public final class LoadListPageUiTask extends UiTask {
 		获取加载时的页码区间
 		 */
 
-		int getLoadFromPage() {
+		final int getLoadFromPage() {
 			return currentPage + 1;
 		}
 
-		int getLoadToPage() {
+		final int getLoadToPage() {
 			return toPagePointer;
 		}
 
@@ -304,8 +301,15 @@ public final class LoadListPageUiTask extends UiTask {
 		获取页码和大小，与加载状态
 		 */
 
-		int getLoadingStatus() {
+		final int getLoadingStatus() {
 			return loadingStatus;
+		}
+
+		/**
+		 * 当分页合并后的回调，只有在当前分页有数据时才会回调
+		 */
+		public interface OnPageCombineListener<D> {
+			void onPageCombined(LoadListPageUiTaskInfo<D> loadListPageUiTaskInfo, List<D> dataList);
 		}
 	}
 
@@ -323,7 +327,7 @@ public final class LoadListPageUiTask extends UiTask {
 	 * 对OnLoadListPage的一个默认实现
 	 */
 	public static abstract class OnLoadSimpleListPage implements OnLoadListPage {
-		public final void onLoadListPage(LoadListPageUiTask task, List<Object> dataList, List<Object> tempList, int fromPage, int toPage, int pageSize) {
+		@Override public final void onLoadListPage(LoadListPageUiTask task, List<Object> dataList, List<Object> tempList, int fromPage, int toPage, int pageSize) {
 			//-- 开始阶段
 			if (task.taskInfo.getLoadingStatus() == LoadListPageUiTask.LOAD_START_PAGE) {
 				task.notifyStart(TaskConfig.Config.LOAD_LIST_PAGE_START_TIP);

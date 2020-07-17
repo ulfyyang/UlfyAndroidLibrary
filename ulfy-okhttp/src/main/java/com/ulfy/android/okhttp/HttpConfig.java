@@ -20,6 +20,7 @@ public final class HttpConfig {
     }
 
     public static final class Config {
+        public static String LOG_TAG = "ulfy-log";                                      // 网络日志打印 tag
         public static boolean enableGetCache = false;                                   // 是否开启Get请求缓存
         public static boolean enablePostCache = false;                                  // 是否开启Post请求缓存
         public static boolean enableOnlineCacheCustomSetting = false;                   // 是否开启在线缓存自定义设置。该设置包含了针对每条域名的时间设置和公共设置。如果服务端响应头中有相关设置则优先使用服务端设置
@@ -27,7 +28,7 @@ public final class HttpConfig {
         public static int onlineExpirationTime = 60;                                    // 在线缓存过期时间，默认一分钟。单位秒
         public static boolean enableOfflineCache = false;                               // 是否启用离线缓存，该设置生效的前提时启动了对应的get或post缓存
         public static int offlineExpirationTime = Integer.MAX_VALUE;                    // 离线缓存过期时间，默认无限长。单位秒
-        public static int cacheSize = 100;                                              // 网络缓存的总大小。单位M
+        public static int cacheSize = 100;                                              // 网络缓存的总大小（GET、POST 各占一半）。单位M
         public static RequestCacheKeyConverter requestCacheKeyConverter;                // 网络请求参数缓存唯一key算法转换器
 
         /**

@@ -5,9 +5,9 @@ import android.util.Log;
 import com.alibaba.fastjson.JSON;
 
 /**
- * 日志工具类
+ * 日志工具辅助类
  */
-class LogUtils {
+final class LogUtils {
 
     /**
      * 打印一个对象
@@ -20,7 +20,7 @@ class LogUtils {
      * 打印一个对象和错误信息
      */
     static void log(Object object, Throwable throwable) {
-        Log.i("ulfy-log",  convertObjectToLogString(object), throwable);
+        Log.i(HttpConfig.Config.LOG_TAG,  convertObjectToLogString(object), throwable);
     }
 
     /**

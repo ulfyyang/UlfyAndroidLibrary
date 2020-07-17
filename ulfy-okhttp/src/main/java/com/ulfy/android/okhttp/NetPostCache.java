@@ -63,7 +63,7 @@ import okio.Source;
  * 1.修改了获取key的方法，去掉了 put 时，限制 GET 的约束
  * 2.其他保持不变
  */
-class NetPostCache implements Closeable, Flushable {
+final class NetPostCache implements Closeable, Flushable {
 	private static final int VERSION = 201105;
 	private static final int ENTRY_METADATA = 0;
 	private static final int ENTRY_BODY = 1;

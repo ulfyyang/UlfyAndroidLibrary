@@ -1,36 +1,67 @@
 package com.ulfy.android.task;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
+import java.util.Objects;
+
 /**
- * 可以执行UI处理的任务
+ * 可以执行 ui 处理的任务，为子类提供更新 ui 的能力，并受到关联 Activity
+ * 生命周期的限制。
+ * @see TaskRepository {@link #runOnUiThread(Runnable)}
  */
 public abstract class UiTask extends Task {
-	private Context context;
-	private Handler uiHandler = new UiHandler();
-	private int identityId = hashCode();					// 为每一个任务定义唯一标识，避免任务回调混乱
-	private boolean cancelUiHandler;
+	private Context context;						// 任务关联的 Activity 上下文，用于跟随上下文的生命周期
+	private Handler uiHandler = new UiHandler();	// 为任务提供更新 ui 的能力
+	private int identityId = hashCode();			// 为每一个任务定义唯一标识，避免任务回调混乱
+	private boolean cancelUiHandler;				// 是否取消更新 ui，如果取消则更新 ui 的操作不会执行
 
+	/**
+	 * 构造方法，参数必须是一个 Activity 的上下文。和 ui 相关的任务都涉及到
+	 * Activity 的生命周期关联（例如：Activity 被销毁后无法在更新 ui），因
+	 * 此上下文必须是一个 Activity 的实例。
+	 */
 	public UiTask(Context context) {
+		Objects.requireNonNull(context, "context can not be null");
+		if (!(context instanceof Activity)) {
+			throw new IllegalArgumentException("a ui task must associate with a activity context");
+		}
 		this.context = context;
 	}
 
-	@Override public void run() {
+	/**
+	 * 获取和任务关联的上线文
+	 */
+	protected final Context getContext() {
+		return context;
+	}
+
+	/**
+	 * 任务执行开始时注册到任务仓库中，任务执行结束前取消注册到仓库中的任务
+	 * 任务定制不可以复写该方法，需要通过复写 {@link Task#run(Task)} 方
+	 * 法来对任务进行定制
+	 */
+	@Override public final void run() {
 		TaskRepository.getInstance().addUiTask(context, this);
 		super.run();
 		TaskRepository.getInstance().removeUiTask(context, this);
 	}
 
-	protected final synchronized void runOnUiThread(Runnable runnable) {
-		if (cancelUiHandler) {
-			return;
+	/**
+	 * 该方法为子类提供更新 ui 的能力
+	 */
+	protected synchronized final void runOnUiThread(Runnable runnable) {
+		if (!cancelUiHandler && runnable != null) {
+			uiHandler.sendMessage(uiHandler.obtainMessage(identityId, runnable));
 		}
-		uiHandler.sendMessage(uiHandler.obtainMessage(identityId, runnable));
 	}
 
+	/**
+	 * 设置取消 ui 操作
+	 */
 	public synchronized void setCancelUiHandler(boolean cancelUiHandler) {
 		this.cancelUiHandler = cancelUiHandler;
 		if (cancelUiHandler) {
@@ -38,6 +69,9 @@ public abstract class UiTask extends Task {
 		}
 	}
 
+	/**
+	 * 判断是否取消 ui 操作
+	 */
 	public synchronized boolean isCancelUiHandler() {
 		return cancelUiHandler;
 	}
@@ -48,7 +82,7 @@ public abstract class UiTask extends Task {
 			super(Looper.getMainLooper());
 		}
 
-		public void handleMessage(Message msg) {
+		@Override public void handleMessage(Message msg) {
 			if (msg.what == identityId && msg.obj instanceof Runnable && !cancelUiHandler) {
 				((Runnable)msg.obj).run();
 			}

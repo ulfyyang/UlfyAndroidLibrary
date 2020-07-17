@@ -5,28 +5,36 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-class FinalUiTaskExecutor implements ITaskExecutor {
+final class FinalUiTaskExecutor implements ITaskExecutor {
     private Executor executor = Executors.newCachedThreadPool();
     private List<UiTask> uiTaskList = new ArrayList<>();
 
     @Override public void post(Task task) {
+        postTask(task);
+    }
+
+    private class TaskLifecycle implements Task.LifecycleCallback {
+        @Override public void onStart(Task task) { }
+        @Override public void onFinish(Task task) {
+            clearTask(task);
+        }
+    }
+
+    private synchronized void postTask(Task task) {
         if (task instanceof UiTask) {
             for (UiTask uiTask : uiTaskList) {
                 uiTask.setCancelUiHandler(true);
             }
-            UiTask pendingUiTask = (UiTask) task;
-            pendingUiTask.setLifecycleCallback(new LifecycleCallbackImpl());
-            uiTaskList.add(pendingUiTask);
-            executor.execute(pendingUiTask);
+            UiTask uiTask = (UiTask) task;
+            uiTask.setLifecycleCallback(new TaskLifecycle());
+            uiTaskList.add(uiTask);
+            executor.execute(uiTask);
         } else {
-            throw new IllegalArgumentException("FinalUiTaskExecutor can only execute UiTask");
+            throw new IllegalArgumentException("FinalUiTaskExecutor can only execute the instance of UiTask");
         }
     }
 
-    private class LifecycleCallbackImpl implements Task.LifecycleCallback {
-        @Override public void onStart(Task task) { }
-        @Override public void onFinish(Task task) {
-            uiTaskList.remove(task);
-        }
+    private synchronized void clearTask(Task task) {
+        uiTaskList.remove(task);
     }
 }
