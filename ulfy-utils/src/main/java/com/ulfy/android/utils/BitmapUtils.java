@@ -2,6 +2,7 @@ package com.ulfy.android.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.view.TextureView;
 import android.view.View;
 
@@ -41,6 +42,29 @@ public final class BitmapUtils {
             Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
             view.setDrawingCacheEnabled(false);
             return bitmap;
+        }
+    }
+
+    /**
+     * 获取视频第一帧缩略图
+     */
+    public static Bitmap videoToBitmap(File video) {
+        MediaMetadataRetriever media = new MediaMetadataRetriever();
+        media.setDataSource(video.getAbsolutePath());
+        return media.getFrameAtTime();
+    }
+
+    /**
+     * 获取视频第一帧缩略图并保存到临时文件中
+     */
+    public static File videoToBitmapToTempFile(File video) {
+        try {
+            Bitmap bitmap = videoToBitmap(video);
+            File file = File.createTempFile("video", ".thumbnail", UtilsConfig.context.getCacheDir());
+            bitmapToFile(bitmap, file, false);
+            return file;
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
         }
     }
 
