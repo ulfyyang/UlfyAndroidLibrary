@@ -60,7 +60,7 @@ public final class BitmapUtils {
     public static File videoToBitmapToTempFile(File video) {
         try {
             Bitmap bitmap = videoToBitmap(video);
-            File file = File.createTempFile("video", ".thumbnail", UtilsConfig.context.getCacheDir());
+            File file = File.createTempFile("video", ".jpg", UtilsConfig.context.getCacheDir());
             bitmapToFile(bitmap, file, false);
             return file;
         } catch (Exception e) {
