@@ -151,7 +151,7 @@ public final class FileUtils {
         long offset = 0L;
 
         for (int i = 0; i < count - 1; i++) {       // 最后一片单独处理
-            File destFile = new File(destDir, String.format("%s_%d.tmp", srcFile.getName().split("\\.")[0], i));
+            File destFile = new File(destDir, String.format("%s_%d.slice", srcFile.getName().split("\\.")[0], i));
             offset = splitFile(srcFile, destFile, offset, (i + 1) * size);
 
             if (onSplitFileListener != null) {
@@ -167,7 +167,7 @@ public final class FileUtils {
         }
 
         if (length - offset > 0) {                  // 处理最后一个
-            File destFile = new File(destDir, String.format("%s_%d.tmp", srcFile.getName().split("\\.")[0], count - 1));
+            File destFile = new File(destDir, String.format("%s_%d.slice", srcFile.getName().split("\\.")[0], count - 1));
             splitFile(srcFile, destFile, offset, length);
 
             if (onSplitFileListener != null) {
@@ -190,7 +190,7 @@ public final class FileUtils {
     }
 
     /**
-     * 分割源文件的第index个切片，该方法会生成对应index下标的.tmp临时文件
+     * 分割源文件的第index个切片，该方法会生成对应index下标的.slice临时文件
      */
     private static long splitFile(File srcFile, File destFile, long begin, long end) {
         long endPointer = 0L;
