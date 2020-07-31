@@ -41,6 +41,7 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
 
     public RecyclerAdapter setHeaderView(View headerView) {
         UiUtils.clearParent(headerView);
+        headerView.setVisibility(View.VISIBLE);
         this.headerView = headerView;
         return this;
     }
@@ -51,6 +52,7 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
 
     public RecyclerAdapter setFooterView(View footerView) {
         UiUtils.clearParent(footerView);
+        footerView.setVisibility(View.VISIBLE);
         this.footerView = footerView;
         return this;
     }
@@ -61,12 +63,14 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
 
     public RecyclerAdapter setEmptyView(View emptyView) {
         UiUtils.clearParent(emptyView);
+        emptyView.setVisibility(View.VISIBLE);
         this.emptyView = emptyView;
         return this;
     }
 
     public RecyclerAdapter setLoadingView(View loadingView) {
         UiUtils.clearParent(loadingView);
+        loadingView.setVisibility(View.VISIBLE);
         this.loadingView = loadingView;
         return this;
     }
