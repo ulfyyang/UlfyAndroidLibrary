@@ -23,11 +23,9 @@ abstract class UlfyBaseAdapter extends BaseAdapter {
      * @return 数据为空时显示的界面
      */
     protected final View getEmptyView() {
-        UiUtils.clearParent(emptyView);
         if (emptyView.getLayoutParams() != null) {
             emptyView.setLayoutParams(new AbsListView.LayoutParams(emptyView.getLayoutParams()));
         }
-        emptyView.setVisibility(View.VISIBLE);
         return emptyView;
     }
 
@@ -36,8 +34,8 @@ abstract class UlfyBaseAdapter extends BaseAdapter {
      * @param emptyView    数据为空时显示的界面
      */
     public final void setEmptyView(View emptyView) {
+        UiUtils.clearParent(emptyView);
+        emptyView.setVisibility(View.VISIBLE);
         this.emptyView = emptyView;
-        UiUtils.clearParent(this.emptyView);
-        emptyView.setVisibility(View.GONE);
     }
 }
