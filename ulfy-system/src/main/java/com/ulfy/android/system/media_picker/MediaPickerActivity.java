@@ -22,6 +22,7 @@ import com.ulfy.android.system.R;
 import com.ulfy.android.system.event.OnTakePhotoEvent;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -194,13 +195,19 @@ public final class MediaPickerActivity extends Activity {
         if (event.requestCode != REQUEST_CODE_TAKE_PHOTO) {
             return;
         }
-        AppUtils.insertPictureToSystem(event.file, event.file.getName(), "app 拍照生成");
-        vm.reloadMultiMedias(this);
-        try {
-            vm.clickItem(0);
-            updateUiData();
-        } catch (OverMaxSelectMediaCountException e) {
-            showOverMaxCountDialog();
-        }
+
+        List<MediaEntity> entityList = new ArrayList<>();
+        MediaEntity mediaEntity = new MediaEntity(0,event.file.getName(),event.file.getAbsolutePath(),event.file.length());
+        entityList.add(mediaEntity);
+        returnSelectedMultiMediaEntities(entityList);
+
+//        AppUtils.insertPictureToSystem(event.file, event.file.getName(), "app 拍照生成");
+//        vm.reloadMultiMedias(this);
+//        try {
+//            vm.clickItem(0);
+//            updateUiData();
+//        } catch (OverMaxSelectMediaCountException e) {
+//            showOverMaxCountDialog();
+//        }
     }
 }
