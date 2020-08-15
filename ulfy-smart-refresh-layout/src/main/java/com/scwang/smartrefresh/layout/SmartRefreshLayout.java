@@ -3701,15 +3701,15 @@ public class SmartRefreshLayout extends ViewGroup implements RefreshLayout, Nest
         @Override
         public RefreshKernel requestDefaultTranslationContentFor(@NonNull RefreshInternal internal, boolean translation) {
             if (internal.equals(mRefreshHeader)) {
-                if (!mManualHeaderTranslationContent) {
+//                if (!mManualHeaderTranslationContent) {           // 原作者限定了只能修改一次，但是这样替换了 header 就会无效
                     mManualHeaderTranslationContent = true;
                     mEnableHeaderTranslationContent = translation;
-                }
+//                }
             } else if (internal.equals(mRefreshFooter)) {
-                if (!mManualFooterTranslationContent) {
+//                if (!mManualFooterTranslationContent) {           // 原作者限定了只能修改一次，但是这样替换了 footer 就会无效
                     mManualFooterTranslationContent = true;
                     mEnableFooterTranslationContent = translation;
-                }
+//                }
             }
             return this;
         }

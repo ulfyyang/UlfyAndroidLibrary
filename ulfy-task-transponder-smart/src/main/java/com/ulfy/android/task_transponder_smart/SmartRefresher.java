@@ -25,14 +25,12 @@ public class SmartRefresher extends Transponder {
     public SmartRefresher(SmartRefreshLayout smartRefreshLayout, OnRefreshSuccessListener onRefreshSuccessListener) {
         this.smartRefreshLayout = smartRefreshLayout;
         this.onRefreshSuccessListener = onRefreshSuccessListener;
-        this.initSetting();
-    }
 
-    private void initSetting() {
         RefreshHeader refreshHeader = SmartConfig.smartRefreshConfig.getRefreshHeaderView(smartRefreshLayout.getContext());
         smartRefreshLayout.setRefreshHeader(refreshHeader);
         smartRefreshLayout.setEnableLoadMore(false);
         smartRefreshLayout.setEnableOverScrollBounce(false);
+
         smartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
             public void onRefresh(RefreshLayout refreshLayout) {
                 if (loadListPageUiTask != null) {
@@ -62,13 +60,19 @@ public class SmartRefresher extends Transponder {
         return this;
     }
 
-    public void autoRefresh() {
-        smartRefreshLayout.autoRefresh(0, 400, 0.5f, false);
-    }
-
     public SmartRefresher setTaskExecutor(ITaskExecutor taskExecutor) {
         this.taskExecutor = taskExecutor;
         return this;
+    }
+
+    public SmartRefresher setSmartRefreshConfig(SmartConfig.SmartRefreshConfig smartRefreshConfig) {
+        RefreshHeader refreshHeader = smartRefreshConfig.getRefreshHeaderView(smartRefreshLayout.getContext());
+        smartRefreshLayout.setRefreshHeader(refreshHeader);
+        return this;
+    }
+
+    public void autoRefresh() {
+        smartRefreshLayout.autoRefresh(0, 400, 0.5f, false);
     }
 
     @Override public final void onNoNetConnection(Object data) {

@@ -26,11 +26,14 @@ public final class SmartRefreshSimpleTextView extends FrameLayout implements Ref
     }
 
     @Override public SpinnerStyle getSpinnerStyle() {
-        return SpinnerStyle.Translate;
+        return SpinnerStyle.Translate;          // 设置平移模式
+    }
+
+    @Override public void onInitialized(RefreshKernel kernel, int height, int maxDragHeight) {
+        kernel.requestDefaultTranslationContentFor(this, true);     // 设置内容跟随header移动
     }
 
     @Override public void setPrimaryColors(int... colors) { }
-    @Override public void onInitialized(RefreshKernel kernel, int height, int maxDragHeight) { }
     @Override public void onMoving(boolean isDragging, float percent, int offset, int height, int maxDragHeight) { }
     @Override public void onReleased(RefreshLayout refreshLayout, int height, int maxDragHeight) { }
     @Override public void onStartAnimator(RefreshLayout refreshLayout, int height, int maxDragHeight) { }
