@@ -33,18 +33,17 @@ class DownloadUtils {
      * @param onDownloadListener 下载监听
      */
     static void download(final String url, final File file, final OnDownloadListener onDownloadListener) {
+        callbackStarted(onDownloadListener);
+
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
 
         okHttpClient.newCall(request).enqueue(new Callback() {
-
             @Override public void onResponse(Call call, Response response) throws IOException {
                 InputStream inputStream = null;
                 FileOutputStream fileOutputStream = null;
 
                 try {
-                    callbackStarted(onDownloadListener);
-
                     inputStream = response.body().byteStream();
                     fileOutputStream = new FileOutputStream(file);
                     long totalLength = response.body().contentLength(), currentOffset = 0;

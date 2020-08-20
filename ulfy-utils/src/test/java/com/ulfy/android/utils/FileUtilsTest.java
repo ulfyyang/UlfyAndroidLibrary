@@ -95,4 +95,49 @@ public class FileUtilsTest {
 
         assertTrue(destFile.exists());
     }
+
+    /*
+    文件下载测试为手工测试，需要肉眼观测控制台输出结果
+     */
+
+    private String urlNormal = "https://media.w3.org/2010/05/sintel/trailer.mp4";     // 正常地址
+    private String urlWrong = "https://media.w3.org/2010/05/sintel/none.mp4";         // 错误地址
+    private FileUtils.OnDownloadListener onDownloadListener = new FileUtils.OnDownloadListener() {
+        @Override public void started() {
+            System.out.println("回调了：started --> 任务启动了");
+        }
+        @Override public void progress(long currentOffset, long totalLength) {
+            System.out.println(String.format("回调了：progress --> 总长度：%d，当前进度：%d", totalLength, currentOffset));
+        }
+        @Override public void success(File file) {
+            System.out.println(String.format("回调了：success --> 下载成功了，文件位置：%s", file.getAbsoluteFile()));
+        }
+        @Override public void error(Exception e) {
+            System.out.println(String.format("回调了：error --> 下载失败：%s", e.getMessage()));
+            e.printStackTrace();
+        }
+    };
+    private File target = new File("/Users/a123/Downloads/outputs/test.mp4");
+
+    /**
+     * 测试文件下载。观察控制台输出：任务启动 --> 进度从0开始到总长度 --> 文件下载成功并打印文件位置
+     * --> 检查指定位置是否存在文件（目录自动创建）
+     */
+    @Test public void testDownload() throws Exception {
+        FileUtils.download(urlNormal, target, onDownloadListener);
+    }
+
+    /**
+     * 测试文件下载。观察控制台：任务启动 --> 打印下载失败回调输出 --> 打印错误异常日志
+     */
+    @Test public void testDownloadWithExceptionAndDownloadListener() throws Exception {
+        FileUtils.download(urlWrong, target, onDownloadListener);
+    }
+
+    /**
+     * 测试文件下载。观察控制台：直接打印错误异常日志
+     */
+    @Test public void testDownloadWithExceptionWithoutDownloadListener() throws Exception {
+        FileUtils.download(urlWrong, target, null);
+    }
 }
