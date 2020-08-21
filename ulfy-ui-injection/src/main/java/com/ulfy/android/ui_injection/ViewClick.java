@@ -18,10 +18,13 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ViewClick {
-
 	/**
-	 * <p>控件的id数组，如果指定了多个控件的id，则每个控件点击都会执行到这里。</p>
+	 * <p>控件的 id 数组，如果指定了多个控件的 id，则每个控件点击都会执行到这里。</p>
 	 * <p>如果只有一个id，可以不用大括号。</p>
      */
 	int[] ids();
+	/**
+	 * 标记点击事件是否是长按事件，默认为 false
+	 */
+	boolean longClick() default false;
 }
