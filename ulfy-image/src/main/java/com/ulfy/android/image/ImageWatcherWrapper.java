@@ -60,9 +60,9 @@ class ImageWatcherWrapper {
      * 启动大图预览
      *      不会跟踪ImageView的位置
      */
-    void preview(Context context, List<String> imagePathList, int showPosition) {
+    ImageWatcher preview(Context context, List<String> imagePathList, int showPosition) {
         if (context == null || imagePathList == null) {
-            return;
+            return null;
         }
         if (showPosition >= imagePathList.size()) {
             showPosition = imagePathList.size() - 1;
@@ -73,16 +73,18 @@ class ImageWatcherWrapper {
             uriList.add(Uri.parse(url));
         }
 
-        findImageWatcherByActivity((Activity) context).show(uriList, showPosition);
+        ImageWatcherHelper imageWatcherHelper = findImageWatcherByActivity((Activity) context);
+        imageWatcherHelper.show(uriList, showPosition);
+        return imageWatcherHelper.getImageWatcher();
     }
 
     /**
      * 启动大图预览
      *      会跟踪ImageView的位置
      */
-    void preview(ViewGroup viewGroup, List<String> imagePathList, int showPosition) {
+    ImageWatcher preview(ViewGroup viewGroup, List<String> imagePathList, int showPosition) {
         if (viewGroup == null || imagePathList == null) {
-            return;
+            return null;
         }
         if (showPosition >= imagePathList.size()) {
             showPosition = imagePathList.size() - 1;
@@ -102,10 +104,13 @@ class ImageWatcherWrapper {
         boolean positionInImageViews = showPosition < imageViewSparseArray.size();
 
         if (positionInImageViews) {
-            findImageWatcherByActivity((Activity) viewGroup.getContext())
-                    .show(imageViewSparseArray.get(showPosition), imageViewSparseArray, uriList);
+            ImageWatcherHelper imageWatcherHelper = findImageWatcherByActivity((Activity) viewGroup.getContext());
+            imageWatcherHelper.show(imageViewSparseArray.get(showPosition), imageViewSparseArray, uriList);
+            return imageWatcherHelper.getImageWatcher();
         } else {
-            findImageWatcherByActivity((Activity) viewGroup.getContext()).show(uriList, showPosition);
+            ImageWatcherHelper imageWatcherHelper = findImageWatcherByActivity((Activity) viewGroup.getContext());
+            imageWatcherHelper.show(uriList, showPosition);
+            return imageWatcherHelper.getImageWatcher();
         }
     }
 

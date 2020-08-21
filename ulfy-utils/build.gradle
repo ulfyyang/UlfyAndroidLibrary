@@ -51,6 +51,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation externalAndroidDesign
+    implementation externalOKHTTP
     implementation externalFastJson
     implementation externalGifEnDeCoder
     implementation project(':ulfy-lib:ulfy-adapter')

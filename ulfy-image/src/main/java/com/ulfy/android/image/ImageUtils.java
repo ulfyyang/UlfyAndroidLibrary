@@ -5,6 +5,8 @@ import android.content.Context;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.github.ielse.imagewatcher.ImageWatcher;
+
 import java.io.File;
 import java.util.List;
 
@@ -127,9 +129,9 @@ public final class ImageUtils {
      * @param context       当前上下文
      * @param imagePathList 预览的图片集合
      */
-    public static void preview(Context context, List<String> imagePathList) {
+    public static ImageWatcher preview(Context context, List<String> imagePathList) {
         ImageConfig.throwExceptionIfConfigNotConfigured();
-        ImageWatcherWrapper.getInstance().preview(context, imagePathList, 0);
+        return ImageWatcherWrapper.getInstance().preview(context, imagePathList, 0);
     }
 
     /**
@@ -138,9 +140,9 @@ public final class ImageUtils {
      * @param imagePathList 预览的图片集合
      * @param showPosition  默认显示的位置
      */
-    public static void preview(Context context, List<String> imagePathList, int showPosition) {
+    public static ImageWatcher preview(Context context, List<String> imagePathList, int showPosition) {
         ImageConfig.throwExceptionIfConfigNotConfigured();
-        ImageWatcherWrapper.getInstance().preview(context, imagePathList, showPosition);
+        return ImageWatcherWrapper.getInstance().preview(context, imagePathList, showPosition);
     }
 
     /**
@@ -148,9 +150,9 @@ public final class ImageUtils {
      * @param viewGroup     包含图片的ImageView容器，这些图片最好同级
      * @param imagePathList 预览的图片集合
      */
-    public static void preview(ViewGroup viewGroup, List<String> imagePathList) {
+    public static ImageWatcher preview(ViewGroup viewGroup, List<String> imagePathList) {
         ImageConfig.throwExceptionIfConfigNotConfigured();
-        ImageWatcherWrapper.getInstance().preview(viewGroup, imagePathList, 0);
+        return ImageWatcherWrapper.getInstance().preview(viewGroup, imagePathList, 0);
     }
 
     /**
@@ -159,9 +161,9 @@ public final class ImageUtils {
      * @param imagePathList 预览的图片集合
      * @param showPosition  默认的显示位置
      */
-    public static void preview(ViewGroup viewGroup, List<String> imagePathList, int showPosition) {
+    public static ImageWatcher preview(ViewGroup viewGroup, List<String> imagePathList, int showPosition) {
         ImageConfig.throwExceptionIfConfigNotConfigured();
-        ImageWatcherWrapper.getInstance().preview(viewGroup, imagePathList, showPosition);
+        return ImageWatcherWrapper.getInstance().preview(viewGroup, imagePathList, showPosition);
     }
 
     /**

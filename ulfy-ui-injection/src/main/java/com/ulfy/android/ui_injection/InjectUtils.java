@@ -170,7 +170,10 @@ public final class InjectUtils {
 	 */
 	private static void bindViewClick(Object search, Object target, List<Method> viewClickList) {
 		for(Method method : viewClickList) {
-			int[] ids = method.getAnnotation(ViewClick.class).ids();
+			ViewClick viewClick = method.getAnnotation(ViewClick.class);
+			int[] ids = viewClick.ids();
+			boolean longClick = viewClick.longClick();
+
 			for(int id : ids) {
 				View view = null;
 				if(search instanceof Activity) {
@@ -181,7 +184,12 @@ public final class InjectUtils {
 				if (view == null) {
 					throw new IllegalArgumentException("cannot regist method: " + method.getName() + " on a null view");
 				}
-				view.setOnClickListener(new OnViewClickListener(target, method));
+
+				if (!longClick) {
+					view.setOnClickListener(new OnViewClickListener(target, method));
+				} else {
+					view.setOnLongClickListener(new OnViewLongClickListener(target, method));
+				}
 			}
 		}
 	}
@@ -196,7 +204,7 @@ public final class InjectUtils {
 			this.clickMethod = clickMethod;
 		}
 
-		public void onClick(View v) {
+		@Override public void onClick(View v) {
 			try {
 				clickMethod.setAccessible(true);
 				clickMethod.invoke(target, v);
@@ -206,4 +214,24 @@ public final class InjectUtils {
 		}
 	}
 
+	// View 的长按事件
+	private static class OnViewLongClickListener implements View.OnLongClickListener {
+		private Object target;
+		private Method clickMethod;
+
+		OnViewLongClickListener(Object target, Method clickMethod) {
+			this.target = target;
+			this.clickMethod = clickMethod;
+		}
+
+		@Override public boolean onLongClick(View v) {
+			try {
+				clickMethod.setAccessible(true);
+				clickMethod.invoke(target, v);
+			} catch (Exception e) {
+				throw new IllegalArgumentException(e);
+			}
+			return true;
+		}
+	}
 }

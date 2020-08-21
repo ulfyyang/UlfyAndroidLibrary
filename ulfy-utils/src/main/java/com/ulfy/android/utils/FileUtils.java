@@ -14,8 +14,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * File工具类
@@ -334,6 +339,91 @@ public final class FileUtils {
             }
             if (!keepRoot) {
                 directory.delete();
+            }
+        }
+    }
+
+    /**
+     * 问价下载监听回调
+     */
+    public interface OnDownloadListener {
+        void started();
+        void progress(long currentOffset, long totalLength);
+        void success(File file);
+        void error(Exception e);
+    }
+
+    /**
+     * 下载文件到指定位置。该方法为同步方法，如需异步处理需要自己封装线程。
+     * 1. 当目标文件所处的目录不存在时会自动创建目录
+     * 2. 当设置了回调监听，发生异常会走 {@link OnDownloadListener#error(Exception)} 方法，否则会抛出到外部
+     * @param url   文件的远程地址 url
+     * @param file  保存文件的位置
+     * @param onDownloadListener    下载过程中的回调
+     */
+    public static void download(String url, File file, OnDownloadListener onDownloadListener) throws IOException {
+        Objects.requireNonNull(url);
+        Objects.requireNonNull(file);
+
+        if (onDownloadListener != null) {
+            onDownloadListener.started();
+        }
+
+        if (file.getParentFile() != null && !file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+
+        try {
+            OkHttpClient okHttpClient = new OkHttpClient();
+            Request request = new Request.Builder().url(url).build();
+            Response response = okHttpClient.newCall(request).execute();
+
+            if (!response.isSuccessful()) {
+                throw new IllegalStateException(String.format("网络连接失败，错误码:%d", response.code()));
+            }
+
+            InputStream inputStream = null;
+            FileOutputStream fileOutputStream = null;
+
+            try {
+                inputStream = response.body().byteStream();
+                fileOutputStream = new FileOutputStream(file);
+                long totalLength = response.body().contentLength(), currentOffset = 0;
+
+                if (onDownloadListener != null) {
+                    onDownloadListener.progress(currentOffset, totalLength);
+                }
+
+                int length = 0; byte[] buffer = new byte[2048];
+                while ((length = inputStream.read(buffer)) != -1) {
+                    fileOutputStream.write(buffer, 0, length);
+                    currentOffset += length;
+
+                    if (onDownloadListener != null) {
+                        onDownloadListener.progress(currentOffset, totalLength);
+                    }
+                }
+
+                fileOutputStream.flush();
+
+                if (onDownloadListener != null) {
+                    onDownloadListener.success(file);
+                }
+            } finally {
+                try {
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                    if (fileOutputStream != null) {
+                        fileOutputStream.close();
+                    }
+                } catch (IOException e) { e.printStackTrace(); }
+            }
+        } catch (Exception e) {
+            if (onDownloadListener != null) {
+                onDownloadListener.error(e);
+            } else {
+                throw e;
             }
         }
     }
