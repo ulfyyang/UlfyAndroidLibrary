@@ -55,7 +55,7 @@ dependencies {
     implementation externalGlideAnnotationProcessor
     annotationProcessor externalGlideAnnotationProcessor
     implementation externalOKHTTP
-    implementation externalImageWatcher
+    api externalImageWatcher
     implementation project(':ulfy-lib:ulfy-cache')
 
     testImplementation externalJunit
