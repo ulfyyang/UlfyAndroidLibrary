@@ -495,15 +495,15 @@ public final class AppUtils {
             return;
         } else {
             url = complementUrl(url);
-            if (url.endsWith(".apk")) {
-                downloadApkThenInstall(url, false);
-            } else {
+//            if (url.endsWith(".apk")) {
+//                downloadApkThenInstall(url, false);
+//            } else {
                 Activity topActivity = ActivityUtils.getTopActivity();
                 Intent intent = new Intent();
                 intent.setAction("android.intent.action.VIEW");
                 intent.setData(Uri.parse(url));
                 topActivity.startActivity(intent);
-            }
+//            }
         }
     }
 
