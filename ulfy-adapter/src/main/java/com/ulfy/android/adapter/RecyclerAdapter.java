@@ -1,6 +1,7 @@
 package com.ulfy.android.adapter;
 
 import android.support.annotation.NonNull;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -10,6 +11,10 @@ import android.view.ViewGroup;
 import com.ulfy.android.mvvm.IView;
 import com.ulfy.android.mvvm.IViewModel;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +22,10 @@ import java.util.Map;
 
 public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ViewTypeHolder viewTypeHolder = new ViewTypeHolder();
+    private List<M> oldModleList;
     private List<M> modelList;
     private List<View> viewList = new ArrayList<>();
+    private Comparator<M> comparator;
     private View headerView, footerView, emptyView, loadingView;
     private OnItemClickListener<M> itemClickListener;
 
@@ -36,6 +43,11 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
             throw new NullPointerException("model list cannot be null");
         }
         this.modelList = modelList;
+        return this;
+    }
+
+    public RecyclerAdapter setComparator(Comparator<M> comparator) {
+        this.comparator = comparator;
         return this;
     }
 
@@ -291,6 +303,48 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
     private static class HeaderFooterEmptyLoadingViewHolder extends RecyclerView.ViewHolder {
         HeaderFooterEmptyLoadingViewHolder(View itemView) {
             super(itemView);
+        }
+    }
+
+    public interface Comparator<M> {
+        public boolean areItemsTheSame(M oldItem, M newItem);
+        public boolean areContentsTheSame(M oldItem, M newItem);
+    }
+
+    public static <M extends IViewModel> void notifyDataSetChanged(final RecyclerAdapter<M> adapter) {
+        if (adapter.comparator == null) {
+            adapter.notifyDataSetChanged();
+        } else {
+            final List<M> oldList = adapter.oldModleList;
+            final List<M> newList = adapter.modelList;
+
+            DiffUtil.Callback callback = new DiffUtil.Callback() {
+                @Override public int getOldListSize() {
+                    return oldList == null ? 0 : oldList.size();
+                }
+                @Override public int getNewListSize() {
+                    return newList == null ? 0 : newList.size();
+                }
+                @Override public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                    return adapter.comparator.areItemsTheSame(oldList.get(oldItemPosition), newList.get(newItemPosition));
+                }
+                @Override public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                    return adapter.comparator.areContentsTheSame(oldList.get(oldItemPosition), newList.get(newItemPosition));
+                }
+            };
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(callback);
+            diffResult.dispatchUpdatesTo(adapter);
+
+            if (adapter.modelList != null) {
+                try {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    new ObjectOutputStream(baos).writeObject(adapter.modelList);
+                    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+                    adapter.oldModleList = (List<M>) new ObjectInputStream(bais).readObject();
+                } catch (Exception e) {
+                    throw new IllegalStateException(e);
+                }
+            }
         }
     }
 }

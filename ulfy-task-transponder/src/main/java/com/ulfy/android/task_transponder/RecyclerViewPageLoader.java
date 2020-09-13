@@ -6,6 +6,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 
 import com.ulfy.android.adapter.RecyclerAdapter;
+import com.ulfy.android.mvvm.IViewModel;
 import com.ulfy.android.task.LoadListPageUiTask;
 import com.ulfy.android.task.NetUiTask;
 import com.ulfy.android.task.TaskExecutor;
@@ -60,7 +61,11 @@ public class RecyclerViewPageLoader extends NoNetConnectionTransponder {
         // 加载成功后更新数据列表，当加载的是最后一页时显示加载到底的界面。
         // 如果加载的不是最后一页，则应该隐藏掉加载动画
         if (recyclerView.getAdapter() != null) {
-            recyclerView.getAdapter().notifyDataSetChanged();
+            if (recyclerView.getAdapter() instanceof RecyclerAdapter) {
+                RecyclerAdapter.notifyDataSetChanged((RecyclerAdapter<IViewModel>) recyclerView.getAdapter());
+            } else {
+                recyclerView.getAdapter().notifyDataSetChanged();
+            }
         }
         if (taskInfo.isLoadedEndPage()) {
             footerView.showNoData();
