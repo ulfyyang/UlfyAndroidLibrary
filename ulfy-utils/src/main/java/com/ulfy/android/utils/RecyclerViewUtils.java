@@ -158,6 +158,26 @@ public final class RecyclerViewUtils {
             }
         });
     }
+    /**
+     * 当内容为空的时候显示指定的View
+     *      使用View.GONE的方式隐藏
+     */
+    public static void showWhenEmpty(final View view, final RecyclerAdapter recyclerAdapter) {
+        showWhenEmpty(view, recyclerAdapter, View.GONE);
+    }
+
+    /**
+     * 当内容为空的时候显示指定的View
+     *      自己指定隐藏方式
+     */
+    public static void showWhenEmpty(final View view, final RecyclerAdapter recyclerAdapter, final int hideCode) {
+        recyclerAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override public void onChanged() {
+                int modelListSize = recyclerAdapter.getModelListSize();
+                view.setVisibility(modelListSize == 0 ? View.VISIBLE : hideCode);
+            }
+        });
+    }
 
     /**
      * 线性布局配置
