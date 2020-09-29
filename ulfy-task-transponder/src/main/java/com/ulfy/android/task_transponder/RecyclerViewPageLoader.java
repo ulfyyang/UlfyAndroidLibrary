@@ -120,11 +120,9 @@ public class RecyclerViewPageLoader extends NoNetConnectionTransponder {
     }
 
     private class OnScrollListenerInner extends RecyclerView.OnScrollListener {
-        private RecyclerView.LayoutManager layoutManager;
 
         public OnScrollListenerInner(RecyclerView recyclerView) {
-            this.layoutManager = recyclerView.getLayoutManager();
-            if (!(layoutManager instanceof LinearLayoutManager) && !(layoutManager instanceof StaggeredGridLayoutManager)) {
+            if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager) && !(recyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager)) {
                 throw new IllegalStateException("LayoutManager must be a instance of LinearLayoutManager or StaggeredGridLayoutManager");
             }
         }
@@ -155,7 +153,8 @@ public class RecyclerViewPageLoader extends NoNetConnectionTransponder {
 
         @Override public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             // 当滚动停止、数据够铺满一屏、最后一个可见时，根据条件触发是否应该上拉加载更多任务
-            if (newState == RecyclerView.SCROLL_STATE_IDLE && recyclerView.getChildCount() < recyclerView.getAdapter().getItemCount() && getLastVisiableItemPosition() == layoutManager.getItemCount() - 1) {
+            if (newState == RecyclerView.SCROLL_STATE_IDLE && recyclerView.getChildCount() < recyclerView.getAdapter().getItemCount() &&
+                    getLastVisiableItemPosition() == recyclerView.getLayoutManager().getItemCount() - 1) {
                 // 如果任务已经加载到最后一页了则直接显示无数据页面
                 if (taskInfo.isLoadedEndPage()) {
                     footerView.showNoData();
@@ -174,10 +173,10 @@ public class RecyclerViewPageLoader extends NoNetConnectionTransponder {
 
         private int getLastVisiableItemPosition() {
             int lastVisibleItemPosition = 0;
-            if (layoutManager instanceof LinearLayoutManager) {
-                lastVisibleItemPosition = ((LinearLayoutManager) layoutManager).findLastVisibleItemPosition();
-            } else if (layoutManager instanceof StaggeredGridLayoutManager) {
-                StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) layoutManager;
+            if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+                lastVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+            } else if (recyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+                StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
                 int[] lastPositions = new int[staggeredGridLayoutManager.getSpanCount()];
                 staggeredGridLayoutManager.findLastVisibleItemPositions(lastPositions);
                 if (lastPositions.length > 0) {

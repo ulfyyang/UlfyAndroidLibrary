@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -100,8 +101,9 @@ public final class RecyclerViewUtils {
                 ((LinearLayoutManager)recyclerView.getLayoutManager()).setRecycleChildrenOnDetach(true);
             }
         }
-        for (int i = 0; i < recyclerView.getItemDecorationCount(); i++) {
-            recyclerView.removeItemDecorationAt(i);
+        int decorationCount = recyclerView.getItemDecorationCount();
+        for (int i = 0; i < decorationCount; i++) {
+            recyclerView.removeItemDecorationAt(0);     // 移除一个之后下一个就会重新变为第一个
         }
     }
 
@@ -112,7 +114,7 @@ public final class RecyclerViewUtils {
             field = recyclerView.getClass().getDeclaredField("mMaxFlingVelocity");
             accessible = field.isAccessible();
             field.setAccessible(true);
-            field.set(recyclerView, recyclerView.getMaxFlingVelocity() / 2);
+            field.set(recyclerView, ViewConfiguration.get(recyclerView.getContext()).getScaledMaximumFlingVelocity() / 2);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
