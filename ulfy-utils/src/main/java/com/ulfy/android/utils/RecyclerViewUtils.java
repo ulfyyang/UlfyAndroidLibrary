@@ -100,6 +100,9 @@ public final class RecyclerViewUtils {
                 ((LinearLayoutManager)recyclerView.getLayoutManager()).setRecycleChildrenOnDetach(true);
             }
         }
+        for (int i = 0; i < recyclerView.getItemDecorationCount(); i++) {
+            recyclerView.removeItemDecorationAt(i);
+        }
     }
 
     private static void initMaxFlingVelocity(RecyclerView recyclerView) {
