@@ -36,6 +36,7 @@ public class MagicTabPagerLinkage {
     private List<View> viewPageList;
     private List<Fragment> fragmentPageList;
     // 定制属性
+    private boolean average;            // 指示器是否平均分配显示（平均以后不滚动）
     private int titleSize = 18;         // 指示器文字大小
     private int titleNormalColor = Color.parseColor("#616161");     // 指示器文字默认颜色
     private int titleSelectedColor = Color.parseColor("#f57c00");   // 指示器文字选中的颜色
@@ -105,6 +106,11 @@ public class MagicTabPagerLinkage {
     /*
     定制属性设置
      */
+
+    public MagicTabPagerLinkage setAverage(boolean average) {
+        this.average = average;
+        return this;
+    }
 
     public MagicTabPagerLinkage setTitleSize(int titleSize) {
         this.titleSize = titleSize;
@@ -183,6 +189,7 @@ public class MagicTabPagerLinkage {
     public MagicTabPagerLinkage build() {
         // 基础设置
         CommonNavigator commonNavigator = new CommonNavigator(magicIndicator.getContext());
+        commonNavigator.setAdjustMode(average);
         commonNavigator.setScrollPivotX(0.8f);
         commonNavigator.setAdapter(new CommonNavigatorAdapter() {
             @Override public int getCount() {
