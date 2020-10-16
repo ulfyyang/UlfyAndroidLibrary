@@ -41,9 +41,10 @@ class UiUtils {
     /**
      * 设置View的点击事件，根据是否为空设置View的点击性
      */
-    static void setViewClickListener(View view, View.OnClickListener onClickListener) {
+    static void setViewClickListener(View view, View.OnClickListener onClickListener, View.OnLongClickListener onLongClickListener) {
         view.setOnClickListener(onClickListener);
-        view.setClickable(onClickListener != null);
+        view.setOnLongClickListener(onLongClickListener);
+        view.setClickable(onClickListener != null || onLongClickListener != null);
     }
 
     /**

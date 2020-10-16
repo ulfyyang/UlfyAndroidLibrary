@@ -28,6 +28,7 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
     private Comparator<M> comparator;
     private View headerView, footerView, emptyView, loadingView;
     private OnItemClickListener<M> itemClickListener;
+    private OnItemLongClickListener<M> itemLongClickListener;
 
     public RecyclerAdapter() {
         setHasStableIds(true);
@@ -104,17 +105,21 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
         return this;
     }
 
+    public RecyclerAdapter setOnItemLongClickListener(OnItemLongClickListener<M> listener) {
+        this.itemLongClickListener = listener;
+        registerItemClickListenerIfNeed();
+        return this;
+    }
+
     /**
      * 根据条件 shouldRegisterItemClickListener() 来执行是否注册单击事件的回调
      *      该方法可以在子类中手动触发
      */
     void registerItemClickListenerIfNeed() {
+        View.OnClickListener clickListener = shouldRegisterItemClickListener() ? new OnClickListenerImpl() : null;
+        View.OnLongClickListener longClickListener = shouldRegisterItemLongClickListener() ? new OnLongClickListenerImpl() : null;
         for (int i = 0; i < viewList.size(); i++) {
-            if (shouldRegisterItemClickListener()) {
-                UiUtils.setViewClickListener(viewList.get(i), new OnClickListenerImpl());
-            } else {
-                UiUtils.setViewClickListener(viewList.get(i), null);
-            }
+            UiUtils.setViewClickListener(viewList.get(i), clickListener, longClickListener);
         }
     }
 
@@ -124,6 +129,14 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
      */
     protected boolean shouldRegisterItemClickListener() {
         return itemClickListener != null;
+    }
+
+    /**
+     * 判断是否应该注册长按事件，在本类中，设置了长按事件表示应该注册。
+     * 该方法可以在子类中加入判断条件
+     */
+    protected boolean shouldRegisterItemLongClickListener() {
+        return itemLongClickListener != null;
     }
 
     private class OnClickListenerImpl implements View.OnClickListener {
@@ -136,10 +149,26 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
         }
     }
 
+    private class OnLongClickListenerImpl implements View.OnLongClickListener {
+        @Override public boolean onLongClick(View v) {
+            int clickIndex = (int) v.getTag(ViewHolder.TAG_CLICK_INDEX);
+            if (itemLongClickListener != null) {
+                itemLongClickListener.onItemLongClick((ViewGroup) v.getParent(), v, clickIndex, modelList.get(clickIndex));
+            }
+            dispatchOnItemLongClick((ViewGroup) v.getParent(), v, clickIndex, modelList.get(clickIndex));
+            return true;
+        }
+    }
+
     /**
      * 在单击事件触发的时候执行这个派发方法，让子类可以有自己的对应处理逻辑
      */
     protected void dispatchOnItemClick(ViewGroup parent, View view, int position, M model) { }
+
+    /**
+     * 在长按事件触发的时候执行这个派发方法，让子类可以有自己的对应处理逻辑
+     */
+    protected void dispatchOnItemLongClick(ViewGroup parent, View view, int position, M model) { }
 
     @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (headerView != null && viewType == headerView.hashCode()) {
@@ -272,6 +301,13 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
      */
     public interface OnItemClickListener<M> {
         void onItemClick(ViewGroup parent, View view, int position, M model);
+    }
+
+    /**
+     * 设置长按事件
+     */
+    public interface OnItemLongClickListener<M> {
+        void onItemLongClick(ViewGroup parent, View view, int position, M model);
     }
 
     private class ViewTypeHolder {
