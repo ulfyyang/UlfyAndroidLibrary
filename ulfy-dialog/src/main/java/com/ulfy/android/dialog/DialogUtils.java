@@ -199,8 +199,6 @@ public final class DialogUtils {
 		builder.setDialogAnimationId(R.style.window_anim_bottom).build().show();
 	}
 
-
-
 	/**
 	 * 关闭默认的弹出框
 	 */
