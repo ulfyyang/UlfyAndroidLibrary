@@ -1,6 +1,7 @@
 package com.ulfy.android.dialog;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -57,6 +58,8 @@ public final class QuickPickView extends FrameLayout implements IQuickPickView {
         titleLineV.setVisibility(title == null || title.length() == 0 ? View.GONE : View.VISIBLE);
         if (title != null && title.length() > 0) {
             titleTV.setText(title);
+            titleTV.setTextSize(13);
+            titleTV.setTextColor(Color.parseColor("#FF666666"));
         }
         return this;
     }
@@ -65,6 +68,16 @@ public final class QuickPickView extends FrameLayout implements IQuickPickView {
         cmList.clear();
         for (CharSequence charSequence : list) {
             cmList.add(new QuickPickCM(charSequence));
+        }
+        pickListLV.setAdapter(adapter);
+        return this;
+    }
+
+    @Override
+    public IQuickPickView setData(List<CharSequence> list, boolean is_comment) {
+        cmList.clear();
+        for (CharSequence charSequence : list) {
+            cmList.add(new QuickPickCM(charSequence, is_comment));
         }
         pickListLV.setAdapter(adapter);
         return this;
