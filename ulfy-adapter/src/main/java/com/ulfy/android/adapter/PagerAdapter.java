@@ -1,8 +1,10 @@
 package com.ulfy.android.adapter;
 
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ulfy.android.mvvm.IView;
 import com.ulfy.android.mvvm.IViewModel;
 
 import java.util.ArrayList;
@@ -13,7 +15,6 @@ import java.util.Objects;
  * ViewPager 适配器：该适配器用于 model 列表，可以动态的托管数据模型与视图的创建
  */
 public class PagerAdapter<M extends IViewModel> extends android.support.v4.view.PagerAdapter {
-    private int childCount;                                 // 为了解决 notifyDataSetChanged 不生效而引入的变量
     private List<M> modelList;
     private List<View> viewList = new ArrayList<>();        // 用于缓存游离于页面之外的视图
 
@@ -35,6 +36,7 @@ public class PagerAdapter<M extends IViewModel> extends android.support.v4.view.
         convertView = UiUtils.createView(container.getContext(), convertView, model);
         UiUtils.clearParent(convertView);
         container.addView(convertView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        convertView.setTag(position);
         return convertView;
     }
 
@@ -52,17 +54,17 @@ public class PagerAdapter<M extends IViewModel> extends android.support.v4.view.
         return null;
     }
 
-    @Override public void notifyDataSetChanged() {
-        childCount = getCount();
-        super.notifyDataSetChanged();
-    }
-
-    @Override public int getItemPosition(Object object) {
-        if (childCount > 0) {
-            childCount --;
-            return POSITION_NONE;
-        } else {
-            return super.getItemPosition(object);
+    /**
+     * 更新当前屏幕中已经存在的项目
+     * 1）在没有数据数量变化的情况下单纯调用notifyDataSetChanged不会触发页面更新
+     * 2）但是正常的手动切换页面会触发页面更新
+     * 3）当数据内容（非数量）变化后可通过该方法将已经存在的项重新刷新
+     * @param viewPager 和该Adapter关联的ViewPager
+     */
+    public void updateScreenItems(ViewPager viewPager) {
+        for (int i = 0; i < viewPager.getChildCount(); i++) {
+            View view = viewPager.getChildAt(i);
+            ((IView)view).bind(modelList.get((Integer) view.getTag()));
         }
     }
 

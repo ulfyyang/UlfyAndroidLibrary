@@ -2,6 +2,7 @@ package com.ulfy.android.ui_linkage;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -35,10 +36,12 @@ public class MagicTabPagerLinkage {
     private List<View> viewPageList;
     private List<Fragment> fragmentPageList;
     // 定制属性
+    private boolean average;            // 指示器是否平均分配显示（平均以后不滚动）
     private int titleSize = 18;         // 指示器文字大小
     private int titleNormalColor = Color.parseColor("#616161");     // 指示器文字默认颜色
     private int titleSelectedColor = Color.parseColor("#f57c00");   // 指示器文字选中的颜色
     private boolean titleScale;         // 指示器文字是否采用缩放效果
+    private boolean titleBold;          // 指示器文字是否采用加粗效果
     private boolean indicatorBounce;    // 设置指示线是否具有跳动效果
     private int indicatorMode = LinePagerIndicator.MODE_WRAP_CONTENT;   // 设置指示线的模式：包裹内容、填充父控件、设置具体值
     private int indicatorWidth = UiUtils.dp2px(20);                     // 设置横线的宽度：当indicatorMode设置为具体值时生效
@@ -104,6 +107,11 @@ public class MagicTabPagerLinkage {
     定制属性设置
      */
 
+    public MagicTabPagerLinkage setAverage(boolean average) {
+        this.average = average;
+        return this;
+    }
+
     public MagicTabPagerLinkage setTitleSize(int titleSize) {
         this.titleSize = titleSize;
         return this;
@@ -121,6 +129,11 @@ public class MagicTabPagerLinkage {
 
     public MagicTabPagerLinkage setTitleScale(boolean titleScale) {
         this.titleScale = titleScale;
+        return this;
+    }
+
+    public MagicTabPagerLinkage setTitleBold(boolean titleBold) {
+        this.titleBold = titleBold;
         return this;
     }
 
@@ -176,6 +189,7 @@ public class MagicTabPagerLinkage {
     public MagicTabPagerLinkage build() {
         // 基础设置
         CommonNavigator commonNavigator = new CommonNavigator(magicIndicator.getContext());
+        commonNavigator.setAdjustMode(average);
         commonNavigator.setScrollPivotX(0.8f);
         commonNavigator.setAdapter(new CommonNavigatorAdapter() {
             @Override public int getCount() {
@@ -191,6 +205,8 @@ public class MagicTabPagerLinkage {
                 scaleTransitionPagerTitleView.setSelectedColor(titleSelectedColor);
                 // 设置是否缩放
                 scaleTransitionPagerTitleView.setScale(titleScale);
+                // 设置是否加错
+                scaleTransitionPagerTitleView.setBold(titleBold);
                 // 与ViewPager联动
                 scaleTransitionPagerTitleView.setOnClickListener(new View.OnClickListener() {
                     @Override public void onClick(View v) {
@@ -263,6 +279,7 @@ public class MagicTabPagerLinkage {
     private static class ScaleTransitionPagerTitleView extends ColorTransitionPagerTitleView {
         private float mMinScale = 0.75f;
         private boolean scale;
+        private boolean bold;
 
         public ScaleTransitionPagerTitleView(Context context) {
             super(context);
@@ -274,6 +291,9 @@ public class MagicTabPagerLinkage {
                 setScaleX(mMinScale + (1.0f - mMinScale) * enterPercent);
                 setScaleY(mMinScale + (1.0f - mMinScale) * enterPercent);
             }
+            if (bold) {
+                setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+            }
         }
 
         @Override public void onLeave(int index, int totalCount, float leavePercent, boolean leftToRight) {
@@ -281,6 +301,9 @@ public class MagicTabPagerLinkage {
             if (scale) {
                 setScaleX(1.0f + (mMinScale - 1.0f) * leavePercent);
                 setScaleY(1.0f + (mMinScale - 1.0f) * leavePercent);
+            }
+            if (bold) {
+                setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL));
             }
         }
 
@@ -294,6 +317,10 @@ public class MagicTabPagerLinkage {
 
         public void setScale(boolean scale) {
             this.scale = scale;
+        }
+
+        public void setBold(boolean bold) {
+            this.bold = bold;
         }
     }
 }
