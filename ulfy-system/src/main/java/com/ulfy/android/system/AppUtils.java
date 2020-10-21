@@ -560,6 +560,15 @@ public final class AppUtils {
                 case SystemConfig.Config.THIRD_APP_PACKAGE_NAME_WECHAT:
                     Toast.makeText(SystemConfig.context, "请安装微信", Toast.LENGTH_LONG).show();
                     break;
+                case SystemConfig.Config.THIRD_APP_PACKAGE_NAME_TAOBAO:
+                    Toast.makeText(SystemConfig.context, "请安装淘宝", Toast.LENGTH_LONG).show();
+                    break;
+                case SystemConfig.Config.THIRD_APP_PACKAGE_NAME_TM:
+                    Toast.makeText(SystemConfig.context, "请安装天猫", Toast.LENGTH_LONG).show();
+                    break;
+                case SystemConfig.Config.THIRD_APP_PACKAGE_NAME_JD:
+                    Toast.makeText(SystemConfig.context, "请安装京东", Toast.LENGTH_LONG).show();
+                    break;
             }
         }
     }

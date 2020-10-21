@@ -24,11 +24,17 @@ public final class SystemConfig {
          */
         public static final String THIRD_APP_PACKAGE_NAME_QQ = "com.tencent.mobileqq";
         public static final String THIRD_APP_PACKAGE_NAME_WECHAT = "com.tencent.mm";
+        public static final String THIRD_APP_PACKAGE_NAME_TAOBAO = "com.taobao.taobao";
+        public static final String THIRD_APP_PACKAGE_NAME_JD = "com.jingdong.app.mall";
+        public static final String THIRD_APP_PACKAGE_NAME_TM = "com.tmall.wireless";
         private static final Map<String, String> packageNameClazzMap = new HashMap<>();
 
         static  {
             packageNameClazzMap.put(THIRD_APP_PACKAGE_NAME_QQ, "com.tencent.mobileqq.activity.SplashActivity");
             packageNameClazzMap.put(THIRD_APP_PACKAGE_NAME_WECHAT, "com.tencent.mm.ui.LauncherUI");
+            packageNameClazzMap.put(THIRD_APP_PACKAGE_NAME_TAOBAO, "com.taobao.tao.welcome.Welcome");
+            packageNameClazzMap.put(THIRD_APP_PACKAGE_NAME_JD, "com.jingdong.app.mall.main.MainActivity");
+            packageNameClazzMap.put(THIRD_APP_PACKAGE_NAME_TM, "com.tmall.wireless.splash.TMSplashActivity");
         }
 
         public static String getLaunchClazzByPackageName(String packageName) {
