@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -100,6 +101,10 @@ public final class RecyclerViewUtils {
                 ((LinearLayoutManager)recyclerView.getLayoutManager()).setRecycleChildrenOnDetach(true);
             }
         }
+        int decorationCount = recyclerView.getItemDecorationCount();
+        for (int i = 0; i < decorationCount; i++) {
+            recyclerView.removeItemDecorationAt(0);     // 移除一个之后下一个就会重新变为第一个
+        }
     }
 
     private static void initMaxFlingVelocity(RecyclerView recyclerView) {
@@ -109,7 +114,7 @@ public final class RecyclerViewUtils {
             field = recyclerView.getClass().getDeclaredField("mMaxFlingVelocity");
             accessible = field.isAccessible();
             field.setAccessible(true);
-            field.set(recyclerView, recyclerView.getMaxFlingVelocity() / 2);
+            field.set(recyclerView, ViewConfiguration.get(recyclerView.getContext()).getScaledMaximumFlingVelocity() / 2);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -154,6 +159,26 @@ public final class RecyclerViewUtils {
             @Override public void onChanged() {
                 int modelListSize = recyclerAdapter.getModelListSize();
                 view.setVisibility(modelListSize == 0 ? hideCode : View.VISIBLE);
+            }
+        });
+    }
+    /**
+     * 当内容为空的时候显示指定的View
+     *      使用View.GONE的方式隐藏
+     */
+    public static void showWhenEmpty(final View view, final RecyclerAdapter recyclerAdapter) {
+        showWhenEmpty(view, recyclerAdapter, View.GONE);
+    }
+
+    /**
+     * 当内容为空的时候显示指定的View
+     *      自己指定隐藏方式
+     */
+    public static void showWhenEmpty(final View view, final RecyclerAdapter recyclerAdapter, final int hideCode) {
+        recyclerAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override public void onChanged() {
+                int modelListSize = recyclerAdapter.getModelListSize();
+                view.setVisibility(modelListSize == 0 ? View.VISIBLE : hideCode);
             }
         });
     }
@@ -263,7 +288,7 @@ public final class RecyclerViewUtils {
     }
 
     /**
-     * 瀑布流布局配置
+     * 瀑布流布局配置，目前只支持纵向且不支持 header 与分割线颜色设置
      */
     public static class StaggeredLayoutConfig {
         private RecyclerView recyclerView;
@@ -273,18 +298,31 @@ public final class RecyclerViewUtils {
         }
 
         /**
-         * 设置为横向布局
+         * 设置为纵向布局
          */
-        public StaggeredLayoutConfig horizontal(int spanCount) {
-            recyclerView.setLayoutManager(new StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.HORIZONTAL));
+        public StaggeredLayoutConfig vertical(int spanCount) {
+            recyclerView.setLayoutManager(new StaggeredGridLayoutManagerInner(spanCount, StaggeredGridLayoutManager.VERTICAL));
             return this;
         }
 
         /**
-         * 设置为纵向布局
+         * 设置分割线
+         *      headerCount、footerCount必须设置，否则布局会错乱
+         *      添加了RecyclerView版的上拉加载会自动添加一个footer，因此需要把这个footer也算在其中
          */
-        public StaggeredLayoutConfig vertical(int spanCount) {
-            recyclerView.setLayoutManager(new StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL));
+        public StaggeredLayoutConfig dividerDp(int color, float horizonLineHeight, float verticalLineHeight, int headerCount, int footerCount) {
+            return dividerPx(color, UiUtils.dp2px(horizonLineHeight), UiUtils.dp2px(verticalLineHeight), headerCount, footerCount);
+        }
+
+        /**
+         * 设置分割线
+         *      headerCount、footerCount必须设置，否则布局会错乱
+         *      添加了RecyclerView版的上拉加载会自动添加一个footer，因此需要把这个footer也算在其中
+         */
+        public StaggeredLayoutConfig dividerPx(int color, float horizonLineHeight, float verticalLineHeight, int headerCount, int footerCount) {
+            recyclerView.addItemDecoration(new StaggeredItemDecoration(
+                    DrawableUtils.gradientBuilder().shapeRectangle().sizePx(horizonLineHeight, verticalLineHeight).color(color).build()
+            ));
             return this;
         }
     }
@@ -346,6 +384,14 @@ public final class RecyclerViewUtils {
                 return (int) (UiUtils.screenHeight() * UtilsConfig.Config.extraLayoutSpaceMultiple);
             }
         }
+
+        @Override public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+            try {
+                super.onLayoutChildren( recycler, state );
+            } catch (IndexOutOfBoundsException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -362,6 +408,14 @@ public final class RecyclerViewUtils {
                 return super.getExtraLayoutSpace(state);
             } else {
                 return (int) (UiUtils.screenHeight() * UtilsConfig.Config.extraLayoutSpaceMultiple);
+            }
+        }
+
+        @Override public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+            try {
+                super.onLayoutChildren( recycler, state );
+            } catch (IndexOutOfBoundsException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -420,6 +474,14 @@ public final class RecyclerViewUtils {
         @Override public RecyclerView.LayoutParams generateDefaultLayoutParams() {
             return new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         }
+
+        @Override public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+            try {
+                super.onLayoutChildren( recycler, state );
+            } catch (IndexOutOfBoundsException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -441,6 +503,24 @@ public final class RecyclerViewUtils {
          * @param forward                   释放时滚动的方向，是否向前滚动
          */
         public void onPageReleased(View releasedView, int positionInRecyclerView, int positionInData, boolean forward);
+    }
+
+    /**
+     * StaggeredGridLayoutManagerInner管理器定制
+     */
+    static class StaggeredGridLayoutManagerInner extends StaggeredGridLayoutManager {
+
+        public StaggeredGridLayoutManagerInner(int spanCount, int orientation) {
+            super(spanCount, orientation);
+        }
+
+        @Override public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+            try {
+                super.onLayoutChildren( recycler, state );
+            } catch (IndexOutOfBoundsException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
    /*
@@ -980,4 +1060,41 @@ public final class RecyclerViewUtils {
         }
     }
 
+    /**
+     * Staggered布局的分割线
+     */
+    static class StaggeredItemDecoration extends RecyclerView.ItemDecoration {
+        private Drawable divider;
+
+        StaggeredItemDecoration(Drawable divider) {
+            this.divider = divider;
+        }
+
+        @Override public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            StaggeredGridLayoutManager manager = (StaggeredGridLayoutManager) parent.getLayoutManager();
+            StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) view.getLayoutParams();
+            int position = parent.getChildAdapterPosition(view);
+            // 计算边距
+            int totalColum = manager.getSpanCount();
+            int currentColum = params.getSpanIndex();
+            int top = position < totalColum ? 0 : divider.getIntrinsicHeight();
+            int left = divider.getIntrinsicWidth() * (currentColum - 1) / totalColum;
+            int right = divider.getIntrinsicWidth() * (totalColum - currentColum) / totalColum;
+            /*
+            在分割线大小设置不为 0 的情况下：中间的分割线最少保证分割线有 1 像素
+                    第一个奇数位放下边，最后一个奇数放上边，剩余奇数位放两边
+                    或者：不是第一个奇数放下边、不是最后一个奇数放上边
+             */
+            if (divider.getIntrinsicWidth() != 0 && left == 0 && right == 0) {
+                if (currentColum == 1) {
+                    right = 1;
+                } else if (currentColum == totalColum && currentColum % 2 == 1) {
+                    left = 1;
+                } else if (currentColum % 2 == 1) {
+                    left = right = 1;
+                }
+            }
+            outRect.set(left, top, right, 0);
+        }
+    }
 }
