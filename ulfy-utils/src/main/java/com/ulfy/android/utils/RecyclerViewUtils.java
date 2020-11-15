@@ -228,9 +228,27 @@ public final class RecyclerViewUtils {
          *      添加了RecyclerView版的上拉加载会自动添加一个footer，因此需要把这个footer也算在其中
          */
         public LinearLayoutConfig dividerPx(int color, float height, int headerCount, int footerCount) {
+            return dividerPx(color, height, headerCount, footerCount, 0, 0);
+        }
+
+        /**
+         * 设置分割线
+         *      headerCount、footerCount必须设置，否则布局会错乱
+         *      添加了RecyclerView版的上拉加载会自动添加一个footer，因此需要把这个footer也算在其中
+         */
+        public LinearLayoutConfig dividerDp(int color, float height, int headerCount, int footerCount, float offsetStart, float offsetEnd) {
+            return dividerPx(color, UiUtils.dp2px(height), headerCount, footerCount, UiUtils.dp2px(offsetStart), UiUtils.dp2px(offsetEnd));
+        }
+
+        /**
+         * 设置分割线
+         *      headerCount、footerCount必须设置，否则布局会错乱
+         *      添加了RecyclerView版的上拉加载会自动添加一个footer，因此需要把这个footer也算在其中
+         */
+        public LinearLayoutConfig dividerPx(int color, float height, int headerCount, int footerCount, float offsetStart, float offsetEnd) {
             recyclerView.addItemDecoration(new LinearItemDecoration(
                     DrawableUtils.gradientBuilder().shapeRectangle().sizePx(height, height).color(color).build(),
-                    orientation, headerCount, footerCount));
+                    orientation, headerCount, footerCount, (int) offsetStart, (int) offsetEnd));
             return this;
         }
     }
@@ -537,23 +555,32 @@ public final class RecyclerViewUtils {
         private Drawable divider;
         private int orientation;
         private int headerCount, footerCount;
+        private int offsetStart, offsetEnd;
 
-        LinearItemDecoration(Drawable divider, int orientation, int headerCount, int footerCount) {
+        LinearItemDecoration(Drawable divider, int orientation, int headerCount, int footerCount, int offsetStart, int offsetEnd) {
             this.divider = divider;
             this.orientation = orientation;
             this.headerCount = headerCount;
             this.footerCount = footerCount;
+            this.offsetStart = offsetStart;
+            this.offsetEnd = offsetEnd;
         }
 
         @Override public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
             if (shouldDrawLayoutLine(view, parent, state)) {
+                int top, left; top = left = isFirstAfterHeader(view, parent, state) ? offsetStart : 0;
                 if (orientation == LinearLayoutManager.VERTICAL) {
-                    outRect.set(0, 0, 0, divider.getIntrinsicHeight());
+                    outRect.set(0, top, 0, divider == null ? 0 : divider.getIntrinsicHeight());
                 } else {
-                    outRect.set(0, 0, divider.getIntrinsicWidth(), 0);
+                    outRect.set(left, 0, divider == null ? 0 : divider.getIntrinsicWidth(), 0);
                 }
             } else {
-                outRect.set(0, 0, 0, 0);
+                int bottom, right; bottom = right = isLastBeforeFooter(view, parent, state) ? offsetEnd : 0;
+                if (orientation == LinearLayoutManager.VERTICAL) {
+                    outRect.set(0, 0, 0, bottom);
+                } else {
+                    outRect.set(0, 0, right, 0);
+                }
             }
         }
 
@@ -637,6 +664,14 @@ public final class RecyclerViewUtils {
                 nearGroup = adapter.isGroupForPosition(position - headerCount) || adapter.isGroupForPosition(position - headerCount + 1);
             }
             return !nearGroup && position > headerCount - 1 && position < state.getItemCount() - footerCount - 1;
+        }
+
+        private boolean isFirstAfterHeader(View view, RecyclerView parent, RecyclerView.State state) {
+            return parent.getChildAdapterPosition(view) == headerCount;
+        }
+
+        private boolean isLastBeforeFooter(View view, RecyclerView parent, RecyclerView.State state) {
+            return parent.getChildAdapterPosition(view) == state.getItemCount() - footerCount - 1;
         }
     }
 
