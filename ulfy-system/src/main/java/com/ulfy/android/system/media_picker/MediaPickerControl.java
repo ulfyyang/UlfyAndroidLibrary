@@ -11,6 +11,7 @@ class MediaPickerControl {
     private List<MediaPickWrapper> mediaPickWrapperList;  // 操作的容器
     private int maxSelectCount = 0;     // 可选的最大数量，0 表示无限制
     private int searchType;             // 搜索类型
+    private List<MediaEntity> mMediaEntityList = new ArrayList<>();
 
     MediaPickerControl(int maxSelectCount, int searchType) {
         mediaRepository = new MediaRepository();
@@ -62,6 +63,7 @@ class MediaPickerControl {
     void selectMultiMedia(int index) throws OverMaxSelectMediaCountException {
         if (canPickMultiMedia()) {
             mediaPickWrapperList.get(index).setSelect(true);
+            mMediaEntityList.add(mediaPickWrapperList.get(index).getMediaEntity());
         } else {
             throw new OverMaxSelectMediaCountException();
         }
@@ -69,6 +71,7 @@ class MediaPickerControl {
 
     void cancelSelectMultiMedia(int index) {
         mediaPickWrapperList.get(index).setSelect(false);
+        mMediaEntityList.remove(mediaPickWrapperList.get(index).getMediaEntity());
     }
 
     boolean canPickMultiMedia() {
@@ -80,23 +83,11 @@ class MediaPickerControl {
     }
 
     List<MediaEntity> getSelectMultiMediaList() {
-        List<MediaEntity> list = new ArrayList<>();
-        for (MediaPickWrapper wrapper : mediaPickWrapperList) {
-            if (wrapper.isSelect()) {
-                list.add(wrapper.getMediaEntity());
-            }
-        }
-        return list;
+        return mMediaEntityList;
     }
 
     int getSelectMultiMediaCount() {
-        int count = 0;
-        for (MediaPickWrapper wrapper : mediaPickWrapperList) {
-            if (wrapper.isSelect()) {
-                count++;
-            }
-        }
-        return count;
+        return mMediaEntityList.size();
     }
 
     int getAllMultiMediaCount() {
