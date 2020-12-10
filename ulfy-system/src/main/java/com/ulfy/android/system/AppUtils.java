@@ -569,6 +569,15 @@ public final class AppUtils {
                 case SystemConfig.Config.THIRD_APP_PACKAGE_NAME_JD:
                     Toast.makeText(SystemConfig.context, "请安装京东", Toast.LENGTH_LONG).show();
                     break;
+                case SystemConfig.Config.THIRD_APP_PACKAGE_NAME_BAIDUNETDISK:
+                    Toast.makeText(SystemConfig.context, "请安装百度网盘", Toast.LENGTH_LONG).show();
+                    break;
+                case SystemConfig.Config.THIRD_APP_PACKAGE_NAME_XUNLEI:
+                    Toast.makeText(SystemConfig.context, "请安装迅雷网盘", Toast.LENGTH_LONG).show();
+                    break;
+                case SystemConfig.Config.THIRD_APP_PACKAGE_NAME_QCLOUD:
+                    Toast.makeText(SystemConfig.context, "请安装腾讯微云", Toast.LENGTH_LONG).show();
+                    break;
             }
         }
     }
