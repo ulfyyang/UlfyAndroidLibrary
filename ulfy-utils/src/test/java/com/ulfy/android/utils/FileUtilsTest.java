@@ -12,6 +12,24 @@ public class FileUtilsTest {
     public int splitCount = 20, splitSize = 1024 * 1024;
 
     /**
+     * 测试获取文件MD5
+     */
+    @Test public void testGetMD5() throws Exception {
+        File file = new File(new File(".").getCanonicalPath(), "src/test/app-release.apk");
+        String md5 = FileUtils.getMD5(file);
+        System.out.println(md5);
+    }
+
+    /**
+     * 测试获取文件扩展名
+     */
+    @Test public void testGetExtension() throws Exception {
+        File file = new File(new File(".").getCanonicalPath(), "src/test/app-release.apk");
+        String extension = FileUtils.getExtension(file.getCanonicalPath());
+        System.out.println(extension);
+    }
+
+    /**
      * 常规使用测试
      */
     @Test public void testSplitFile() throws Exception {
