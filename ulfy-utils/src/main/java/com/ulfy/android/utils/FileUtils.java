@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +28,62 @@ import okhttp3.Response;
  * File工具类
  */
 public final class FileUtils {
+
+    /**
+     * 获取文件MD5，示例：008a26911978de84c2025fea712932f2
+     */
+    public static String getMD5(File file) throws Exception {
+        FileInputStream fis = null;DigestInputStream dis = null;
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            fis = new FileInputStream(file);
+            dis = new DigestInputStream(fis, md);
+            byte[] buffer = new byte[1024];         // 缓冲计算空间，越大越快
+            int len = 0;
+            while ((len = dis.read(buffer)) > 0) { }
+            md = dis.getMessageDigest();            // 获取最终的MessageDigest对象
+            byte[] resultByteArray = md.digest();   // 这个数组的长度是16
+            return byteArrayToHex(resultByteArray);
+        } finally {
+            try {
+                if (fis != null) fis.close();
+                if (dis != null) dis.close();
+            } catch (IOException e) { e.printStackTrace(); }
+        }
+    }
+
+    private static String byteArrayToHex(byte[] byteArray) {
+        // 初始化一个字符数组，用来存放每个16进制字符。如果字母改成大写则计算出来的结果为大写字幕
+        char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+        char[] resultCharArray = new char[byteArray.length * 2];
+        int index = 0;
+        for (byte b : byteArray) {
+            /*
+             * 一个byte是八位二进制数，十六进制数转化为二进制数时，比如F，结果是1111,所以八位二进制数可以转为两位的十六进制数
+             * byteArray的长度是16位的，要转换为标准的32位MD5值，所以每一个八进制要扩展为2位的16进制数，所以resultCharArray
+             * 的长度为byteArray长度的两倍
+             * 位运算的效率比较高，所以选用了位运算
+             * >>> 无符号右移，把二进制数向右移动n位，最高位空出来的全部用零补位，低位移除的舍弃
+             * b>>>4 首先b会转化为8位二进制数，然后右移4位，取得b的高四位
+             */
+            //先把b的高四位转为16进制数,和0xf(十六进制数f)做与运算，排除负数的干扰
+            resultCharArray[index++] = hexDigits[b >>> 4 & 0xf];
+            //再把b的低四位转为16进制数 1000 1111 & 0000 1111 = 0000 1111
+            resultCharArray[index++] = hexDigits[b & 0xf];
+        }
+        return new String(resultCharArray);
+    }
+
+    /**
+     * 获取文件的扩展名，例如：".png"、".jpg"
+     */
+    public static String getExtension(String path) {
+        if (path == null) {
+            return null;
+        }
+        int dot = path.lastIndexOf(".");
+        return dot >= 0 ? path.substring(dot) : "";
+    }
 
     /**
      * 读取文件为字符串
