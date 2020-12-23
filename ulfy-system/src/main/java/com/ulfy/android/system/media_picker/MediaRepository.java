@@ -14,7 +14,7 @@ public final class MediaRepository {
     public static final int SEARCH_TYPE_VIDEO = 2;      // 选择视频
     public static final int SEARCH_TYPE_VOICE = 3;      // 选择音频
 
-    List<MediaEntity> searchMultiMediaEntityByType(Context context, int type) {
+    public static List<MediaEntity> searchMultiMediaEntityByType(Context context, int type) {
 
         List<MediaEntity> mediaEntityList = new ArrayList<>();// 多媒体容器
 
