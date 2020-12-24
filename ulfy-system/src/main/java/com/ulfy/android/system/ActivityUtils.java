@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.widget.Toast;
+
 import com.ulfy.android.bus.BusUtils;
 import com.ulfy.android.dialog.NormalDialog;
 import com.ulfy.android.system.event.OnCropPictureEvent;
@@ -158,22 +159,35 @@ public final class ActivityUtils {
 		startActivity(activityClazz, requestCode, sendData, StartMode.NORMAL_START);
 	}
 
+	public static void startActivity(Activity activity, Class<? extends Activity> activityClazz, int requestCode, Bundle sendData) {
+		startActivity(activity, activityClazz, requestCode, sendData, StartMode.NORMAL_START);
+	}
+
 	public static void startActivity(Class<? extends Activity> activityClazz, int requestCode, Bundle sendData, int startMode) {
+		startActivity(null, activityClazz, requestCode, sendData, startMode);
+	}
+
+	public static void startActivity(Activity activity, Class<? extends Activity> activityClazz, int requestCode, Bundle sendData, int startMode) {
 		ActivityRepository repository = ActivityRepository.getInstance();
+
 		// 记录当前 Activity 和当前顶部 Activity 的位置
 		int activityPosition = repository.findActivityPosition(activityClazz);
 		int topPosition = repository.size() - 1;
+
 		// 记录当前的 Activity
-		ActivityInfo activityInfo = repository.getTopActivityInfo();
+		ActivityInfo activityInfo = activity == null ? repository.getTopActivityInfo() :
+				repository.findInfoByActivity(activity);
 		if (activityInfo == null) {
 			return;
 		}
+
 		Activity topActivity = activityInfo.activity;
 		ReceiveDataState state = activityInfo.receiveDataState;
 		// 有可能用户在跳转之前切到后台运行，或其它情况导致的内存被回收，这里做个安全判断
 		if (topActivity == null) {
 			return;
 		}
+
 		// 构造意图对象
 		Intent intent = new Intent(topActivity, activityClazz);
 		if (sendData != null) {
@@ -186,6 +200,7 @@ public final class ActivityUtils {
 			state.state = ReceiveDataState.RECEIVE_DATA;
 			topActivity.startActivityForResult(intent, requestCode);
 		}
+
 		// 根据启动模式处理 Activity 仓储
 		switch (startMode) {
 			case StartMode.RE_START:
