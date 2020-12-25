@@ -1110,8 +1110,7 @@ public final class RecyclerViewUtils {
             StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) view.getLayoutParams();
             int position = parent.getChildAdapterPosition(view);
             // 计算边距
-            int totalColum = manager.getSpanCount();
-            int currentColum = params.getSpanIndex();
+            int totalColum = manager.getSpanCount(); int currentColum = params.getSpanIndex() + 1;
             int top = position < totalColum ? 0 : divider.getIntrinsicHeight();
             int left = divider.getIntrinsicWidth() * (currentColum - 1) / totalColum;
             int right = divider.getIntrinsicWidth() * (totalColum - currentColum) / totalColum;
