@@ -98,6 +98,14 @@ public final class StatusBarUtils {
         }
     }
 
+    /**
+     * 修改导航栏颜色（安卓5.0支持）
+     */
+    public static void changeNavigationBarColor(Activity activity, int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity.getWindow().setNavigationBarColor(color);
+        }
+    }
 
 
     ///////////////////////////////////////////////////////////////////////////
