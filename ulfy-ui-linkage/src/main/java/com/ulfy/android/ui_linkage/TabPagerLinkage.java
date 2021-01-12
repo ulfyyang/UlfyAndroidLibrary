@@ -32,6 +32,7 @@ public class TabPagerLinkage {
     public static final int LINE_WIDTH_MATCH_PARENT = ViewGroup.LayoutParams.MATCH_PARENT;
     public static final int LINE_WIDTH_WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
     // 基础属性
+    private Fragment parentFragment;            // 如果实在Fragment里边嵌套Fragment，则该参数为父Fragment
     private TabLayout tabLayout;
     private ViewPager viewPagerContainer;
     private ViewGroup viewGroupContainer;
@@ -51,6 +52,11 @@ public class TabPagerLinkage {
     private List<Integer> tabViewContainerInitWidthList = new ArrayList<>();
     // 用于记录真正使用的TabView
     private List<View> convertedTabViewList = new ArrayList<>();
+
+    public TabPagerLinkage setParentFragment(Fragment parentFragment) {
+        this.parentFragment = parentFragment;
+        return this;
+    }
 
     public TabPagerLinkage setTabLayout(TabLayout tabLayout) {
         this.tabLayout = tabLayout;
@@ -208,7 +214,13 @@ public class TabPagerLinkage {
             viewPagerContainer.setAdapter(new ViewPagerAdapter(viewPageList));
             viewPagerContainer.setOffscreenPageLimit(viewPageList.size() - 1);
         } else if (fragmentPageList != null) {
-            viewPagerContainer.setAdapter(new FragmentPagerAdapter((FragmentActivity) viewPagerContainer.getContext(), fragmentPageList));
+            if (parentFragment == null) {
+                viewPagerContainer.setAdapter(new FragmentPagerAdapter(
+                        ((FragmentActivity) viewPagerContainer.getContext()).getSupportFragmentManager(), fragmentPageList));
+            } else {
+                viewPagerContainer.setAdapter(new FragmentPagerAdapter(
+                        parentFragment.getChildFragmentManager(), fragmentPageList));
+            }
             viewPagerContainer.setOffscreenPageLimit(fragmentPageList.size() - 1);
         }
         tabLayout.setupWithViewPager(viewPagerContainer);

@@ -30,6 +30,7 @@ import java.util.List;
  */
 public class MagicTabPagerLinkage {
     // 基础属性
+    private Fragment parentFragment;            // 如果实在Fragment里边嵌套Fragment，则该参数为父Fragment
     private MagicIndicator magicIndicator;
     private ViewPager viewPagerContainer;
     private List<String> tabStringList;
@@ -55,6 +56,11 @@ public class MagicTabPagerLinkage {
     /*
     基础属性设置
      */
+
+    public MagicTabPagerLinkage setParentFragment(Fragment parentFragment) {
+        this.parentFragment = parentFragment;
+        return this;
+    }
 
     public MagicTabPagerLinkage setMagicIndicator(MagicIndicator magicIndicator) {
         this.magicIndicator = magicIndicator;
@@ -241,7 +247,13 @@ public class MagicTabPagerLinkage {
             viewPagerContainer.setAdapter(new ViewPagerAdapter(viewPageList));
             viewPagerContainer.setOffscreenPageLimit(viewPageList.size() - 1);
         } else if (fragmentPageList != null) {
-            viewPagerContainer.setAdapter(new FragmentPagerAdapter((FragmentActivity) viewPagerContainer.getContext(), fragmentPageList));
+            if (parentFragment == null) {
+                viewPagerContainer.setAdapter(new FragmentPagerAdapter(
+                        ((FragmentActivity) viewPagerContainer.getContext()).getSupportFragmentManager(), fragmentPageList));
+            } else {
+                viewPagerContainer.setAdapter(new FragmentPagerAdapter(
+                        parentFragment.getChildFragmentManager(), fragmentPageList));
+            }
             viewPagerContainer.setOffscreenPageLimit(fragmentPageList.size() - 1);
         }
         this.viewPagerContainer.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
