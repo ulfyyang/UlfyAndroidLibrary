@@ -24,6 +24,7 @@ public class MediaEntity implements Serializable {
 
     @Override public final boolean equals(Object obj) {
         return this.getClass() == obj.getClass() && this.id == ((MediaEntity)obj).id;
+//        return (this.filePath.equals(((MediaEntity)obj).filePath)) && this.id == ((MediaEntity)obj).id;
     }
 
     public final boolean exists() {
