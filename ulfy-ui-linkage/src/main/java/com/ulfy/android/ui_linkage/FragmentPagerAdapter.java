@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * 简单的ViewPager适配器，用于适配非动态生成的Fragment
  */
-class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAdapter {
+class FragmentPagerAdapter extends android.support.v4.app.FragmentStatePagerAdapter {
     private List<Fragment> fragmentList;
 
     public FragmentPagerAdapter(FragmentManager fragmentManager, List<Fragment> fragmentList) {
