@@ -44,13 +44,14 @@ public final class SmartRefreshSimpleTextView extends FrameLayout implements Ref
     @Override public void onStateChanged(RefreshLayout refreshLayout, RefreshState oldState, RefreshState newState) {
         switch (newState) {
             case PullDownToRefresh:
-                textTV.setText("下拉即可刷新");
+                textTV.setText("下拉刷新 👇");
+
                 break;
             case ReleaseToRefresh:
-                textTV.setText("释放即可刷新");
+                textTV.setText("开始刷新~ 🤗");
                 break;
             case RefreshReleased:
-                textTV.setText("努力加载中...");
+                textTV.setText("数据刷新... 🎈");
                 break;
         }
     }

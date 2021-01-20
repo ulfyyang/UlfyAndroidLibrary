@@ -15,7 +15,7 @@ public final class LoadListPageUiTask extends UiTask {
 	public static final int LOAD_NEXT_PAGE = 2;					// 当前状态为加载下一页的状态
 	public static final int LOAD_RELOAD_ALL = 3;				// 当前状态为重新加载已有的页面的状态
 	public static int DEFAULT_START_PAGE = 1;					// 起始页默认为1
-	public static int DEFAULT_PAGE_SIZE = 20;					// 每页默认大小为20
+	public static int DEFAULT_PAGE_SIZE = 10;					// 每页默认大小为20
 
 	private LoadListPageUiTaskInfo taskInfo;					// 任务处理的信息（不能为空）
 	private OnLoadListPage loadListPageBody;					// 任务执行代码块，如果没有则会执行执行成功
