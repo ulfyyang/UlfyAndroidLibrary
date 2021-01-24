@@ -1,7 +1,8 @@
 package com.ulfy.android.adapter;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentPagerAdapter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.Objects;
 /**
  * ViewPager 适配器：该适配器用于简单的 Fragment 列表，可以快速的将 Fragment 和 ViewPager 连接起来
  */
-public class PagerFragmentAdapter extends android.support.v4.app.FragmentPagerAdapter {
+public class PagerFragmentAdapter extends FragmentPagerAdapter {
     private List<Fragment> fragmentList;
 
     public PagerFragmentAdapter(FragmentActivity activity) {

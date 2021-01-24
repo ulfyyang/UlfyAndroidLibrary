@@ -1,7 +1,9 @@
 package com.ulfy.android.bus;
 
 import android.app.Activity;
-import android.support.v4.app.FragmentActivity;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -28,7 +30,7 @@ class SubscriberEventMethodPairs {
 	}
 
 	private Set<Method> findSubscribMethods(Class<?> clazz, Set<Method> methodSet) {
-		if (clazz == Activity.class || clazz == FragmentActivity.class || clazz == android.app.Fragment.class || clazz == android.support.v4.app.Fragment.class || clazz == Object.class) {
+		if (clazz == Activity.class || clazz == FragmentActivity.class || clazz == android.app.Fragment.class || clazz == Fragment.class || clazz == Object.class) {
 			return methodSet;
 		}
 		for (Method method : clazz.getDeclaredMethods()) {

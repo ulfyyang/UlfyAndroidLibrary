@@ -10,7 +10,7 @@ import android.view.View;
  *      该控件通过镜像转换原来的触摸事件坐标实现的纵向转移，但是这会扰乱正常的事件拦截
  *      如果在ViewPager上有覆盖更多的点击操作，不要使用该控件
  */
-public class ViewPager extends android.support.v4.view.ViewPager {
+public class ViewPager extends androidx.viewpager.widget.ViewPager {
     private boolean isVertical = false;
 
     public ViewPager(Context context) {

@@ -1,8 +1,9 @@
 package com.ulfy.android.adapter;
 
-import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.viewpager.widget.ViewPager;
 
 import com.ulfy.android.mvvm.IView;
 import com.ulfy.android.mvvm.IViewModel;
@@ -14,7 +15,7 @@ import java.util.Objects;
 /**
  * ViewPager 适配器：该适配器用于 model 列表，可以动态的托管数据模型与视图的创建
  */
-public class PagerAdapter<M extends IViewModel> extends android.support.v4.view.PagerAdapter {
+public class PagerAdapter<M extends IViewModel> extends androidx.viewpager.widget.PagerAdapter {
     private List<M> modelList;
     private List<View> viewList = new ArrayList<>();        // 用于缓存游离于页面之外的视图
 

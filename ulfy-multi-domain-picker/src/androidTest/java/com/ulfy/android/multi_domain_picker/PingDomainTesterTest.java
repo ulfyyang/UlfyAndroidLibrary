@@ -1,6 +1,6 @@
 package com.ulfy.android.multi_domain_picker;
 
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
 import org.junit.Test;

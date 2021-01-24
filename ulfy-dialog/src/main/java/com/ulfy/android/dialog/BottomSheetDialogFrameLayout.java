@@ -1,9 +1,10 @@
 package com.ulfy.android.dialog;
 
 import android.content.Context;
-import android.support.design.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
+
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 class BottomSheetDialogFrameLayout extends FrameLayout {
     private CoordinatorLayout coordinator;

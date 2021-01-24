@@ -1,12 +1,13 @@
 package com.ulfy.android.adapter;
 
-import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.ulfy.android.mvvm.IView;
 import com.ulfy.android.mvvm.IViewModel;
@@ -170,7 +171,8 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
      */
     protected void dispatchOnItemLongClick(ViewGroup parent, View view, int position, M model) { }
 
-    @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @NonNull
+    @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (headerView != null && viewType == headerView.hashCode()) {
             return new HeaderFooterEmptyLoadingViewHolder(headerView);
         } else if (footerView != null && viewType == footerView.hashCode()) {

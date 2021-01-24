@@ -7,15 +7,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.StyleRes;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.view.AccessibilityDelegateCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
-import android.support.v7.app.AppCompatDialog;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -24,6 +15,17 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StyleRes;
+import androidx.appcompat.app.AppCompatDialog;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 /**
  * 仿网易云的弹窗效果，具有回弹的功能
@@ -297,11 +299,11 @@ class BounceBottomSheetDialog extends AppCompatDialog implements IDialog {
             // If the provided theme is 0, then retrieve the dialogTheme from our theme
             TypedValue outValue = new TypedValue();
             if (context.getTheme().resolveAttribute(
-                    android.support.design.R.attr.bottomSheetDialogTheme, outValue, true)) {
+                    R.attr.bottomSheetDialogTheme, outValue, true)) {
                 themeId = outValue.resourceId;
             } else {
                 // bottomSheetDialogTheme is not provided; we default to our light theme
-                themeId = android.support.design.R.style.Theme_Design_Light_BottomSheetDialog;
+                themeId = R.style.Theme_Design_Light_BottomSheetDialog;
             }
         }
         return themeId;

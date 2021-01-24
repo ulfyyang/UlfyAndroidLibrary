@@ -1,10 +1,11 @@
 package com.ulfy.android.system.base;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
 
 import com.ulfy.android.bus.BusUtils;
 import com.ulfy.android.bus.Subscribe;
@@ -18,7 +19,8 @@ public abstract class UlfyBaseFragment extends UlfyBaseVisibilityFragment {
     //      布局文件处理和事件总线处理
     ///////////////////////////////////////////////////////////////////////////
 
-    @Nullable @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    @Nullable
+    @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         int layoutId = InjectUtils.findUILayoutFileID(this.getClass());
         if (layoutId == -1) {
             return null;
