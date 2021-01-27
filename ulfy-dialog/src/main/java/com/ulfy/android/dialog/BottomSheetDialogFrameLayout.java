@@ -18,10 +18,10 @@ class BottomSheetDialogFrameLayout extends FrameLayout {
     }
 
     @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//        if (coordinator != null) {
-//            int size = (int) ((float) (getResources().getDisplayMetrics().heightPixels * 0.618));
-//            heightMeasureSpec = MeasureSpec.makeMeasureSpec(size, Integer.MAX_VALUE);
-//        }
+        if (coordinator != null) {
+            int size = (int) ((float) (getResources().getDisplayMetrics().heightPixels * 0.618));
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(size, MeasureSpec.AT_MOST);
+        }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
