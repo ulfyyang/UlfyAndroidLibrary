@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.PopupWindow;
 
@@ -66,5 +67,9 @@ class PopupDialog extends PopupWindow implements IDialog {
     @Override public void dismiss() {
         DialogRepository.getInstance().removeDialog(this);
         super.dismiss();
+    }
+
+    @Override public void ignoreSoftInputMethod() {
+        setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
     }
 }

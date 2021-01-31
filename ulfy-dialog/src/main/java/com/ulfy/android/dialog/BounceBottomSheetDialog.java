@@ -99,6 +99,10 @@ class BounceBottomSheetDialog extends AppCompatDialog implements IDialog {
         super.dismiss();
     }
 
+    @Override public void ignoreSoftInputMethod() {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+    }
+
     @Override
     public void setContentView(@LayoutRes int layoutResId) {
         super.setContentView(wrapInBottomSheet(layoutResId, null, null));

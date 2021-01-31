@@ -19,4 +19,8 @@ public interface IDialog {
      * 关闭弹出框
      */
     public void dismiss();
+    /**
+     * 忽略输入法对弹出框的影响
+     */
+    public void ignoreSoftInputMethod();
 }
