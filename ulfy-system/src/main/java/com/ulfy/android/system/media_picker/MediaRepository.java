@@ -60,7 +60,7 @@ public final class MediaRepository {
 
     private List<MediaEntity> queryMediaEntity(Context context, int type, int start, int end) {
         Cursor cursor = CursorColums.newInstance(type).createCursor(context);
-        MediaEntityColumns columns = MediaEntityColumns.newInstance(type);
+        MediaEntityColumns columns = MediaEntityColumns.newInstance(type, cursor);
 
         List<MediaEntity> mediaEntityList = new ArrayList<>();
         for (int i = start; i < end; i++) {
@@ -111,36 +111,37 @@ public final class MediaRepository {
      * 获取具体实体的字段
      */
     static class MediaEntityColumns {
-        private String searchId = null;
-        private String searchTitle = null;
-        private String searchPath = null;
-        private String searchDuration = null;       // 图片没有时长字段
-        private String searchSize = null;
+        private int searchIdIndex = 0;
+        private int searchTitleIndex = 0;
+        private int searchPathIndex = 0;
+        private int searchDurationIndex = 0;       // 图片没有时长字段
+        private int searchSizeIndex = 0;
         private int type = 0;
 
-        static MediaEntityColumns newInstance(int type) {
+        // 读取 index 比较耗时，所以要提前读出来，这样查询的时候速度会很快
+        static MediaEntityColumns newInstance(int type, Cursor cursor) {
             MediaEntityColumns columns = new MediaEntityColumns();
             columns.type = type;
             switch (type) {
                 case SEARCH_TYPE_PICTURE:
-                    columns.searchId = MediaStore.Images.Media._ID;
-                    columns.searchTitle = MediaStore.Images.Media.TITLE;
-                    columns.searchPath = MediaStore.Images.Media.DATA;
-                    columns.searchSize = MediaStore.Images.Media.SIZE;
+                    columns.searchIdIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+                    columns.searchTitleIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.TITLE);
+                    columns.searchPathIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                    columns.searchSizeIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE);
                     break;
                 case SEARCH_TYPE_VIDEO:
-                    columns.searchId = MediaStore.Video.Media._ID;
-                    columns.searchTitle = MediaStore.Video.Media.TITLE;
-                    columns.searchPath = MediaStore.Video.Media.DATA;
-                    columns.searchDuration = MediaStore.Video.Media.DURATION;
-                    columns.searchSize = MediaStore.Video.Media.SIZE;
+                    columns.searchIdIndex = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID);
+                    columns.searchTitleIndex = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.TITLE);
+                    columns.searchPathIndex = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
+                    columns.searchDurationIndex = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION);
+                    columns.searchSizeIndex = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE);
                     break;
                 case SEARCH_TYPE_VOICE:
-                    columns.searchId = MediaStore.Audio.Media._ID;
-                    columns.searchTitle = MediaStore.Audio.Media.TITLE;
-                    columns.searchPath = MediaStore.Audio.Media.DATA;
-                    columns.searchDuration = MediaStore.Audio.Media.DURATION;
-                    columns.searchSize = MediaStore.Audio.Media.SIZE;
+                    columns.searchIdIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID);
+                    columns.searchTitleIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE);
+                    columns.searchPathIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+                    columns.searchDurationIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION);
+                    columns.searchSizeIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE);
                     break;
             }
             return columns;
@@ -151,28 +152,22 @@ public final class MediaRepository {
             switch (type) {
                 case SEARCH_TYPE_PICTURE:
                     entity = new PictureEntity(
-                            cursor.getInt(cursor.getColumnIndexOrThrow(searchId)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(searchTitle)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(searchPath)),
-                            cursor.getLong(cursor.getColumnIndexOrThrow(searchSize))
+                            cursor.getInt(searchIdIndex), cursor.getString(searchTitleIndex),
+                            cursor.getString(searchPathIndex), cursor.getLong(searchSizeIndex)
                     );
                     break;
                 case SEARCH_TYPE_VIDEO:
                     entity = new VideoEntity(
-                            cursor.getInt(cursor.getColumnIndexOrThrow(searchId)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(searchTitle)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(searchPath)),
-                            cursor.getLong(cursor.getColumnIndexOrThrow(searchSize)),
-                            cursor.getLong(cursor.getColumnIndexOrThrow(searchDuration))
+                            cursor.getInt(searchIdIndex), cursor.getString(searchTitleIndex),
+                            cursor.getString(searchPathIndex), cursor.getLong(searchSizeIndex),
+                            cursor.getLong(searchDurationIndex)
                     );
                     break;
                 case SEARCH_TYPE_VOICE:
                     entity = new VoiceEntity(
-                            cursor.getInt(cursor.getColumnIndexOrThrow(searchId)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(searchTitle)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(searchPath)),
-                            cursor.getLong(cursor.getColumnIndexOrThrow(searchSize)),
-                            cursor.getLong(cursor.getColumnIndexOrThrow(searchDuration))
+                            cursor.getInt(searchIdIndex), cursor.getString(searchTitleIndex),
+                            cursor.getString(searchPathIndex), cursor.getLong(searchSizeIndex),
+                            cursor.getLong(searchDurationIndex)
                     );
                     break;
             }
