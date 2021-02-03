@@ -15,24 +15,21 @@ import com.ulfy.android.system.R;
  * 当超出最大选择数的时候显示的弹出框
  */
 public final class MediaOverMaxSelectCountView extends FrameLayout implements IView, View.OnClickListener {
-    private TextView maxCountTV;
-    private TextView haveKnowTV;
+    public static final String DIALOG_ID = "DIALOG_ID_MediaOverMaxSelectCountView";       // 显示数量超限用的ID
     private MediaOverMaxSelectCountVM vm;
 
     public MediaOverMaxSelectCountView(Context context) {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.ulfy_system_view_media_over_max_select_count, this);
-        maxCountTV = findViewById(R.id.maxCountTV);
-        haveKnowTV = findViewById(R.id.haveKnowTV);
-        haveKnowTV.setOnClickListener(this);
+        findViewById(R.id.haveKnowTV).setOnClickListener(this);
     }
 
     @Override public void bind(IViewModel model) {
         vm = (MediaOverMaxSelectCountVM) model;
-        maxCountTV.setText(vm.getTipText());
+        ((TextView)findViewById(R.id.maxCountTV)).setText(vm.getTipText());
     }
 
     @Override public void onClick(View v) {
-        DialogUtils.dismissDialog();
+        DialogUtils.dismissDialog(DIALOG_ID);
     }
 }

@@ -22,9 +22,13 @@ public class MediaEntity implements Serializable {
         this.size = size;
     }
 
-    public boolean isSame(int index) {
-        MediaEntity entity = MediaRepository.getInstance().get(index);
-        return entity != null && entity.id == this.id;
+    /**
+     * 这个方法比较重要：在选中的视频中取出、添加会根据这个方法来判断；在Wrapper中也会根据这个方法来判断是否选中
+     */
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MediaEntity)) return false;
+        return id == ((MediaEntity) o).id;
     }
 
     public final boolean exists() {

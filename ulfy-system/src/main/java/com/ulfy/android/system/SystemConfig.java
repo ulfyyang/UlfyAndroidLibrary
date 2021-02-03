@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class SystemConfig {
-    static Application context;
+    public static Application context;
 
     /**
      * 初始化系统模块

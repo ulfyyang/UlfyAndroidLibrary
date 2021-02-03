@@ -478,9 +478,9 @@ public final class ActivityUtils {
 				// 构造意图
 				Intent intent = new Intent(topActivity, MediaPickerActivity.class);
 				Bundle data = new Bundle();
-				data.putInt("search", search);
-				data.putInt("max", max);
-				data.putSerializable("entities", (Serializable) entities);
+				data.putInt(MediaPickerActivity.KEY_SEARCH, search);
+				data.putInt(MediaPickerActivity.KEY_MAX, max);
+				data.putSerializable(MediaPickerActivity.KEY_ENTITIES, (Serializable) entities);
 				intent.putExtras(data);
 				// 启动选择
 				state.state = ReceiveDataState.PICK_MEDIA;

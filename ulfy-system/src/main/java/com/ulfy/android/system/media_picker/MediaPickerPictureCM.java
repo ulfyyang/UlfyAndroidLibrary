@@ -6,8 +6,11 @@ import com.ulfy.android.mvvm.IViewModel;
 class MediaPickerPictureCM implements IViewModel {
     MediaPickWrapper wrapper;
 
-    @Override
-    public Class<? extends IView> getViewClass() {
+    public MediaPickerPictureCM(MediaPickWrapper wrapper) {
+        this.wrapper = wrapper;
+    }
+
+    @Override public Class<? extends IView> getViewClass() {
         return MediaPickerPictureCell.class;
     }
 }
