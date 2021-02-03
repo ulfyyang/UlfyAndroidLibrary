@@ -121,9 +121,9 @@ public final class ActivityUtils {
 	}
 
 	private static void processPickMedia(ReceiveDataState receiveDataState, Activity target, int request, Intent data) {
-		int search = data == null ? 0 : data.getExtras().getInt("search");
-		int max = data == null ? 0 : data.getExtras().getInt("max");
-		List<MediaEntity> entities = data == null ? null : (List<MediaEntity>) data.getExtras().getSerializable("entities");
+		int search = data == null ? 0 : data.getExtras().getInt(MediaPickerActivity.KEY_SEARCH);
+		int max = data == null ? 0 : data.getExtras().getInt(MediaPickerActivity.KEY_MAX);
+		List<MediaEntity> entities = data == null ? null : (List<MediaEntity>) data.getExtras().getSerializable(MediaPickerActivity.KEY_ENTITIES);
 		BusUtils.post(target, new OnPickMediaEvent(request, search, max, entities));
 		initActivityState(receiveDataState);
 	}
