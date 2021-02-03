@@ -14,7 +14,7 @@ class MediaPickerControl {
     private List<MediaEntity> mMediaEntityList = new ArrayList<>();
 
     MediaPickerControl(int maxSelectCount, int searchType) {
-        mediaRepository = new MediaRepository();
+        mediaRepository = MediaRepository.getInstance();
         this.mediaPickWrapperList = new LinkedList<>();
         this.maxSelectCount = maxSelectCount < 0 ? 0 : maxSelectCount;
         this.searchType = searchType;
@@ -35,20 +35,19 @@ class MediaPickerControl {
 
     private List<MediaPickWrapper> searchMultiMediaPickWrappersInside(Context context, List<MediaEntity> selectEntities) {
         List<MediaPickWrapper> mediaPickWrapperList = new LinkedList<>();
-        List<MediaEntity> multiMediaEntities = mediaRepository.searchMultiMediaEntityByType(context, searchType);
-        for (MediaEntity entity : multiMediaEntities) {
+        List<MediaEntity> multiMediaEntities = MediaRepository.getInstance().init(context, searchType);
+        for (int i = 0; i < multiMediaEntities.size(); i++) {
             boolean isEquals = false;
             if (selectEntities != null && selectEntities.size() >= 0) {
                 for (MediaEntity haveEntity : selectEntities) {
-                    if (haveEntity.equals(entity)) {
+                    if (haveEntity.isSame(i)) {
                         isEquals = true;
                         break;
                     }
                 }
             }
-            mediaPickWrapperList.add(new MediaPickWrapper(entity, isEquals));
+            mediaPickWrapperList.add(new MediaPickWrapper(multiMediaEntities, i, isEquals));
         }
-
         return mediaPickWrapperList;
     }
 

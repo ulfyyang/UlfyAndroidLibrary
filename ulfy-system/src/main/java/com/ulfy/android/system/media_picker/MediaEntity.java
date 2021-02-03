@@ -22,8 +22,9 @@ public class MediaEntity implements Serializable {
         this.size = size;
     }
 
-    @Override public final boolean equals(Object obj) {
-        return this.getClass() == obj.getClass() && this.id == ((MediaEntity)obj).id;
+    public boolean isSame(int index) {
+        MediaEntity entity = MediaRepository.getInstance().get(index);
+        return entity != null && entity.id == this.id;
     }
 
     public final boolean exists() {

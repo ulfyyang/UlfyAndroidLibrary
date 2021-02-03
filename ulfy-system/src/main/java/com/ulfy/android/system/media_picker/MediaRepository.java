@@ -5,60 +5,82 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
+/*
+核心算法：
+    1. 准备一个虚拟的List负责对接外部的数据获取
+    2. 首次准备30条数据，之后的数据都是空的
+    3. 当滑动到剩余10条以后的时候开始加载第二个30条
+    4. 由于不存在真实数据，因此对于目标Entity的访问要采用延迟访问的策略（需要对Entity做一层包装）
+ */
 public final class MediaRepository {
     public static final int SEARCH_TYPE_PICTURE = 1;    // 选择图片
     public static final int SEARCH_TYPE_VIDEO = 2;      // 选择视频
     public static final int SEARCH_TYPE_VOICE = 3;      // 选择音频
+    private List<MediaEntity> mediaEntityList = new ArrayList<>();
+    private FutureList futureList;
+    private static MediaRepository instance = new MediaRepository();
 
-    List<MediaEntity> searchMultiMediaEntityByType(final Context context, final int type) {
-        List<MediaEntity> mediaEntityList = new ArrayList<>();
+    /**
+     * 私有化构造方法，提供单例，便于全局访问
+     */
+    private MediaRepository () { }
+
+    public List<MediaEntity> init(Context context, int type) {
         Cursor cursor = CursorColums.newInstance(type).createCursor(context);
-
-        if (cursor != null && cursor.getCount() > 0) {
-            int totalCount = cursor.getCount();
-            int groupCount = 8; int groupSize = totalCount / groupCount;
-
-            if (groupSize > 10) {               // 一共分m组，当每组大n个的时候才执行多线程操作
-                List<Future<List<MediaEntity>>> futureList = new ArrayList<>();
-                ExecutorService executor = Executors.newCachedThreadPool();
-
-                for (int i = 0; i < groupCount; i++) {
-                    final int start = i * groupSize;
-                    final int end = start + groupSize > totalCount ? totalCount : start + groupSize;
-
-                    Future<List<MediaEntity>> future = executor.submit(new Callable<List<MediaEntity>>() {
-                        @Override public List<MediaEntity> call() throws Exception {
-                            return queryMediaEntity(context, type, start, end);
-                        }
-                    });
-                    futureList.add(future);
-                }
-
-                for (Future<List<MediaEntity>> future : futureList) {
-                    try {
-                        mediaEntityList.addAll(future.get());
-                    } catch (Exception e) { e.printStackTrace(); }
-                }
-            } else {
-                mediaEntityList.addAll(queryMediaEntity(context, type, 0, totalCount));
-            }
+        if (instance.futureList == null) {
+            instance.futureList = new FutureList(context, type, cursor.getCount());
+            instance.futureList.loadNextPageMediaEntity();
         }
-
-        if (cursor != null) {
-            cursor.close();
-        }
-
-        return mediaEntityList;
+        return instance.futureList;
     }
 
-    private List<MediaEntity> queryMediaEntity(Context context, int type, int start, int end) {
+    public static MediaRepository getInstance() {
+        return instance;
+    }
+
+    /**
+     * 根据索引获取实体，如果索引位置没有数据则返回null。该方法不会执行加载下一页。
+     */
+    public MediaEntity get(int index) {
+        return index < mediaEntityList.size() ? mediaEntityList.get(index) : null;
+    }
+
+    class FutureList extends AbstractList<MediaEntity> {
+        private Context context;
+        private int type, size;
+
+        FutureList(Context context, int type, int size) {
+            this.context = context;
+            this.type = type;
+            this.size = size;
+        }
+
+        void loadNextPageMediaEntity() {
+            int start = mediaEntityList.size();
+            int end = mediaEntityList.size() + 30;      // 每页数据不要太大，否则加载会占用太多时间，造成滑动过程中页面卡顿
+            if (end > size) {
+                end = size;
+            }
+            mediaEntityList.addAll(queryMediaEntity(context, type, start, end));
+        }
+
+        @Override public MediaEntity get(int index) {
+            if (mediaEntityList.size() != size && index > mediaEntityList.size() - 10) {
+                loadNextPageMediaEntity();
+            }
+            return index < mediaEntityList.size() ? mediaEntityList.get(index) : null;
+        }
+
+        @Override public int size() {
+            return size;
+        }
+    }
+
+    private static List<MediaEntity> queryMediaEntity(Context context, int type, int start, int end) {
         Cursor cursor = CursorColums.newInstance(type).createCursor(context);
         MediaEntityColumns columns = MediaEntityColumns.newInstance(type, cursor);
 

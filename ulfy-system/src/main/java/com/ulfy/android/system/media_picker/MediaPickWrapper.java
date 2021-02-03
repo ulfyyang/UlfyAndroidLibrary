@@ -1,24 +1,24 @@
 package com.ulfy.android.system.media_picker;
 
+import java.util.List;
+
 class MediaPickWrapper {
-    private MediaEntity mediaEntity;  // 多媒体实体
+    private List<MediaEntity> mediaEntityList;
+    private int index;
     private boolean isSelect;                   // 是否被选中
 
-    MediaPickWrapper(MediaEntity mediaEntity, boolean isSelect) {
-        this.mediaEntity = mediaEntity;
+    MediaPickWrapper(List<MediaEntity> mediaEntityList, int index, boolean isSelect) {
+        this.mediaEntityList = mediaEntityList;
+        this.index = index;
         this.isSelect = isSelect;
     }
 
     MediaEntity getMediaEntity() {
-        return mediaEntity;
+        return mediaEntityList.get(index);
     }
 
     boolean isSelect() {
         return isSelect;
-    }
-
-    void setMediaEntity(MediaEntity mediaEntity) {
-        this.mediaEntity = mediaEntity;
     }
 
     void setSelect(boolean select) {
