@@ -80,8 +80,8 @@ public final class HttpUtils {
         builder.addInterceptor(httpLogger);                            // 日志打印
 
         // 其它常规配置
-        builder.connectTimeout(5, TimeUnit.SECONDS);        // 5 秒连接超时时间
-        builder.readTimeout(10, TimeUnit.SECONDS);          // 10 秒读超时时间
+        builder.connectTimeout(60, TimeUnit.SECONDS);        // 60 秒连接超时时间
+        builder.readTimeout(60, TimeUnit.SECONDS);          // 60 秒读超时时间
         builder.addInterceptor(new GlobalHeaderInterceptor());      // 全局 header 添加
         HttpUtils.enableUnValidHttpsCertificate(builder);           // 允许未认证的 https 网络连接
         builder.proxy(Proxy.NO_PROXY);                              // 不使用代理，防止应用抓包
