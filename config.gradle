@@ -120,7 +120,7 @@ ext {
     externalPinyin = 'com.belerweb:pinyin4j:2.5.0'                                                  // 汉语转拼音
     externalTinyPinyin = 'com.github.promeg:tinypinyin:2.0.3'                                       // 汉字转拼音
     externalPictureCompressor = 'id.zelory:compressor:2.1.0'                                        // 图片压缩
-    externalOkDownload = 'com.liulishuo.okdownload:okdownload:1.0.5'                                // 下载引擎
-    externalOkDownloadSqlite = 'com.liulishuo.okdownload:sqlite:1.0.5'                              // 下载引擎：添加该依赖可提供断点下载功能
-    externalOkDownloadOkHttp = 'com.liulishuo.okdownload:okhttp:1.0.5'                              // 下载引擎：添加该依赖会采用okhttp作为网络工具
+    externalOkDownload = 'com.liulishuo.okdownload:okdownload:1.0.7'                                // 下载引擎
+    externalOkDownloadSqlite = 'com.liulishuo.okdownload:sqlite:1.0.7'                              // 下载引擎：添加该依赖可提供断点下载功能
+    externalOkDownloadOkHttp = 'com.liulishuo.okdownload:okhttp:1.0.7'                              // 下载引擎：添加该依赖会采用okhttp作为网络工具
 }
