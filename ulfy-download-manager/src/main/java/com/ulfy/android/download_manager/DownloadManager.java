@@ -18,6 +18,18 @@ import java.util.List;
 public final class DownloadManager {
     private static final DownloadManager instance = new DownloadManager();              // 单例对象
     private final UiTimer netSpeedTimer = new UiTimer(1000);                      // 网速更新定时器，每秒更新以此
+    static OnDownloadCompleteListener onDownloadCompleteListener;                       // 当任务下载完成之后的全局回调
+
+    public interface OnDownloadCompleteListener {
+        void onDownloadComplete(DownloadTask downloadTask);
+    }
+
+    /**
+     * 设置任务完成时的全局回调
+     */
+    public static void setOnDownloadCompleteListener(OnDownloadCompleteListener onDownloadCompleteListener) {
+        DownloadManager.onDownloadCompleteListener = onDownloadCompleteListener;
+    }
 
     /**
      * 私有化构造方法

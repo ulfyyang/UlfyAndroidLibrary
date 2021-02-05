@@ -319,6 +319,9 @@ public class DownloadTask<T extends DownloadTaskInfo> implements Serializable {
                 DownloadingTaskRepository.getInstance().removeDownloadTaskById(downloadTask.downloadTaskInfo.provideUniquelyIdentifies());
                 DownloadManager.getInstance().reScheduleDownloadTaskStatus();
                 BusUtils.post(new DownloadManager.OnDownloadManagerStateChangeEvent());
+                if (DownloadManager.onDownloadCompleteListener != null) {
+                    DownloadManager.onDownloadCompleteListener.onDownloadComplete(downloadTask);
+                }
             }
         }
         @Override protected void canceled(com.liulishuo.okdownload.DownloadTask task) { }
