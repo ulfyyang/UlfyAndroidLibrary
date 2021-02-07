@@ -5,12 +5,14 @@ import android.content.res.Resources;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewParent;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ListAdapter;
@@ -38,7 +40,11 @@ public final class UiUtils {
 	 * 屏幕高度
 	 */
 	public static int screenHeight() {
-		return UtilsConfig.context.getResources().getDisplayMetrics().heightPixels;
+		DisplayMetrics outMetrics = new DisplayMetrics();
+		WindowManager windowManager = (WindowManager) UtilsConfig.context.getSystemService(Context.WINDOW_SERVICE);
+		windowManager.getDefaultDisplay().getRealMetrics(outMetrics);
+		return outMetrics.heightPixels;
+//		return UtilsConfig.context.getResources().getDisplayMetrics().heightPixels;		// 这种方法获取的在有虚拟键的手机上会变小
 	}
 
 	/**

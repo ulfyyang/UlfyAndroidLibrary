@@ -124,12 +124,12 @@ public class ShapeLayout extends FrameLayout {
         if (contentShape == null) {
             super.dispatchDraw(canvas);
         } else {
-            if (canvas.getWidth() != 0 && canvas.getHeight() != 0) {
-                int layerId = canvas.saveLayer(0, 0, canvas.getWidth(), canvas.getHeight(), null, Canvas.ALL_SAVE_FLAG);
+            if (getWidth() != 0 && getHeight() != 0) {
+                int layerId = canvas.saveLayer(0, 0, getWidth(), getHeight(), null, Canvas.ALL_SAVE_FLAG);
                 // 绘制子View内容
                 super.dispatchDraw(canvas);
                 // 内容裁切
-                contentShape.draw(canvas, getPaddingLeft(), getPaddingTop(), canvas.getWidth() - getPaddingRight(), canvas.getHeight() - getPaddingBottom(), 0, 0, 0, 0);
+                contentShape.draw(canvas, getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getHeight() - getPaddingBottom(), 0, 0, 0, 0);
                 canvas.restoreToCount(layerId);
             }
         }
