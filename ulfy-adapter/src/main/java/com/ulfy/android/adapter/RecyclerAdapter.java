@@ -3,7 +3,6 @@ package com.ulfy.android.adapter;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -171,7 +170,6 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
      */
     protected void dispatchOnItemLongClick(ViewGroup parent, View view, int position, M model) { }
 
-    @NonNull
     @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (headerView != null && viewType == headerView.hashCode()) {
             return new HeaderFooterEmptyLoadingViewHolder(headerView);

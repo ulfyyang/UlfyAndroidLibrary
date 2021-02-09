@@ -55,6 +55,7 @@ ext {
     externalAppBarLayout = 'io.github.iamyours:flingappbarlayout:1.0.7'                             // 官方AppBarLayout升级版
     externalAndroidCardView = 'androidx.cardview:cardview:1.0.0'                                    // 卡片布局
     externalConstraintLayout = 'androidx.constraintlayout:constraintlayout:2.0.4'                   // 约束布局
+    externalViewPager2 = 'androidx.viewpager2:viewpager2:1.0.0'                                     // ViewPager2
     externalAndroidMultiDex = 'androidx.multidex:multidex:2.0.1'                                    // 分包打包
 
     /**
