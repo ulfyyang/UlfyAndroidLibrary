@@ -3,9 +3,6 @@ package com.ulfy.android.adapter;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.viewpager.widget.ViewPager;
-
-import com.ulfy.android.mvvm.IView;
 import com.ulfy.android.mvvm.IViewModel;
 
 import java.util.ArrayList;
@@ -18,6 +15,7 @@ import java.util.Objects;
 public class PagerAdapter<M extends IViewModel> extends androidx.viewpager.widget.PagerAdapter {
     private List<M> modelList;
     private List<View> viewList = new ArrayList<>();        // 用于缓存游离于页面之外的视图
+    private int unUpdateChildCount = 0;                     // 当更新时用于记录总数，更新一个少一个
 
     public PagerAdapter() { }
 
@@ -55,23 +53,27 @@ public class PagerAdapter<M extends IViewModel> extends androidx.viewpager.widge
         return null;
     }
 
-    /**
-     * 更新当前屏幕中已经存在的项目
-     * 1）在没有数据数量变化的情况下单纯调用notifyDataSetChanged不会触发页面更新
-     * 2）但是正常的手动切换页面会触发页面更新
-     * 3）当数据内容（非数量）变化后可通过该方法将已经存在的项重新刷新
-     * @param viewPager 和该Adapter关联的ViewPager
-     */
-    public void updateScreenItems(ViewPager viewPager) {
-        for (int i = 0; i < viewPager.getChildCount(); i++) {
-            View view = viewPager.getChildAt(i);
-            ((IView)view).bind(modelList.get((Integer) view.getTag()));
-        }
-    }
-
     @Override public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView((View) object);
         viewList.add((View) object);
+    }
+
+    /*
+        强制更新的逻辑，默认情况下notifyDataSetChanged是不会重新走instantiateItem方法更新View的
+     */
+    public void notifyDataSetChanged(boolean forceUpdate) {
+        if (forceUpdate) {
+            unUpdateChildCount = getCount();
+        }
+        super.notifyDataSetChanged();
+    }
+    @Override public int getItemPosition(Object object) {
+        if (unUpdateChildCount > 0) {
+            unUpdateChildCount--;       // 这里利用判断执行若干次不缓存，刷新
+            return POSITION_NONE;       // 返回这个是强制ViewPager不缓存，每次滑动都刷新视图
+        } else {
+            return super.getItemPosition(object);
+        }
     }
 
     @Override public int getCount() {
