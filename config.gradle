@@ -50,7 +50,7 @@ ext {
      * 谷歌官方支持库
      */
     externalAndroidAppCompatV7 = 'androidx.appcompat:appcompat:1.2.0'                               // 组件支持库
-    externalAndroidDesign = 'com.google.android.material:material:1.0.0'                            // material design 库
+    externalAndroidDesign = 'com.google.android.material:material:1.1.0'                            // material design 库
     externalAppBarLayoutBehavior = 'com.github.yuruiyin:AppbarLayoutBehavior:v1.0.2'                // 解决AppBarLayout上拉回弹问题
     externalAppBarLayout = 'io.github.iamyours:flingappbarlayout:1.0.7'                             // 官方AppBarLayout升级版
     externalAndroidCardView = 'androidx.cardview:cardview:1.0.0'                                    // 卡片布局
