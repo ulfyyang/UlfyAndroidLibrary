@@ -18,6 +18,7 @@ public final class UiTimer {
     private TimerDriver timerDriver;                                                                // 定时器的内核驱动器
     private boolean isSchedule;                                                                     // 是否已经开始了循环，这个表示循环是否终止
     private long delay;                                                                             // 每次执行间隔的时间
+    private long delayStart;                                                                        // 延迟指定时间后启动定时器任务循环
     private List<OnTimerStartListener> onTimerStartListenerList = new ArrayList<>();                // 定时器启动时的回调
     private List<BackgroundTimerExecuteBody> backgroundTimerExecuteBodyList = new ArrayList<>();    // 定时器执行的任务
     private List<UiTimerExecuteBody> uiTimerExecuteBodyList = new ArrayList<>();                    // 定时器执行的任务
@@ -36,6 +37,14 @@ public final class UiTimer {
         this.timerDriver = new DefaultTimerDriver();
         this.setUiTimerExecuteBody(uiTimerExecuteBody);
         this.setOnTimerFinishListener(onTimerFinishListener);
+    }
+
+    /**
+     * 设置延迟启动定时器循环的时间
+     */
+    public UiTimer setDelayStart(long delayStart) {
+        this.delayStart = delayStart;
+        return this;
     }
 
     /**
@@ -375,7 +384,11 @@ public final class UiTimer {
         }
 
         public void startTimer() {
-            sendMessage(obtainMessage(identityId));
+            if (uiTimer.delayStart > 0) {
+                sendMessageDelayed(obtainMessage(identityId), uiTimer.delayStart);
+            } else {
+                sendMessage(obtainMessage(identityId));
+            }
         }
 
         public void stopTimer() {
