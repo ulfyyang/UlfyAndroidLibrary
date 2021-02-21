@@ -108,6 +108,8 @@ ext {
     externalGuava = 'com.google.guava:guava:24.0-android'                                           // 谷歌基础工具包
     externalJodaTime = 'joda-time:joda-time:2.9.9'                                                  // 日期处理库
     externalPermission = 'com.yanzhenjie:permission:1.1.2'                                          // 动态权限申请
+    externalRxJava = 'io.reactivex.rxjava3:rxjava:3.0.11-RC3'                                       // RxJava
+    externalRxAndroid = 'io.reactivex.rxjava3:rxandroid:3.0.0'                                      // RxAndroid
 
     /**
      * 其它杂项功能
