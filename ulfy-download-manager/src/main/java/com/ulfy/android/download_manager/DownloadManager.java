@@ -5,88 +5,153 @@ import android.os.Environment;
 import android.widget.Toast;
 
 import com.ulfy.android.bus.BusUtils;
-import com.ulfy.android.task_extension.UiTimer;
 
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.rxjava3.core.Observable;
+
+import static com.ulfy.android.download_manager.DownloadManagerConfig.defaultIdIfEmpty;
 
 /**
- * 下载管理器，模块总入口
+ * 下载管理器，模块总入口。回调方法均不保证是在UI线程中运行
  */
 public final class DownloadManager {
-    private static final DownloadManager instance = new DownloadManager();              // 单例对象
-    private final UiTimer netSpeedTimer = new UiTimer(1000);                      // 网速更新定时器，每秒更新以此
-    static OnDownloadCompleteListener onDownloadCompleteListener;                       // 当任务下载完成之后的全局回调
+    private static final Map<String, DownloadManager> downloadManagerMap = new HashMap<>();
+    private String downloadManagerId;           //下载管理器标识
+    // 下载任务是一个长时间运行的过程，因此不要在单个页面上注册，要在Application中进行全局注册，其它页面需要的话可以派发事件
+    private OnItemDownloadCompleteListener onItemDownloadCompleteListener;               // 当任务下载完成之后的全局回调（每个任务完成都会回调一次）
+    private OnAllDownloadCompleteListener onAllDownloadCompleteListener;                 // 当任务下载完成之后的全局回调（所有任务下载完成后会回调）
 
-    public interface OnDownloadCompleteListener {
-        void onDownloadComplete(DownloadTask downloadTask);
+    /**
+     * 最后对下载过程中的变化状态做一个汇总，统一将变化的状态发布出去，间隔在1秒钟一次
+     */
+
+    public interface OnItemDownloadCompleteListener {
+        /**
+         * 当一个任务下载完成之后执行该方法
+         * @param downloadTask          下载完成的任务
+         * @param downloadingCount      下载中仓库中的任务数量
+         * @param downloadedCount       下载完成的任务数量
+         * @param totalCount            总的下载任务数量（下载中、已完成）
+         */
+        void onDownloadComplete(DownloadTask downloadTask, int downloadingCount, int downloadedCount, int totalCount);
+    }
+
+    public interface OnAllDownloadCompleteListener {
+        /**
+         * 当当前下载管理器中的所有下载任务完成时执行的方法
+         */
+        void onDownloadComplete();
     }
 
     /**
-     * 设置任务完成时的全局回调
+     * 当下载任务速度变更时调用这里
      */
-    public static void setOnDownloadCompleteListener(OnDownloadCompleteListener onDownloadCompleteListener) {
-        DownloadManager.onDownloadCompleteListener = onDownloadCompleteListener;
+    final void notifyItemSpeedChanged(DownloadTask downloadTask, long lastSpeed, long currentSpeed) {
+        // 这个方法先占个位置，暂时没有具体的业务需求需要
+    }
+
+    /**
+     * 当下载任务进度变更时调用这里
+     */
+    final void notifyItemProgressChanged(DownloadTask downloadTask, long lastOffset, long currentOffset) {
+        // 这个方法先占个位置，暂时没有具体的业务需求需要
+    }
+
+    /**
+     * 当单个任务下载完成时调用这里
+     */
+    final void notifyItemDownloadComplete(DownloadTask downloadTask) {
+        reScheduleDownloadTaskStatus();
+        BusUtils.post(new OnDownloadManagerStateChangeEvent());
+        int downloadingCount = DownloadingTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).getTaskCount();
+        int downloadedCount = DownloadedTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).getTaskCount();
+        int totalCount = downloadingCount + downloadedCount;
+        if (onItemDownloadCompleteListener != null) {
+            onItemDownloadCompleteListener.onDownloadComplete(downloadTask, downloadingCount, downloadedCount, totalCount);
+        }
+        if (onAllDownloadCompleteListener != null && downloadingCount == 0) {
+            onAllDownloadCompleteListener.onDownloadComplete();
+        }
+    }
+
+    /**
+     * 设置当任务下载完成之后的全局回调（每个任务完成都会回调一次）
+     */
+    public DownloadManager setOnItemDownloadCompleteListener(OnItemDownloadCompleteListener onItemDownloadCompleteListener) {
+        this.onItemDownloadCompleteListener = onItemDownloadCompleteListener;
+        return this;
+    }
+
+    /**
+     * 设置当任务下载完成之后的全局回调（所有任务下载完成后会回调）
+     */
+    public DownloadManager setOnAllDownloadCompleteListener(OnAllDownloadCompleteListener onAllDownloadCompleteListener) {
+        this.onAllDownloadCompleteListener = onAllDownloadCompleteListener;
+        return this;
     }
 
     /**
      * 私有化构造方法
      */
-    private DownloadManager() {
-        netSpeedTimer.setUiTimerExecuteBody(new UiTimer.UiTimerExecuteBody() {
-            @Override public void onExecute(UiTimer timer, UiTimer.TimerDriver timerDriver) {
-                onNetSpeedTimerExecute();
+    private DownloadManager(String downloadManagerId) {
+        this.downloadManagerId = defaultIdIfEmpty(downloadManagerId);
+        Observable.interval(1, TimeUnit.SECONDS).subscribe(x -> {
+            // 如果有失效的任务就过滤掉并通知客户端状态已变化（可能是用户手动删除了文件）
+            boolean clearRecord = false;
+            if (DownloadingTaskRepository.deleteInvalidRecord()) {
+                clearRecord = true;
+            }
+            if (DownloadedTaskRepository.deleteInvalidRecord()) {
+                clearRecord = true;
+            }
+            if (clearRecord) {
+                BusUtils.post(new OnDownloadManagerStateChangeEvent());
+            }
+            // 如果下载中的任务有状态更新则通知客户端状态已更新
+            boolean stateUpdate = false;
+            List<DownloadTask> downloadTaskList = DownloadingTaskRepository
+                    .getInstance(defaultIdIfEmpty(downloadManagerId)).getAllTask();
+            for (DownloadTask downloadTask : downloadTaskList) {
+                if (downloadTask.isStateUpdated()) {
+                    stateUpdate = true;
+                }
+                downloadTask.stateUpdatePublished();
+            }
+            if (stateUpdate) {
+                BusUtils.post(new OnDownloadManagerStateUpdateEvent());
+                DownloadingTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId))
+                        .updateToCache();
             }
         });
     }
 
-    private void onNetSpeedTimerExecute() {
-        // 如果有失效的任务就过滤掉并通知客户端状态已变化
-        boolean clearRecord = false;
-        if (DownloadingTaskRepository.getInstance().clearInvalidDownloadRecord()) {
-            clearRecord = true;
-        }
-        if (DownloadedTaskRepository.getInstance().clearInvalidDownloadRecord()) {
-            clearRecord = true;
-        }
-        if (clearRecord) {
-            BusUtils.post(new OnDownloadManagerStateChangeEvent());
-        }
-
-        // 更新下载中任务的进度
-        List<DownloadTask> downloadTaskList = DownloadingTaskRepository.getInstance().provideAllDownloadingTask();
-        if (downloadTaskList != null && downloadTaskList.size() > 0) {
-            for (DownloadTask downloadTask : downloadTaskList) {
-                downloadTask.updateProgressOnTimer();
-            }
-            BusUtils.post(new OnDownloadManagerStateUpdateEvent());
-            DownloadingTaskRepository.getInstance().updateToCache();
-        }
-    }
-
     /**
-     * 获取下载管理器实例
+     * 获取默认的下载管理器实例
      */
     public static DownloadManager getInstance() {
+        return getInstance(DownloadManagerConfig.DEFAULT_DOWNLOAD_MANAGER_ID);
+    }
+
+    /**
+     * 根据下载管理ID获取下载管理器
+     * @param downloadManagerId 下载管理ID，用户自定义的用于跟踪的KEY
+     */
+    public static DownloadManager getInstance(String downloadManagerId) {
         DownloadManagerConfig.throwExceptionIfConfigNotConfigured();
-        return instance;
-    }
-
-    /**
-     * 初始化下载模块
-     */
-    void init() {
-        netSpeedTimer.schedule();
-    }
-
-    /**
-     * 反初始化下载任务模块
-     *      通常下载任务的生命周期是和App的生命周期一样的，因此通常不需要调用
-     */
-    void deinit() {
-        netSpeedTimer.cancel();
+        downloadManagerId = defaultIdIfEmpty(downloadManagerId);
+        DownloadManager downloadManager = downloadManagerMap.get(downloadManagerId);
+        if (downloadManager == null) {
+            downloadManager = new DownloadManager(downloadManagerId);
+            downloadManagerMap.put(downloadManagerId, downloadManager);
+        }
+        return downloadManager;
     }
 
 
@@ -99,14 +164,14 @@ public final class DownloadManager {
      * 提供所有的下载中任务
      */
     public final List<DownloadTask> provideAllDownloadingTask() {
-        return DownloadingTaskRepository.getInstance().provideAllDownloadingTask();
+        return DownloadingTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).getAllTask();
     }
 
     /**
      * 获取下载中任务数量
      */
     public final int getDownloadingTaskCount() {
-        return DownloadingTaskRepository.getInstance().getDownloadTaskCount();
+        return DownloadingTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).getTaskCount();
     }
 
     /**
@@ -120,7 +185,7 @@ public final class DownloadManager {
      * 检查指定的下载任务信是否已经处于下载队列中
      */
     public final boolean checkIfDownloading(DownloadTaskInfo downloadTaskInfo) {
-        DownloadTask downloadTask = DownloadingTaskRepository.getInstance().findDownlaodTaskById(downloadTaskInfo.provideUniquelyIdentifies());
+        DownloadTask downloadTask = DownloadingTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).findTaskById(downloadTaskInfo.getUniquelyIdentifies());
         return downloadTask != null && !downloadTask.isComplete();
     }
 
@@ -135,7 +200,7 @@ public final class DownloadManager {
      * 获取下载中任务信息对应文件的大小
      */
     public final long getDownloadingTaskFileSize(DownloadTaskInfo downloadTaskInfo) {
-        DownloadTask downloadTask = DownloadingTaskRepository.getInstance().findDownlaodTaskById(downloadTaskInfo.provideUniquelyIdentifies());
+        DownloadTask downloadTask = DownloadingTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).findTaskById(downloadTaskInfo.getUniquelyIdentifies());
         return downloadTask == null ? 0 : downloadTask.getTotalLength();
     }
 
@@ -144,7 +209,7 @@ public final class DownloadManager {
      */
     public final long getAllDownloadingTaskFileSize() {
         long totalSize = 0;
-        for (DownloadTask downloadTask : DownloadingTaskRepository.getInstance().provideAllDownloadingTask()) {
+        for (DownloadTask downloadTask : DownloadingTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).getAllTask()) {
             totalSize += downloadTask == null ? 0 : downloadTask.getTotalLength();
         }
         return totalSize;
@@ -171,8 +236,8 @@ public final class DownloadManager {
      * 新建一个下载任务并开始
      */
     public final synchronized void newDownloadingTask(DownloadTaskInfo downloadTaskInfo) {
-        DownloadTask downloadTask = DownloadingTaskRepository.getInstance().provideDownloadTaskByDownloadTaskInfo(downloadTaskInfo);
-        if (DownloadManagerConfig.DownloadLimitConfig.getInstance().canStartDownloadTask()) {
+        DownloadTask downloadTask = DownloadingTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).getDownloadTaskByTaskInfo(downloadTaskInfo);
+        if (DownloadManagerConfig.DownloadLimitConfig.getInstance(defaultIdIfEmpty(downloadManagerId)).canStartDownloadTask()) {
             downloadTask.start();
         }
     }
@@ -181,7 +246,7 @@ public final class DownloadManager {
      * 启动一个下载任务
      */
     public final synchronized void start(DownloadTask downloadTask) {
-        if (DownloadManagerConfig.DownloadLimitConfig.getInstance().canStartDownloadTask()) {
+        if (DownloadManagerConfig.DownloadLimitConfig.getInstance(defaultIdIfEmpty(downloadManagerId)).canStartDownloadTask()) {
             if (downloadTask.start()) {
                 BusUtils.post(new DownloadManager.OnDownloadManagerStateUpdateEvent());
             }
@@ -206,7 +271,7 @@ public final class DownloadManager {
      * 重启一个下载任务
      */
     public final synchronized void restart(DownloadTask downloadTask) {
-        if (DownloadManagerConfig.DownloadLimitConfig.getInstance().canStartDownloadTask()) {
+        if (DownloadManagerConfig.DownloadLimitConfig.getInstance(defaultIdIfEmpty(downloadManagerId)).canStartDownloadTask()) {
             if (downloadTask.restart()) {
                 BusUtils.post(new DownloadManager.OnDownloadManagerStateUpdateEvent());
             }
@@ -218,9 +283,9 @@ public final class DownloadManager {
      */
     final synchronized void reScheduleDownloadTaskStatus() {
         // 如果是有下载数量限制的根据条件自动开启任务，没有设置下载次数的话保持原样
-        if (DownloadManagerConfig.DownloadLimitConfig.getInstance().getLimitCount() > 0) {
+        if (DownloadManagerConfig.DownloadLimitConfig.getInstance(defaultIdIfEmpty(downloadManagerId)).getLimitCount() > 0) {
             for (DownloadTask downloadTask : provideAllDownloadingTask()) {
-                if (!DownloadManagerConfig.DownloadLimitConfig.getInstance().canStartDownloadTask()) {
+                if (!DownloadManagerConfig.DownloadLimitConfig.getInstance(defaultIdIfEmpty(downloadManagerId)).canStartDownloadTask()) {
                     break;
                 }
                 /*
@@ -245,14 +310,14 @@ public final class DownloadManager {
      * 获取全部的下载任务列表
      */
     public final List<DownloadTask> provideAllDownloadedTaskInfo() {
-        return DownloadedTaskRepository.getInstance().provideAllDownloadedTask();
+        return DownloadedTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).getAllTask();
     }
 
     /**
      * 获取已下载任务的数量
      */
     public final int getDownloadedTaskCount() {
-        return DownloadedTaskRepository.getInstance().getDownloadTaskCount();
+        return DownloadedTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).getTaskCount();
     }
 
     /**
@@ -266,7 +331,7 @@ public final class DownloadManager {
      * 检查指定的下载任务信息是否已经被下载了
      */
     public final boolean checkIfDownloaded(DownloadTaskInfo downloadTaskInfo) {
-        DownloadTask downloadTask = DownloadedTaskRepository.getInstance().findDownlaodTaskById(downloadTaskInfo.provideUniquelyIdentifies());
+        DownloadTask downloadTask = DownloadedTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).findTaskById(downloadTaskInfo.getUniquelyIdentifies());
         return downloadTask != null && downloadTask.isComplete();
     }
 
@@ -281,7 +346,7 @@ public final class DownloadManager {
      * 根据下载任务信息获取对应的文件路径
      */
     public final File getDownloadedFile(DownloadTaskInfo downloadTaskInfo) {
-        DownloadTask downloadTask = DownloadedTaskRepository.getInstance().findDownlaodTaskById(downloadTaskInfo.provideUniquelyIdentifies());
+        DownloadTask downloadTask = DownloadedTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).findTaskById(downloadTaskInfo.getUniquelyIdentifies());
         return downloadTask == null ? null : downloadTask.getTargetFile();
     }
 
@@ -296,7 +361,7 @@ public final class DownloadManager {
      * 获取已下载任务信息对应文件的大小
      */
     public final long getDownloadedTaskFileSize(DownloadTaskInfo downloadTaskInfo) {
-        DownloadTask downloadTask = DownloadedTaskRepository.getInstance().findDownlaodTaskById(downloadTaskInfo.provideUniquelyIdentifies());
+        DownloadTask downloadTask = DownloadedTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).findTaskById(downloadTaskInfo.getUniquelyIdentifies());
         return downloadTask == null ? 0 : downloadTask.getTargetFileSize();
     }
 
@@ -305,7 +370,7 @@ public final class DownloadManager {
      */
     public final long getAllDownloadedTaskFileSize() {
         long totalSize = 0;
-        for (DownloadTask downloadTask : DownloadedTaskRepository.getInstance().provideAllDownloadedTask()) {
+        for (DownloadTask downloadTask : DownloadedTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).getAllTask()) {
             totalSize += downloadTask == null ? 0 : downloadTask.getTargetFileSize();
         }
         return totalSize;
@@ -321,9 +386,9 @@ public final class DownloadManager {
      */
     public final DownloadTask findDownloadTaskByDownloadTaskInfo(DownloadTaskInfo downloadTaskInfo) {
         if (checkIfDownloading(downloadTaskInfo)) {
-            return DownloadingTaskRepository.getInstance().findDownlaodTaskById(downloadTaskInfo.provideUniquelyIdentifies());
+            return DownloadingTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).findTaskById(downloadTaskInfo.getUniquelyIdentifies());
         } else if (checkIfDownloaded(downloadTaskInfo)) {
-            return DownloadedTaskRepository.getInstance().findDownlaodTaskById(downloadTaskInfo.provideUniquelyIdentifies());
+            return DownloadedTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).findTaskById(downloadTaskInfo.getUniquelyIdentifies());
         } else {
             return null;
         }
@@ -334,11 +399,11 @@ public final class DownloadManager {
      */
     public final synchronized void destroy(DownloadTask downloadTask) {
         if (!downloadTask.isComplete()) {
-            DownloadingTaskRepository.getInstance().removeDownloadTaskById(downloadTask.getDownloadTaskInfo().provideUniquelyIdentifies());
-            DownloadingTaskRepository.getInstance().updateToCache();
+            DownloadingTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).removeTaskById(downloadTask.getDownloadTaskInfo().getUniquelyIdentifies());
+            DownloadingTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).updateToCache();
         } else {
-            DownloadedTaskRepository.getInstance().removeDownloadTaskById(downloadTask.getDownloadTaskInfo().provideUniquelyIdentifies());
-            DownloadedTaskRepository.getInstance().updateToCache();
+            DownloadedTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).removeTaskById(downloadTask.getDownloadTaskInfo().getUniquelyIdentifies());
+            DownloadedTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).updateToCache();
         }
         downloadTask.destroy();
         reScheduleDownloadTaskStatus();
@@ -361,14 +426,14 @@ public final class DownloadManager {
     public final synchronized void destroyByDownloadTaskList(List<DownloadTask> downloadTaskList) {
         for (DownloadTask downloadTask : downloadTaskList) {
             if (!downloadTask.isComplete()) {
-                DownloadingTaskRepository.getInstance().removeDownloadTaskById(downloadTask.getDownloadTaskInfo().provideUniquelyIdentifies());
+                DownloadingTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).removeTaskById(downloadTask.getDownloadTaskInfo().getUniquelyIdentifies());
             } else {
-                DownloadedTaskRepository.getInstance().removeDownloadTaskById(downloadTask.getDownloadTaskInfo().provideUniquelyIdentifies());
+                DownloadedTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).removeTaskById(downloadTask.getDownloadTaskInfo().getUniquelyIdentifies());
             }
             downloadTask.destroy();
         }
-        DownloadingTaskRepository.getInstance().updateToCache();
-        DownloadedTaskRepository.getInstance().updateToCache();
+        DownloadingTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).updateToCache();
+        DownloadedTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId)).updateToCache();
         reScheduleDownloadTaskStatus();
         BusUtils.post(new DownloadManager.OnDownloadManagerStateChangeEvent());
     }

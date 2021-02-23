@@ -50,12 +50,15 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':ulfy-lib:ulfy-cache')                       // 对象缓存包
-    implementation project(':ulfy-lib:ulfy-bus')                         // 事件总线包
-    implementation project(':ulfy-lib:ulfy-task-extension')              // 任务扩展包
-    implementation externalOkDownload
-    implementation externalOkDownloadSqlite
-    implementation externalOkDownloadOkHttp
+    implementation project(':ulfy-lib:ulfy-cache')                      // 对象缓存包
+    implementation project(':ulfy-lib:ulfy-bus')                        // 事件总线包
+    implementation project(':ulfy-lib:ulfy-task-extension')             // 任务扩展包
+    implementation externalRxJava                                       // RxJava
+//    implementation 'com.arialyy.aria:core:3.8.15'
+//    annotationProcessor 'com.arialyy.aria:compiler:3.8.15'
+    implementation externalOkDownload                                   // 下载引擎
+    implementation externalOkDownloadOkHttp                             // 采用OkHttp下载
+    implementation externalOkDownloadSqlite                             // 支持断点下载
 
     testImplementation externalJunit
     testImplementation externalHamcrestLibrary

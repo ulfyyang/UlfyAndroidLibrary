@@ -6,16 +6,7 @@ import java.io.File;
  * File工具类
  */
 class FileUtils {
-    /**
-     * 删除文件或者文件夹，默认保留根目录
-     */
-    static void delete(File directory) {
-        delete(directory, true);
-    }
 
-    /**
-     * 删除文件或者文件夹
-     */
     static void delete(File directory, boolean keepRoot) {
         if (directory != null && directory.exists()) {
             if (directory.isDirectory()) {
@@ -28,4 +19,5 @@ class FileUtils {
             }
         }
     }
+
 }
