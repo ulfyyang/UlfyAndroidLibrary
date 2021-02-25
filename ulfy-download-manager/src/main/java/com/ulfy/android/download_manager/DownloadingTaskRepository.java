@@ -19,7 +19,7 @@ import static com.ulfy.android.download_manager.DownloadManagerConfig.defaultIdI
 final class DownloadingTaskRepository implements Serializable {
     private static final long serialVersionUID = 185632873962007026L;
     private String downloadManagerId;                                           // 存储仓库所属的下载管理器
-    private Map<String, DownloadTask> downloadTaskMap = new LinkedHashMap<>();  // 存储下载任务（采用LinkedHashMap是为了保持添加的顺序）
+    private Map<String, DownloadTaskWrapper> downloadTaskMap = new LinkedHashMap<>();  // 存储下载任务（采用LinkedHashMap是为了保持添加的顺序）
 
     /**
      * 私有化构造方法
@@ -97,9 +97,9 @@ final class DownloadingTaskRepository implements Serializable {
      */
     private boolean deleteInvalidRecordInner() {
         boolean clear = false;
-        Iterator<Map.Entry<String, DownloadTask>> iterator = downloadTaskMap.entrySet().iterator();
+        Iterator<Map.Entry<String, DownloadTaskWrapper>> iterator = downloadTaskMap.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<String, DownloadTask> next = iterator.next();
+            Map.Entry<String, DownloadTaskWrapper> next = iterator.next();
             if (!next.getValue().isValid()) {
                 iterator.remove();
                 clear = true;
@@ -111,10 +111,10 @@ final class DownloadingTaskRepository implements Serializable {
     /**
      * 根据任务信息获取到对应的任务，如果该任务不存在会创建一个新任务
      */
-    final DownloadTask getDownloadTaskByTaskInfo(DownloadTaskInfo downloadTaskInfo) {
-        DownloadTask downloadTask = downloadTaskMap.get(downloadTaskInfo.getUniquelyIdentifies());
+    final DownloadTaskWrapper getDownloadTaskByTaskInfo(DownloadTaskInfo downloadTaskInfo) {
+        DownloadTaskWrapper downloadTask = downloadTaskMap.get(downloadTaskInfo.getUniquelyIdentifies());
         if (downloadTask == null) {
-            downloadTask = new DownloadTask(downloadManagerId, downloadTaskInfo);
+            downloadTask = new DownloadTaskWrapper(downloadManagerId, downloadTaskInfo);
             downloadTaskMap.put(downloadTaskInfo.getUniquelyIdentifies(), downloadTask);
             BusUtils.post(new DownloadManager.OnDownloadManagerStateChangeEvent());
             updateToCache();
@@ -125,8 +125,20 @@ final class DownloadingTaskRepository implements Serializable {
     /**
      * 根据任务ID删除已下载的任务
      */
-    final void removeTaskById(String id) {
+    final void removeTaskByIdThenUpdateToCache(String id) {
         if (downloadTaskMap.remove(id) != null) {
+            updateToCache();
+        }
+    }
+
+    final void removeTaskByTaskListThenUpdateToCache(List<DownloadTaskWrapper> downloadTaskList) {
+        boolean remove = false;
+        for (DownloadTaskWrapper downloadTask : downloadTaskList) {
+            if (downloadTaskMap.remove(downloadTask.provideUniquelyIdentifies()) != null) {
+                remove = true;
+            }
+        }
+        if (remove) {
             updateToCache();
         }
     }
@@ -134,14 +146,14 @@ final class DownloadingTaskRepository implements Serializable {
     /**
      * 根据任务ID查找到对应的任务
      */
-    final DownloadTask findTaskById(String id) {
+    final DownloadTaskWrapper findTaskById(String id) {
         return downloadTaskMap.get(id);
     }
 
     /**
      * 提供所有的下载任务集合
      */
-    final List<DownloadTask> getAllTask() {
+    final List<DownloadTaskWrapper> getAllTask() {
         return new ArrayList<>(downloadTaskMap.values());
     }
 
@@ -150,7 +162,7 @@ final class DownloadingTaskRepository implements Serializable {
      */
     final int getDownloadingTaskCount() {
         int count = 0;
-        for (DownloadTask downloadTask : downloadTaskMap.values()) {
+        for (DownloadTaskWrapper downloadTask : downloadTaskMap.values()) {
             if (downloadTask.isStart()) {
                 count ++;
             }

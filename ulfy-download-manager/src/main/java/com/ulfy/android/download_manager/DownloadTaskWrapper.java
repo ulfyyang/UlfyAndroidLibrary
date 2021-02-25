@@ -2,8 +2,9 @@ package com.ulfy.android.download_manager;
 
 import android.util.Log;
 
-import com.liulishuo.okdownload.core.cause.ResumeFailedCause;
-import com.liulishuo.okdownload.core.listener.DownloadListener3;
+import com.arialyy.annotations.Download;
+import com.arialyy.aria.core.Aria;
+import com.arialyy.aria.core.task.DownloadTask;
 
 import java.io.File;
 import java.io.Serializable;
@@ -18,8 +19,9 @@ import static com.ulfy.android.download_manager.DownloadManagerConfig.defaultIdI
  * 表示一个具体的下载任务（现在支持的任务状态变更回调：进行中->进度回调->速度回调，执行结束->执行完成
  *      包括下载任务的状态信息
  *      下载引擎的对接
+ * 改类的名字不能是DownloadTask，因为Aria框架自动生成的代码中也有DownloadTask，这会引起冲突导致编译错误
  */
-public class DownloadTask<T extends DownloadTaskInfo> implements Serializable {
+public class DownloadTaskWrapper<T extends DownloadTaskInfo> implements Serializable {
     private static final long serialVersionUID = -6410544290427834001L;
     private transient String TAG = getClass().getSimpleName();
     /*
@@ -52,7 +54,7 @@ public class DownloadTask<T extends DownloadTaskInfo> implements Serializable {
     /**
      * 构造方法
      */
-    DownloadTask(String downloadManagerId, T downloadTaskInfo) {
+    DownloadTaskWrapper(String downloadManagerId, T downloadTaskInfo) {
         this.downloadManagerId = defaultIdIfEmpty(downloadManagerId);
         this.downloadTaskInfo = downloadTaskInfo;
     }
@@ -139,13 +141,14 @@ public class DownloadTask<T extends DownloadTaskInfo> implements Serializable {
      * 销毁任务
      */
     final synchronized void destroy() {
-        stopDownloadInner();
+        if (!complete) {
+            cancelDownloadInner();
+        }
         getTargetFile().delete();
         start = false; waiting = false; complete = false;
         totalLength = 0; currentOffset = 0;
         lastOffset = 0; lastSpeed = 0; speed = 0;
         stateUpdateForPublish = true;
-        downloadTaskInner = null; downloadListenerInner = null;
     }
 
     /**
@@ -158,6 +161,7 @@ public class DownloadTask<T extends DownloadTaskInfo> implements Serializable {
     /**
      * 当前任务是否还有效（用于用户手动删除文件的情况）
      *      对于下载中任务无论是否文件被移除都有效（移除以后下载进程会报错，然后执行重试，这样就又生成了新的文件）
+     *      对于下载中的文件是分片为多个文件的，因为无法确定目标文件的具体路径，也就无法判断是否存在
      *      对于下载完成的任务如果被外部移除则说明该任务失效了
      */
     final boolean isValid() {
@@ -179,8 +183,8 @@ public class DownloadTask<T extends DownloadTaskInfo> implements Serializable {
      * 获取与任务关联的目标文件（该文件会根据当前任务是否完成而返回不同的路径）
      */
     public final File getTargetFile() {
-        File dir = !complete ? DownloadManagerConfig.Config.downloadingDirectory :
-                DownloadManagerConfig.Config.downloadedDirectory;
+        File dir = !complete ? DownloadManagerConfig.Config.getDownloadingDirectoryById(defaultIdIfEmpty(downloadManagerId)) :
+                DownloadManagerConfig.Config.getDownloadedDirectoryById(defaultIdIfEmpty(downloadManagerId));
         return new File(dir, downloadTaskInfo.provideDownloadFileName());
     }
 
@@ -269,60 +273,69 @@ public class DownloadTask<T extends DownloadTaskInfo> implements Serializable {
     ------------------------------- 三方下载模块的相应包装 ---------------------------------
      */
 
-    private transient com.liulishuo.okdownload.DownloadTask downloadTaskInner;
-    private transient DownloadListenerInner downloadListenerInner;
     private transient Disposable speedProgressDetectDisposable;         // 用于跟踪网速探测进程
+    private long taskId = 0;    // 0 表示任务没有创建（如果创建失败返回的是-1），为了能在应用被杀死后仍能跟踪任务，需要序列化该字段
+
+    /*
+        当任务从序列化回复后，可能执行启动、停止、删除等操作，但是这时候由于没有注册相应的回调不会调用
+        因此要在这些方法中都进行注册
+        这些注册并不会造成内存泄漏，因为在相应的回调里边会执行反注册操作
+     */
 
     private void startDownloadInner() {
-        initDownloadTaskIfNeedInner();
-        downloadTaskInner.enqueue(downloadListenerInner);
+        Aria.download(this).register();
+        taskId = Aria.download(this)
+                .load(combineDownloadLink())                // 读取下载地址
+                .setFilePath(generateDownloadFilePath())    // 设置文件保存的完整路径
+                .create();                                  // 创建并启动下载
     }
 
     private void stopDownloadInner() {
-        initDownloadTaskIfNeedInner();
-        downloadTaskInner.cancel();
+        Aria.download(this).register();
+        Aria.download(this).load(taskId).stop();
     }
 
-    /**
-     * 因为采用了序列化机制，当序列化恢复时对应的未序列化的字段会为空，因此需要恢复
+    private void cancelDownloadInner() {
+        Aria.download(this).register();
+        Aria.download(this).load(taskId).cancel();
+    }
+
+    /*
+        Aria会将同一个下载地址对应的多个任务关联起来，这样不利于任务逻辑的维护。通过将下载地址和下载文件名合并起来标识单个任务可以解决这个问题
      */
-    private void initDownloadTaskIfNeedInner() {
-        if (downloadTaskInner == null) {
-            downloadTaskInner = new com.liulishuo.okdownload.DownloadTask
-                    .Builder(downloadTaskInfo.provideDownloadFileLink(), DownloadManagerConfig.Config.downloadingDirectory)
-                    .setFilename(downloadTaskInfo.provideDownloadFileName()).setMinIntervalMillisCallbackProcess(50)
-                    .setPassIfAlreadyCompleted(false).build();
-        }
-        if (downloadListenerInner == null) {
-            downloadListenerInner = new DownloadListenerInner();
-        }
+    private String combineDownloadLink() {
+        return String.format("%s?file=%s", downloadTaskInfo.provideDownloadFileLink(), generateDownloadFilePath());
+    }
+    private String generateDownloadFilePath() {
+        return new File(DownloadManagerConfig.Config
+                .getDownloadingDirectoryById(defaultIdIfEmpty(downloadManagerId)), downloadTaskInfo.provideDownloadFileName())
+                .getAbsolutePath();
     }
 
     /**
      * 开始探测下载速度、进度进程（这里的进程指的是一个过程，而不是操作系统的进程）
      */
     private void startDetectDownloadSpeedAndProgress() {
-        if (speedProgressDetectDisposable != null) {
-            speedProgressDetectDisposable.dispose();
+        if (speedProgressDetectDisposable == null) {
+            speedProgressDetectDisposable = Observable.interval(1, TimeUnit.SECONDS).subscribe(x -> {
+                speed = currentOffset - lastOffset;
+                if (lastOffset == 0 || speed < 0) { // 计算网速（若currentOffset是从序列化恢复的，则首次计算网速会非常大，应该过滤掉）
+                    speed = 0;
+                }
+                if (lastSpeed != speed) {
+                    DownloadManager.getInstance(defaultIdIfEmpty(downloadManagerId))
+                            .notifyItemSpeedChanged(this, lastSpeed, speed);
+                    stateUpdateForPublish = true;
+                    lastSpeed = speed;
+                }
+                if (lastOffset != currentOffset) {
+                    DownloadManager.getInstance(defaultIdIfEmpty(downloadManagerId))
+                            .notifyItemProgressChanged(this, lastOffset, currentOffset);
+                    stateUpdateForPublish = true;
+                    lastOffset = currentOffset;
+                }
+            });
         }
-        speedProgressDetectDisposable = Observable.interval(1, TimeUnit.SECONDS).subscribe(x -> {
-            speed = currentOffset - lastOffset;
-            if (lastOffset == 0 || speed < 0) { // 计算网速（若currentOffset是从序列化恢复的，则首次计算网速会非常大，应该过滤掉）
-                speed = 0;
-            }
-            if (lastSpeed != speed) {
-                DownloadManager.getInstance(defaultIdIfEmpty(downloadManagerId))
-                        .notifyItemSpeedChanged(this, lastSpeed, speed);
-                stateUpdateForPublish = true;
-                lastSpeed = speed;
-            }
-            if (lastOffset != currentOffset) {
-                DownloadManager.getInstance(defaultIdIfEmpty(downloadManagerId))
-                        .notifyItemProgressChanged(this, lastOffset, currentOffset);
-                stateUpdateForPublish = true;
-                lastOffset = currentOffset;
-            }
-        });
     }
 
     /**
@@ -331,14 +344,17 @@ public class DownloadTask<T extends DownloadTaskInfo> implements Serializable {
     private void stopDetectDownloadSpeedProgress() {
         if (speedProgressDetectDisposable != null) {
             speedProgressDetectDisposable.dispose();
+            speedProgressDetectDisposable = null;
+            speed = 0;
         }
-        speed = 0;
     }
 
     /**
      * 当内部任务下载完毕后调用的回调，完成一些后续工作（移动文件位置、重新调整任务队列、执行相应的回调）
      */
-    private void onDownloadCompletedInner() {
+    private synchronized void onDownloadCompletedInner() {
+        complete = true;                    // 设置状态要放到迁移仓库的前面，否则这些状态不会被序列化到
+        stateUpdateForPublish = true;
         // 将下载中文件移动到下载完成目录中（表示下载完成）
         File downloadingFile = new File(DownloadManagerConfig.Config
                 .getDownloadingDirectoryById(defaultIdIfEmpty(downloadManagerId)), downloadTaskInfo.provideDownloadFileName());
@@ -347,51 +363,75 @@ public class DownloadTask<T extends DownloadTaskInfo> implements Serializable {
         downloadingFile.renameTo(downloadedFile);       // 两个目录要配置到统一上下文中，避免重命名文件发生文件移动造成的阻塞和不同权限目录中的移动造成的失败
         // 维护下载队列信息
         DownloadedTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId))
-                .addTask(DownloadTask.this);
+                .addTaskThenUpdateToCache(DownloadTaskWrapper.this);
         DownloadingTaskRepository.getInstance(defaultIdIfEmpty(downloadManagerId))
-                .removeTaskById(downloadTaskInfo.getUniquelyIdentifies());
-        complete = true;
-        stateUpdateForPublish = true;
+                .removeTaskByIdThenUpdateToCache(downloadTaskInfo.getUniquelyIdentifies());
+        Log.i(TAG, "完成任务迁移，任务记录已更新...");
         DownloadManager.getInstance(defaultIdIfEmpty(downloadManagerId)).notifyItemDownloadComplete(this);
     }
 
-    /**
-     * 下载过程监听，用于对接任务状态DownloadTask。以下方法的声明按照任务生命周期的顺序声明
-     *      内部任务是一个持续化的过程，内部任务负责更新外部任务的状态
-     */
-    private class DownloadListenerInner extends DownloadListener3 {
-        @Override protected void started(com.liulishuo.okdownload.DownloadTask task) {
-            Log.i(TAG, "任务启动...");
-        }
-        @Override public void connected(com.liulishuo.okdownload.DownloadTask task, int blockCount, long currentOffset, long totalLength) {
-            Log.i(TAG, String.format("任务连接...currentOffset %d totalLength %d", currentOffset, totalLength));
-            DownloadTask.this.totalLength = totalLength;
-            DownloadTask.this.currentOffset = currentOffset;
-            DownloadTask.this.lastOffset = currentOffset;
-            DownloadTask.this.lastSpeed = 0; DownloadTask.this.speed = 0;
-            DownloadTask.this.startDetectDownloadSpeedAndProgress();
-        }
-        @Override public void progress(com.liulishuo.okdownload.DownloadTask task, long currentOffset, long totalLength) {
-            Log.i(TAG, String.format("任务进行中...currentOffset %d totalLength %d", currentOffset, totalLength));
-            DownloadTask.this.currentOffset = currentOffset;
+    @Download.onTaskStart protected void taskStart(DownloadTask task) {
+        if (task != null && task.getKey() != null && task.getKey().equals(combineDownloadLink())) {
+            totalLength = task.getFileSize();
+            currentOffset = task.getCurrentProgress();
+            lastOffset = currentOffset;
+            lastSpeed = 0; speed = 0;
             stateUpdateForPublish = true;
+            startDetectDownloadSpeedAndProgress();
+            Log.i(TAG, String.format("任务(%d)开始...currentOffset %d totalLength %d", taskId, currentOffset, totalLength));
         }
-        @Override protected void completed(com.liulishuo.okdownload.DownloadTask task) {
-            Log.i(TAG, "任务完成...");
-            DownloadTask.this.stopDetectDownloadSpeedProgress();
-            DownloadTask.this.onDownloadCompletedInner();
+    }
+
+    @Download.onTaskResume protected void taskResume(DownloadTask task) {
+        if (task != null && task.getKey() != null && task.getKey().equals(combineDownloadLink())) {
+            stateUpdateForPublish = true;
+            startDetectDownloadSpeedAndProgress();
+            Log.i(TAG, String.format("任务(%d)恢复...", taskId));
         }
-        @Override protected void canceled(com.liulishuo.okdownload.DownloadTask task) {
-            Log.i(TAG, "任务取消...");
-            DownloadTask.this.stopDetectDownloadSpeedProgress();
+    }
+
+    //在这里处理任务执行中的状态，如进度进度条的刷新
+    @Download.onTaskRunning protected void taskRunning(DownloadTask task) {
+        if (task != null && task.getKey() != null && task.getKey().equals(combineDownloadLink())) {
+            currentOffset = task.getCurrentProgress();
+            stateUpdateForPublish = true;
+            Log.i(TAG, String.format("任务(%d)进行中...currentOffset %d totalLength %d", taskId, currentOffset, totalLength));
         }
-        @Override protected void error(com.liulishuo.okdownload.DownloadTask task, Exception e) {
-            Log.w(TAG, "任务出错...", e);
-            DownloadTask.this.restart();
+    }
+
+    @Download.onTaskStop protected void taskStop(DownloadTask task) {
+        if (task != null && task.getKey() != null && task.getKey().equals(combineDownloadLink())) {
+            stateUpdateForPublish = true;
+            stopDetectDownloadSpeedProgress();
+            Log.i(TAG, String.format("任务(%d)停止...", taskId));
         }
-        @Override protected void warn(com.liulishuo.okdownload.DownloadTask task) { }
-        @Override public void retry(com.liulishuo.okdownload.DownloadTask task, ResumeFailedCause cause) {
-            Log.w(TAG, "任务重试...");
+    }
+
+    @Download.onTaskCancel protected void taskCancel(DownloadTask task) {
+        if (task != null && task.getKey() != null && task.getKey().equals(combineDownloadLink())) {
+            stateUpdateForPublish = true;
+            stopDetectDownloadSpeedProgress();
+            Aria.download(DownloadTaskWrapper.this).unRegister();
+            Log.i(TAG, String.format("任务(%d)取消...", taskId));
+        }
+    }
+
+    @Download.onTaskFail protected void taskFail(DownloadTask task) {
+        if (task != null && task.getKey() != null && task.getKey().equals(combineDownloadLink())) {
+            stateUpdateForPublish = true;
+            stopDetectDownloadSpeedProgress();
+            DownloadTaskWrapper.this.restart();
+            Log.i(TAG, String.format("任务(%d)失败...", taskId));
+        }
+    }
+
+    @Download.onTaskComplete protected void taskComplete(DownloadTask task) {
+        if (task != null && task.getKey() != null && task.getKey().equals(combineDownloadLink())) {
+            stopDetectDownloadSpeedProgress();
+            onDownloadCompletedInner();
+            stateUpdateForPublish = true;
+            Aria.download(DownloadTaskWrapper.this).unRegister();
+            Log.i(TAG, String.format("任务(%d)完成...", taskId));
         }
     }
 }

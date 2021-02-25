@@ -54,11 +54,8 @@ dependencies {
     implementation project(':ulfy-lib:ulfy-bus')                        // 事件总线包
     implementation project(':ulfy-lib:ulfy-task-extension')             // 任务扩展包
     implementation externalRxJava                                       // RxJava
-//    implementation 'com.arialyy.aria:core:3.8.15'
-//    annotationProcessor 'com.arialyy.aria:compiler:3.8.15'
-    implementation externalOkDownload                                   // 下载引擎
-    implementation externalOkDownloadOkHttp                             // 采用OkHttp下载
-    implementation externalOkDownloadSqlite                             // 支持断点下载
+    implementation externalAria                                         // 下载引擎
+    annotationProcessor externalAriaAnnotationProcesser                 // 下载引擎预编译
 
     testImplementation externalJunit
     testImplementation externalHamcrestLibrary

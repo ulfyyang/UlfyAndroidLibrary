@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.arialyy.aria.core.Aria;
 import com.ulfy.android.bus.BusConfig;
 import com.ulfy.android.bus.BusUtils;
 import com.ulfy.android.cache.CacheConfig;
@@ -16,11 +17,10 @@ import java.util.Map;
 
 public final class DownloadManagerConfig {
     static boolean configured;
-    static Application context;
-    static ICache cache;
+    static Application context; static ICache cache;
     static String DEFAULT_DOWNLOAD_MANAGER_ID = "ULFY_DEFAULT_DOWNLOAD_MANAGER_ID";
 
-    static String defaultIdIfEmpty(String downloadManagerId) {
+    static String defaultIdIfEmpty(String downloadManagerId) {      // 为了保证从序列化恢复的正确性，所有需要用到管理器ID的地方都要用该方法矫正
         if (TextUtils.isEmpty(downloadManagerId)) {
             downloadManagerId = DEFAULT_DOWNLOAD_MANAGER_ID;
         }
@@ -35,6 +35,10 @@ public final class DownloadManagerConfig {
             configured = true;
 
             DownloadManagerConfig.context = context;
+
+            Aria.init(context);
+            Aria.get(context).getDownloadConfig().setMaxTaskNum(Integer.MAX_VALUE);
+
             cache = CacheConfig.newMemoryDiskCache(context, Config.recordInfoCacheDirName);
 
             Config.init(context);
@@ -61,10 +65,10 @@ public final class DownloadManagerConfig {
         public static String recordInfoCacheDirName = "download_manager_cache";                         // 用于跟踪下载信息的缓存目录
         public static boolean startWaitingFirst = true;                                                 // 优先开启等待中任务
         public static Map<String, Integer> limitCount = new HashMap<>();                                // 默认的同时下载数量限制。没有表示无限制
-        public static String statusStringStart = "下载中";                                              // 任务开始状态显示的文字（调用DownloadTask.getStatusString()的配置）
-        public static String statusStringPause = "已暂停";                                              // 任务暂停状态显示的文字（调用DownloadTask.getStatusString()的配置）
-        public static String statusStringWaiting = "等待中";                                            // 任务等待状态显示的文字（调用DownloadTask.getStatusString()的配置）
-        public static String statusStringComplete = "已完成";                                           // 任务完成状态显示的文字（调用DownloadTask.getStatusString()的配置）
+        public static String statusStringStart = "下载中";                                               // 任务开始状态显示的文字（调用DownloadTask.getStatusString()的配置）
+        public static String statusStringPause = "已暂停";                                               // 任务暂停状态显示的文字（调用DownloadTask.getStatusString()的配置）
+        public static String statusStringWaiting = "等待中";                                             // 任务等待状态显示的文字（调用DownloadTask.getStatusString()的配置）
+        public static String statusStringComplete = "已完成";                                            // 任务完成状态显示的文字（调用DownloadTask.getStatusString()的配置）
         static File downloadingDirectory;                                                               // 下载中文件目录
         static File downloadedDirectory;                                                                // 下载完成文件目录
 
@@ -124,10 +128,10 @@ public final class DownloadManagerConfig {
          */
         public static class DefaultDirectoryConfig implements DirectoryConfig {
             @Override public File getDownloadingDirectory(Context context) {
-                return new File(context.getFilesDir(), "movie_downloading");
+                return new File(context.getCacheDir(), "downloading");
             }
             @Override public File getDownloadedDirectory(Context context) {
-                return new File(context.getFilesDir(), "movie_downloaded");
+                return new File(context.getFilesDir(), "downloaded");
             }
         }
     }
@@ -146,7 +150,7 @@ public final class DownloadManagerConfig {
          * 私有化构造方法
          */
         private DownloadLimitConfig(String downloadManagerId) {
-            this.downloadManagerId = downloadManagerId;
+            this.downloadManagerId = defaultIdIfEmpty(downloadManagerId);
         }
 
         final static class LimitCache implements Serializable {
