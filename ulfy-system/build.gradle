@@ -45,6 +45,7 @@ dependencies {
     implementation externalGlide
     implementation externalGlideAnnotationProcessor
     annotationProcessor externalGlideAnnotationProcessor
+    implementation externalGuava                                // JAVA基础工具库
     implementation project(':ulfy-lib:ulfy-bus')
     implementation project(':ulfy-lib:ulfy-dialog')
     implementation project(':ulfy-lib:ulfy-ui-injection')

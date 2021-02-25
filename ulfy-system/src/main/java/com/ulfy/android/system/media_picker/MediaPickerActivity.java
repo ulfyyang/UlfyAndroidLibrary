@@ -82,7 +82,7 @@ public final class MediaPickerActivity extends Activity {
 
     @Subscribe public void onTakePhoto(OnTakePhotoEvent event) {
         if (event.requestCode == REQUEST_CODE_TAKE_PHOTO) {
-            AppUtils.insertPictureToSystem(event.file, event.file.getName(), "app 拍照生成");
+            AppUtils.insertPictureToSystem(event.file, event.file.getName());
             vm.initMediaCMListData();
             if (vm.clickItem(1)) {              // 因为相机占据这0号位，所以应当是模拟点击1号位
                 mediaAdapter.notifyDataSetChanged();
