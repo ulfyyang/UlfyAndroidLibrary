@@ -57,6 +57,7 @@ ext {
     externalConstraintLayout = 'androidx.constraintlayout:constraintlayout:2.0.4'                   // 约束布局
     externalViewPager2 = 'androidx.viewpager2:viewpager2:1.0.0'                                     // ViewPager2
     externalAndroidMultiDex = 'androidx.multidex:multidex:2.0.1'                                    // 分包打包
+    externalGoogleFindBugs = 'com.google.code.findbugs:jsr305:3.0.2'                                // 很多三方库依赖findbugs，不过版本不统一，如果编译出现findbugs版本冲突，则强制使用该版本
 
     /**
      * 测试库相关库
