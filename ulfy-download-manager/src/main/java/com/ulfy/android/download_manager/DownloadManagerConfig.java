@@ -18,7 +18,7 @@ import java.util.Map;
 public final class DownloadManagerConfig {
     static boolean configured;
     static Application context; static ICache cache;
-    static String DEFAULT_DOWNLOAD_MANAGER_ID = "ULFY_DEFAULT_DOWNLOAD_MANAGER_ID";
+    public static final String DEFAULT_DOWNLOAD_MANAGER_ID = "ULFY_DEFAULT_DOWNLOAD_MANAGER_ID";
 
     static String defaultIdIfEmpty(String downloadManagerId) {      // 为了保证从序列化恢复的正确性，所有需要用到管理器ID的地方都要用该方法矫正
         if (TextUtils.isEmpty(downloadManagerId)) {
@@ -168,7 +168,14 @@ public final class DownloadManagerConfig {
         /**
          * 获取实例
          */
-        static DownloadLimitConfig getInstance(String downloadManagerId) {
+        public static DownloadLimitConfig getInstance() {
+            return getInstance(DEFAULT_DOWNLOAD_MANAGER_ID);
+        }
+
+        /**
+         * 获取实例
+         */
+        public static DownloadLimitConfig getInstance(String downloadManagerId) {
             downloadManagerId = defaultIdIfEmpty(downloadManagerId);
             LimitCache cache = LimitCache.getInstance();
             Map<String, DownloadLimitConfig> limitMap = cache.limitMap;
