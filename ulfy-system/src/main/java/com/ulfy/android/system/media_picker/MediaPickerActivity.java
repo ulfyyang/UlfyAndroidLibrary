@@ -82,14 +82,17 @@ public final class MediaPickerActivity extends Activity {
 
     @Subscribe public void onTakePhoto(OnTakePhotoEvent event) {
         if (event.requestCode == REQUEST_CODE_TAKE_PHOTO) {
-            AppUtils.insertPictureToSystem(event.file, event.file.getName());
-            vm.initMediaCMListData();
-            if (vm.clickItem(1)) {              // 因为相机占据这0号位，所以应当是模拟点击1号位
-                mediaAdapter.notifyDataSetChanged();
-                ((TextView)findViewById(R.id.completeTV)).setText(vm.getCompleteText());
-            } else {
-                showOverMaxCountDialog();
-            }
+            AppUtils.insertPictureToSystem(event.file, event.file.getName(), new Runnable() {
+                @Override public void run() {
+                    vm.initMediaCMListData();
+                    if (vm.clickItem(1)) {              // 因为相机占据这0号位，所以应当是模拟点击1号位
+                        mediaAdapter.notifyDataSetChanged();
+                        ((TextView)findViewById(R.id.completeTV)).setText(vm.getCompleteText());
+                    } else {
+                        showOverMaxCountDialog();
+                    }
+                }
+            });
         }
     }
 

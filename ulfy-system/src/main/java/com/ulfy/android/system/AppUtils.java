@@ -612,13 +612,15 @@ public final class AppUtils {
     /**
      * 保存图片到本地
      *      由于直接采用了Bitmap对象，因此不会留下痕迹
+     * @param runnable 当插入成功之后执行的回调
      */
-    public static void insertPictureToSystem(final Bitmap bitmap, final String title) {
+    public static void insertPictureToSystem(final Bitmap bitmap, final String title, final Runnable runnable) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {        // 安卓10以下需要读写权限
             requestWriteExternalStoragePermissionTheDo(new Runnable() {
                 @Override public void run() {
                     String url = MediaStore.Images.Media.insertImage(SystemConfig.context.getContentResolver(), bitmap, title, title);
                     SystemConfig.context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(url)));
+                    if (runnable != null) { runnable.run(); }
                 }
             });
         } else {        // 安卓10以上不需要特殊权限
@@ -628,6 +630,7 @@ public final class AppUtils {
             values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/");
             Uri insert = SystemConfig.context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
             insertBitmapToSystemInner(bitmap, insert, "图片");
+            if (runnable != null) { runnable.run(); }
         }
     }
 
@@ -635,14 +638,16 @@ public final class AppUtils {
      * 保存图片到本地
      *      file尽量是不会被系统扫描的地方。否则会在相册中生成两张文件
      *      如果是调用系统相机拍照产生的图片，建议直接发布广播通知
+     * @param runnable 当插入成功之后执行的回调
      */
-    public static void insertPictureToSystem(final File file, final String title) {
+    public static void insertPictureToSystem(final File file, final String title, final Runnable runnable) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {        // 安卓10以下需要读写权限
             requestWriteExternalStoragePermissionTheDo(new Runnable() {
                 @Override public void run() {
                     try {
                         MediaStore.Images.Media.insertImage(SystemConfig.context.getContentResolver(), file.getAbsolutePath(), title, title);
                         notifySystemScanMediaFile(file);
+                        if (runnable != null) { runnable.run(); }
                     } catch (FileNotFoundException e) {
                         e.printStackTrace(); Toast.makeText(SystemConfig.context, "文件保存失败", Toast.LENGTH_LONG).show();
                     }
@@ -655,15 +660,17 @@ public final class AppUtils {
             values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/");
             Uri insert = SystemConfig.context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
             insertFileToSystemInner(file, insert, "图片");
+            if (runnable != null) { runnable.run(); }
         }
     }
 
     /**
      * 保存视频到相册（不同的手机查看的位置不同，有的手机需要到系统相册App中查看，有的手机需要到系统视频App中查看）
      * @param file      视频文件
-     * @param title     视频的标题（安卓10一下将直接采用视频文件名，title参数会被忽略
+     * @param title     视频的标题（安卓10以下将直接采用视频文件名，title参数会被忽略）
+     * @param runnable 当插入成功之后执行的回调
      */
-    public static void insertVideoToSystem(final File file, final String title) {
+    public static void insertVideoToSystem(final File file, final String title, final Runnable runnable) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {        // 安卓10以下需要读写权限
             requestWriteExternalStoragePermissionTheDo(new Runnable() {
                 @Override public void run() {
@@ -672,6 +679,7 @@ public final class AppUtils {
                         if (!targetFile.exists()) {
                             Files.copy(file, targetFile);
                             notifySystemScanMediaFile(targetFile);
+                            if (runnable != null) { runnable.run(); }
                         }
                     } catch (Exception e) {
                         e.printStackTrace(); Toast.makeText(SystemConfig.context, "文件保存失败", Toast.LENGTH_LONG).show();
@@ -685,6 +693,7 @@ public final class AppUtils {
             values.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/");
             Uri insert = SystemConfig.context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
             insertFileToSystemInner(file, insert, "视频");
+            if (runnable != null) { runnable.run(); }
         }
     }
 
