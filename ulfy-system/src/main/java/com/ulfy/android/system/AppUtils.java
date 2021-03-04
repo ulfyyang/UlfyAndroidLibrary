@@ -645,8 +645,8 @@ public final class AppUtils {
             requestWriteExternalStoragePermissionTheDo(new Runnable() {
                 @Override public void run() {
                     try {
-                        MediaStore.Images.Media.insertImage(SystemConfig.context.getContentResolver(), file.getAbsolutePath(), title, title);
-                        notifySystemScanMediaFile(file);
+                        String url = MediaStore.Images.Media.insertImage(SystemConfig.context.getContentResolver(), file.getAbsolutePath(), title, title);
+                        SystemConfig.context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(url)));
                         if (runnable != null) { runnable.run(); }
                     } catch (FileNotFoundException e) {
                         e.printStackTrace(); Toast.makeText(SystemConfig.context, "文件保存失败", Toast.LENGTH_LONG).show();
@@ -675,7 +675,8 @@ public final class AppUtils {
             requestWriteExternalStoragePermissionTheDo(new Runnable() {
                 @Override public void run() {
                     try {
-                        File targetFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), title);
+                        String titleSuffix = completeTitleSuffix(title, "mp4");
+                        File targetFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), titleSuffix);
                         if (!targetFile.exists()) {
                             Files.copy(file, targetFile);
                             notifySystemScanMediaFile(targetFile);
@@ -706,6 +707,15 @@ public final class AppUtils {
                 Toast.makeText(SystemConfig.context, "未授予访问系统存储空间权限", Toast.LENGTH_LONG).show();
             }
         }, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    private static String completeTitleSuffix(String title, String defaultSuffix) {
+        String suffix = title.substring(title.lastIndexOf("."));
+        if (TextUtils.isEmpty(suffix)) {
+            return title + "." + defaultSuffix;
+        } else {
+            return title;
+        }
     }
 
     private static String getFileSuffix(File file, String defaultSuffix) {
