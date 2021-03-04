@@ -43,7 +43,6 @@ dependencies {
     //noinspection GradleDependency
     compileOnly 'androidx.annotation:annotation:1.0.0'
     //noinspection GradleDependency,GradleCompatible
-//    compileOnly 'com.android.support:support-v4:22.1.0'
     //noinspection GradleDependency,GradleCompatible
     compileOnly 'androidx.recyclerview:recyclerview:1.0.0'
     //noinspection GradleDependency,GradleCompatible
