@@ -147,12 +147,12 @@ public final class DialogUtils {
 	public static void showProgressDialog(Context context, String dialogId, String title, int total, int current) {
 		NormalDialog normalDialog = (NormalDialog) DialogRepository.getInstance().getDialogById(dialogId);
 		if (normalDialog == null) {
-			normalDialog = new NormalDialog.Builder(context, new ProgressView(context))
+			normalDialog = new NormalDialog.Builder(context, (View) DialogConfig.Config.progressDialogConfig.getProgressView(context))
 					.setDialogId(DialogConfig.ULFY_MAIN_PROGRASS_ID).setFullDialog(true)
 					.setTouchOutsideDismiss(false).setCancelable(false).build();
 			normalDialog.show();
 		}
-		ProgressView progressView = (ProgressView) normalDialog.getDialogView();
+		IProgressView progressView = (IProgressView) normalDialog.getDialogView();
 		progressView.setTitle(title);
 		progressView.updatePrograss(total, current);
 	}
