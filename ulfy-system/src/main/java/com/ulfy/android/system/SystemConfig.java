@@ -1,6 +1,7 @@
 package com.ulfy.android.system;
 
 import android.app.Application;
+import android.os.Environment;
 
 import java.io.File;
 import java.util.HashMap;
@@ -55,7 +56,12 @@ public final class SystemConfig {
      * 获得拍照图片缓存目录
      */
     static File getTakePhotoPictureCacheDir() {
-        File dir = new File(SystemConfig.context.getFilesDir(), "tack_photo_cache");
+        File dir = null;
+        if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+            dir = new File(Environment.getExternalStorageDirectory(), "/DCIM/camera/");
+        }else {
+            dir = new File(Environment.getDataDirectory(), "camera");
+        }
         if(!dir.exists()) {
             dir.mkdirs();
         }
