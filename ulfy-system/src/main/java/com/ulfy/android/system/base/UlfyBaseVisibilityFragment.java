@@ -2,8 +2,9 @@ package com.ulfy.android.system.base;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.View;
+
+import androidx.fragment.app.Fragment;
 
 public class UlfyBaseVisibilityFragment extends Fragment implements View.OnAttachStateChangeListener, OnFragmentVisibilityChangedListener {
     private boolean parentActivityVisible = false;              // ParentActivity是否可见

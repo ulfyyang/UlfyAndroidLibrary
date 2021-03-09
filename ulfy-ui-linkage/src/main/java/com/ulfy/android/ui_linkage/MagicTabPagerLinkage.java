@@ -3,12 +3,13 @@ package com.ulfy.android.ui_linkage;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import net.lucode.hackware.magicindicator.MagicIndicator;
 import net.lucode.hackware.magicindicator.ViewPagerHelper;
@@ -30,6 +31,7 @@ import java.util.List;
  */
 public class MagicTabPagerLinkage {
     // 基础属性
+    private Fragment parentFragment;            // 如果实在Fragment里边嵌套Fragment，则该参数为父Fragment
     private MagicIndicator magicIndicator;
     private ViewPager viewPagerContainer;
     private List<String> tabStringList;
@@ -55,6 +57,11 @@ public class MagicTabPagerLinkage {
     /*
     基础属性设置
      */
+
+    public MagicTabPagerLinkage setParentFragment(Fragment parentFragment) {
+        this.parentFragment = parentFragment;
+        return this;
+    }
 
     public MagicTabPagerLinkage setMagicIndicator(MagicIndicator magicIndicator) {
         this.magicIndicator = magicIndicator;
@@ -241,7 +248,13 @@ public class MagicTabPagerLinkage {
             viewPagerContainer.setAdapter(new ViewPagerAdapter(viewPageList));
             viewPagerContainer.setOffscreenPageLimit(viewPageList.size() - 1);
         } else if (fragmentPageList != null) {
-            viewPagerContainer.setAdapter(new FragmentPagerAdapter((FragmentActivity) viewPagerContainer.getContext(), fragmentPageList));
+            if (parentFragment == null) {
+                viewPagerContainer.setAdapter(new FragmentPagerAdapter(
+                        ((FragmentActivity) viewPagerContainer.getContext()).getSupportFragmentManager(), fragmentPageList));
+            } else {
+                viewPagerContainer.setAdapter(new FragmentPagerAdapter(
+                        parentFragment.getChildFragmentManager(), fragmentPageList));
+            }
             viewPagerContainer.setOffscreenPageLimit(fragmentPageList.size() - 1);
         }
         this.viewPagerContainer.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

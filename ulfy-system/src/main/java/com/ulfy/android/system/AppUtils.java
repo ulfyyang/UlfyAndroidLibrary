@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,14 +25,11 @@ import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Vibrator;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.FileProvider;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -44,17 +42,26 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+
+import com.google.common.io.Files;
 import com.ulfy.android.dialog.DialogUtils;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionListener;
 import com.yanzhenjie.permission.Rationale;
 import com.yanzhenjie.permission.RationaleListener;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -623,40 +630,156 @@ public final class AppUtils {
 
     /**
      * 保存图片到本地
-     *      file尽量是不会被系统扫描的地方。否则会在相册中生成两张文件
-     *      如果是调用系统相机拍照产生的图片，建议直接发布广播通知
+     *      由于直接采用了Bitmap对象，因此不会留下痕迹
+     * @param runnable 当插入成功之后执行的回调
      */
-    public static void insertPictureToSystem(final File file, final String title, final String description) {
-        AppUtils.requestPermission(new OnRequestPermissionListener() {
-            @Override public void onSuccess() {
-                try {
-                    MediaStore.Images.Media.insertImage(SystemConfig.context.getContentResolver(), file.getAbsolutePath(), title, description);
-                    SystemConfig.context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + file.getAbsolutePath())));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    Toast.makeText(SystemConfig.context, "文件保存失败", Toast.LENGTH_LONG).show();
+    public static void insertPictureToSystem(final Bitmap bitmap, final String title, final Runnable runnable) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {        // 安卓10以下需要读写权限
+            requestWriteExternalStoragePermissionTheDo(new Runnable() {
+                @Override public void run() {
+                    String url = MediaStore.Images.Media.insertImage(SystemConfig.context.getContentResolver(), bitmap, title, title);
+                    SystemConfig.context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(url)));
+                    if (runnable != null) { runnable.run(); }
                 }
-            }
-            @Override public void onFail() {
-                Toast.makeText(SystemConfig.context, "未授予访问系统存储空间权限", Toast.LENGTH_LONG).show();
-            }
-        }, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            });
+        } else {        // 安卓10以上不需要特殊权限
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, title);
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/");
+            Uri insert = SystemConfig.context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            insertBitmapToSystemInner(bitmap, insert, "图片");
+            if (runnable != null) { runnable.run(); }
+        }
     }
 
     /**
      * 保存图片到本地
-     *      由于直接采用了Bitmap对象，因此不会留下痕迹
+     *      file尽量是不会被系统扫描的地方。否则会在相册中生成两张文件
+     *      如果是调用系统相机拍照产生的图片，建议直接发布广播通知
+     * @param runnable 当插入成功之后执行的回调
      */
-    public static void insertPictureToSystem(final Bitmap bitmap, final String title, final String description) {
+    public static void insertPictureToSystem(final File file, final String title, final Runnable runnable) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {        // 安卓10以下需要读写权限
+            requestWriteExternalStoragePermissionTheDo(new Runnable() {
+                @Override public void run() {
+                    try {
+                        String url = MediaStore.Images.Media.insertImage(SystemConfig.context.getContentResolver(), file.getAbsolutePath(), title, title);
+                        SystemConfig.context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(url)));
+                        if (runnable != null) { runnable.run(); }
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace(); Toast.makeText(SystemConfig.context, "文件保存失败", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        } else {        // 安卓10以上不需要特殊权限
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, title);
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/" + getFileSuffix(file, "png"));
+            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/");
+            Uri insert = SystemConfig.context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            insertFileToSystemInner(file, insert, "图片");
+            if (runnable != null) { runnable.run(); }
+        }
+    }
+
+    /**
+     * 保存视频到相册（不同的手机查看的位置不同，有的手机需要到系统相册App中查看，有的手机需要到系统视频App中查看）
+     * @param file      视频文件
+     * @param title     视频的标题（安卓10以下将直接采用视频文件名，title参数会被忽略）
+     * @param runnable 当插入成功之后执行的回调
+     */
+    public static void insertVideoToSystem(final File file, final String title, final Runnable runnable) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {        // 安卓10以下需要读写权限
+            requestWriteExternalStoragePermissionTheDo(new Runnable() {
+                @Override public void run() {
+                    try {
+                        String titleSuffix = completeTitleSuffix(title, "mp4");
+                        File targetFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), titleSuffix);
+                        if (!targetFile.exists()) {
+                            Files.copy(file, targetFile);
+                            notifySystemScanMediaFile(targetFile);
+                            if (runnable != null) { runnable.run(); }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace(); Toast.makeText(SystemConfig.context, "文件保存失败", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        } else {        // 安卓10以上不需要特殊权限
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Video.Media.DISPLAY_NAME, title);
+            values.put(MediaStore.Video.Media.MIME_TYPE, "video/" + getFileSuffix(file, "mp4"));
+            values.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/");
+            Uri insert = SystemConfig.context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+            insertFileToSystemInner(file, insert, "视频");
+            if (runnable != null) { runnable.run(); }
+        }
+    }
+
+    private static void requestWriteExternalStoragePermissionTheDo(final Runnable runnable) {
         AppUtils.requestPermission(new OnRequestPermissionListener() {
             @Override public void onSuccess() {
-                String url = MediaStore.Images.Media.insertImage(SystemConfig.context.getContentResolver(), bitmap, title, description);
-                SystemConfig.context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(url)));
+                if (runnable != null) { runnable.run(); }
             }
             @Override public void onFail() {
                 Toast.makeText(SystemConfig.context, "未授予访问系统存储空间权限", Toast.LENGTH_LONG).show();
             }
-        }, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    private static String completeTitleSuffix(String title, String defaultSuffix) {
+        String suffix = title.substring(title.lastIndexOf("."));
+        if (TextUtils.isEmpty(suffix)) {
+            return title + "." + defaultSuffix;
+        } else {
+            return title;
+        }
+    }
+
+    private static String getFileSuffix(File file, String defaultSuffix) {
+        String suffix = file.getName().substring(file.getName().lastIndexOf(".") + 1);
+        if (TextUtils.isEmpty(suffix)) {
+            suffix = defaultSuffix;
+        }
+        return suffix;
+    }
+
+    private static void insertFileToSystemInner(File file, Uri insert, String type) {
+        BufferedInputStream inputStream = null; OutputStream outputStream = null;
+        try {
+            inputStream = new BufferedInputStream(new FileInputStream(file));
+            outputStream = SystemConfig.context.getContentResolver().openOutputStream(insert);
+            byte[] buffer = new byte[1024 * 4]; int length;
+            while ((length = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, length);
+            }
+            outputStream.flush();
+//            SystemConfig.context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, insert));      // 不需要扫描可以直接成功（在Android10中已经过时）
+        } catch (Exception e) {
+            e.printStackTrace(); Toast.makeText(SystemConfig.context, type + "保存失败：" + e.getMessage(), Toast.LENGTH_LONG).show();
+        } finally {
+            if (inputStream != null) {
+                try { inputStream.close(); } catch (IOException e) { e.printStackTrace(); }
+            }
+            if (outputStream != null) {
+                try { outputStream.close(); } catch (IOException e) { e.printStackTrace(); }
+            }
+        }
+    }
+
+    private static void insertBitmapToSystemInner(Bitmap bitmap, Uri insert, String type) {
+        OutputStream outputStream = null;
+        try {
+            outputStream = SystemConfig.context.getContentResolver().openOutputStream(insert);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace(); Toast.makeText(SystemConfig.context, type + "保存失败：" + e.getMessage(), Toast.LENGTH_LONG).show();
+        } finally {
+            if (outputStream != null) {
+                try { outputStream.close(); } catch (IOException e) { e.printStackTrace(); }
+            }
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////

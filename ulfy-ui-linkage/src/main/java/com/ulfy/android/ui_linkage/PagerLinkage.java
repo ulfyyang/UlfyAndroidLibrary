@@ -1,19 +1,21 @@
 package com.ulfy.android.ui_linkage;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class PagerLinkage {
+    private Fragment parentFragment;            // 如果实在Fragment里边嵌套Fragment，则该参数为父Fragment
     private ViewPager viewPagerContainer;
     private ViewGroup viewGroupContainer;
     private int viewGroupContainerId;
@@ -23,6 +25,11 @@ public class PagerLinkage {
     private List<OnTabSelectedListener> onTabSelectedListenerList = new ArrayList<>();
     private ClickFilter clickFilter;
     private int currentIndexRecord = -1;        // 记录当前显示的标签页，用于过滤点击事件的多次回调
+
+    public PagerLinkage setParentFragment(Fragment parentFragment) {
+        this.parentFragment = parentFragment;
+        return this;
+    }
 
     public PagerLinkage setContainer(ViewPager viewPager) {
         this.viewPagerContainer = viewPager;
@@ -138,7 +145,13 @@ public class PagerLinkage {
             viewPagerContainer.setAdapter(new ViewPagerAdapter(viewPageList));
             viewPagerContainer.setOffscreenPageLimit(viewPageList.size() - 1);
         } else if (fragmentPageList != null) {
-            viewPagerContainer.setAdapter(new FragmentPagerAdapter((FragmentActivity) viewPagerContainer.getContext(), fragmentPageList));
+            if (parentFragment == null) {
+                viewPagerContainer.setAdapter(new FragmentPagerAdapter(
+                        ((FragmentActivity) viewPagerContainer.getContext()).getSupportFragmentManager(), fragmentPageList));
+            } else {
+                viewPagerContainer.setAdapter(new FragmentPagerAdapter(
+                        parentFragment.getChildFragmentManager(), fragmentPageList));
+            }
             viewPagerContainer.setOffscreenPageLimit(fragmentPageList.size() - 1);
         }
         viewPagerContainer.addOnPageChangeListener(new OnViewPagerPageChangeListenerInner());

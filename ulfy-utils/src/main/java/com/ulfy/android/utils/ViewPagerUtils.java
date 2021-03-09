@@ -1,10 +1,11 @@
 package com.ulfy.android.utils;
 
 import android.content.Context;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.Scroller;
+
+import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
+import androidx.viewpager.widget.ViewPager;
 
 import java.lang.reflect.Field;
 
@@ -13,7 +14,7 @@ public final class ViewPagerUtils {
     public static void initViewPagerScrollSpeed(ViewPager viewPager) {
         try {
             FixedSpeedScroller scroller = new FixedSpeedScroller(viewPager.getContext(), new LinearOutSlowInInterpolator());
-            Field field = Class.forName("android.support.v4.view.ViewPager").getDeclaredField("mScroller");
+            Field field = Class.forName("androidx.viewpager.widget.ViewPager").getDeclaredField("mScroller");
             field.setAccessible(true);
             field.set(viewPager, scroller);
         } catch (Exception e) {

@@ -1,11 +1,12 @@
 package com.ulfy.android.task_transponder;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 /**
  * 当加载页面正在加载中时显示的界面，IOS风格

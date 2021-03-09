@@ -5,15 +5,15 @@ package com.ulfy.android.download_manager;
  */
 public interface DownloadTaskInfo {
     /**
-     * 提供唯一表示，通常情况下可以使用下载连接代替
+     * 提供唯一标识，通常情况下可以使用下载连接代替
      */
-    public String provideUniquelyIdentifies();
+    public String getUniquelyIdentifies();
     /**
      * 提供下载文件连接
      */
     public String provideDownloadFileLink();
     /**
-     * 提供下载文件映射名
+     * 提供下载文件映射名（保存文件的名字）
      */
     public String provideDownloadFileName();
 }

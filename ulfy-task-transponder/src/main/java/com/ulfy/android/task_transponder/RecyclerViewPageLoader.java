@@ -1,9 +1,10 @@
 package com.ulfy.android.task_transponder;
 
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.ulfy.android.adapter.RecyclerAdapter;
 import com.ulfy.android.mvvm.IViewModel;

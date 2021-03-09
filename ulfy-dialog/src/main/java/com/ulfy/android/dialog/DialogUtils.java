@@ -15,76 +15,83 @@ public final class DialogUtils {
 	/**
 	 * 弹出一个弹窗
 	 */
-	public static void showDialog(Context context, View dialogView) {
-		showDialog(context, DialogConfig.ULFY_MAIN_DIALOG_ID, dialogView);
+	public static IDialog showDialog(Context context, View dialogView) {
+		return showDialog(context, DialogConfig.ULFY_MAIN_DIALOG_ID, dialogView);
 	}
 
 	/**
 	 * 弹出一个弹窗
 	 */
-	public static void showDialog(Context context, String dialogId, View dialogView) {
-		new NormalDialog.Builder(context, dialogView).setDialogId(dialogId).build().show();
+	public static IDialog showDialog(Context context, String dialogId, View dialogView) {
+		IDialog dialog = new NormalDialog.Builder(context, dialogView).setDialogId(dialogId).build();
+		dialog.show();
+		return dialog;
 	}
 
 	/**
 	 * 弹出一个弹窗
 	 */
-	public static void showBottomDialog(Context context, View dialogView) {
-		showBottomDialog(context, DialogConfig.ULFY_MAIN_DIALOG_ID, dialogView);
+	public static IDialog showBottomDialog(Context context, View dialogView) {
+		return showBottomDialog(context, DialogConfig.ULFY_MAIN_DIALOG_ID, dialogView);
 	}
 
 	/**
 	 * 弹出一个弹窗
 	 */
-	public static void showBottomDialog(Context context, String dialogId, View dialogView) {
-		new NormalDialog.Builder(context, dialogView).setDialogId(dialogId)
-				.setDialogAnimationId(R.style.window_anim_bottom).build().show();
+	public static IDialog showBottomDialog(Context context, String dialogId, View dialogView) {
+		IDialog dialog = new NormalDialog.Builder(context, dialogView).setDialogId(dialogId)
+				.setDialogAnimationId(R.style.window_anim_bottom).build();
+		dialog.show();
+		return dialog;
 	}
 
 	/**
 	 * 弹出一个弹窗
 	 */
-	public static void showTopDialog(Context context, View dialogView) {
-		showTopDialog(context, DialogConfig.ULFY_MAIN_DIALOG_ID, dialogView);
+	public static IDialog showTopDialog(Context context, View dialogView) {
+		return showTopDialog(context, DialogConfig.ULFY_MAIN_DIALOG_ID, dialogView);
 	}
 
 	/**
 	 * 弹出一个弹窗
 	 */
-	public static void showTopDialog(Context context, String dialogId, View dialogView) {
-		new NormalDialog.Builder(context, dialogView).setDialogId(dialogId)
-				.setDialogAnimationId(R.style.window_anim_top).build().show();
+	public static IDialog showTopDialog(Context context, String dialogId, View dialogView) {
+		IDialog dialog = new NormalDialog.Builder(context, dialogView).setDialogId(dialogId)
+				.setDialogAnimationId(R.style.window_anim_top).build();
+		dialog.show();
+		return dialog;
 	}
 
 	/**
 	 * 弹出一个BottomSheet弹窗
 	 */
-	public static void showBottomSheetDialog(Context context, View dialogView) {
-		showBottomSheetDialog(context, DialogConfig.ULFY_MAIN_DIALOG_ID, dialogView, false);
+	public static IDialog showBottomSheetDialog(Context context, View dialogView) {
+		return showBottomSheetDialog(context, DialogConfig.ULFY_MAIN_DIALOG_ID, dialogView, false);
 	}
 
 	/**
 	 * 弹出一个BottomSheet弹窗
 	 */
-	public static void showBottomSheetDialog(Context context, String dialogId, View dialogView) {
-		showBottomSheetDialog(context, dialogId, dialogView, false);
+	public static IDialog showBottomSheetDialog(Context context, String dialogId, View dialogView) {
+		return showBottomSheetDialog(context, dialogId, dialogView, false);
 	}
 
 	/**
 	 * 弹出一个BottomSheet弹窗
 	 */
-	public static void showBottomSheetDialog(Context context, View dialogView, boolean noBackground) {
-		showBottomSheetDialog(context, DialogConfig.ULFY_MAIN_DIALOG_ID, dialogView, noBackground);
+	public static IDialog showBottomSheetDialog(Context context, View dialogView, boolean noBackground) {
+		return showBottomSheetDialog(context, DialogConfig.ULFY_MAIN_DIALOG_ID, dialogView, noBackground);
 	}
 
 	/**
 	 * 弹出一个BottomSheet弹窗
 	 */
-	public static void showBottomSheetDialog(Context context, String dialogId, View dialogView, boolean noBackground) {
+	public static IDialog showBottomSheetDialog(Context context, String dialogId, View dialogView, boolean noBackground) {
 		BounceBottomSheetDialog dialog = new BounceBottomSheetDialog(context, dialogId, noBackground);
 		dialog.setContentView(dialogView);
 		dialog.addSpringBackDisLimit(-1);
 		dialog.show();
+		return dialog;
 	}
 
 
@@ -92,8 +99,10 @@ public final class DialogUtils {
 	/**
 	 * 弹出一个局部弹出框
 	 */
-	public static void showPopupDialog(Context context, View contentView, View anchorView) {
-		new PopupDialog(context, DialogConfig.ULFY_MAIN_POPUP_ID, contentView, anchorView).build().show();
+	public static IDialog showPopupDialog(Context context, View contentView, View anchorView) {
+		IDialog dialog = new PopupDialog(context, DialogConfig.ULFY_MAIN_POPUP_ID, contentView, anchorView).build();
+		dialog.show();
+		return dialog;
 	}
 
 
@@ -138,12 +147,12 @@ public final class DialogUtils {
 	public static void showProgressDialog(Context context, String dialogId, String title, int total, int current) {
 		NormalDialog normalDialog = (NormalDialog) DialogRepository.getInstance().getDialogById(dialogId);
 		if (normalDialog == null) {
-			normalDialog = new NormalDialog.Builder(context, new ProgressView(context))
+			normalDialog = new NormalDialog.Builder(context, (View) DialogConfig.Config.progressDialogConfig.getProgressView(context))
 					.setDialogId(DialogConfig.ULFY_MAIN_PROGRASS_ID).setFullDialog(true)
 					.setTouchOutsideDismiss(false).setCancelable(false).build();
 			normalDialog.show();
 		}
-		ProgressView progressView = (ProgressView) normalDialog.getDialogView();
+		IProgressView progressView = (IProgressView) normalDialog.getDialogView();
 		progressView.setTitle(title);
 		progressView.updatePrograss(total, current);
 	}

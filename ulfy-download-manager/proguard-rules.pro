@@ -26,3 +26,16 @@
 -keep public interface com.ulfy.android.download_manager.DownloadTaskInfo { *; }
 # 因为不知道okdownload的具体规则，因此保留全部
 -keep class com.liulishuo.okdownload.** { *; }
+
+# Aria混淆配置
+-dontwarn com.arialyy.aria.**
+-keep class com.arialyy.aria.**{*;}
+-keep class **$$DownloadListenerProxy{ *; }
+-keep class **$$UploadListenerProxy{ *; }
+-keep class **$$DownloadGroupListenerProxy{ *; }
+-keep class **$$DGSubListenerProxy{ *; }
+-keepclasseswithmembernames class * {
+    @Download.* <methods>;
+    @Upload.* <methods>;
+    @DownloadGroup.* <methods>;
+}

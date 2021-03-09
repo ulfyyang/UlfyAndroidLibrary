@@ -1,9 +1,10 @@
 package com.ulfy.android.dialog;
 
 import android.content.Context;
-import android.support.design.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
+
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 class BottomSheetDialogFrameLayout extends FrameLayout {
     private CoordinatorLayout coordinator;
@@ -19,7 +20,7 @@ class BottomSheetDialogFrameLayout extends FrameLayout {
     @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 //        if (coordinator != null) {
 //            int size = (int) ((float) (getResources().getDisplayMetrics().heightPixels * 0.618));
-//            heightMeasureSpec = MeasureSpec.makeMeasureSpec(size, Integer.MAX_VALUE);
+//            heightMeasureSpec = MeasureSpec.makeMeasureSpec(size, MeasureSpec.AT_MOST);
 //        }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }

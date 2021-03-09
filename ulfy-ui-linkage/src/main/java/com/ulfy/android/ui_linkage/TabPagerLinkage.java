@@ -2,13 +2,6 @@ package com.ulfy.android.ui_linkage;
 
 import android.content.Context;
 import android.graphics.Paint;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +9,15 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ public class TabPagerLinkage {
     public static final int LINE_WIDTH_MATCH_PARENT = ViewGroup.LayoutParams.MATCH_PARENT;
     public static final int LINE_WIDTH_WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
     // 基础属性
+    private Fragment parentFragment;            // 如果实在Fragment里边嵌套Fragment，则该参数为父Fragment
     private TabLayout tabLayout;
     private ViewPager viewPagerContainer;
     private ViewGroup viewGroupContainer;
@@ -51,6 +54,11 @@ public class TabPagerLinkage {
     private List<Integer> tabViewContainerInitWidthList = new ArrayList<>();
     // 用于记录真正使用的TabView
     private List<View> convertedTabViewList = new ArrayList<>();
+
+    public TabPagerLinkage setParentFragment(Fragment parentFragment) {
+        this.parentFragment = parentFragment;
+        return this;
+    }
 
     public TabPagerLinkage setTabLayout(TabLayout tabLayout) {
         this.tabLayout = tabLayout;
@@ -208,7 +216,13 @@ public class TabPagerLinkage {
             viewPagerContainer.setAdapter(new ViewPagerAdapter(viewPageList));
             viewPagerContainer.setOffscreenPageLimit(viewPageList.size() - 1);
         } else if (fragmentPageList != null) {
-            viewPagerContainer.setAdapter(new FragmentPagerAdapter((FragmentActivity) viewPagerContainer.getContext(), fragmentPageList));
+            if (parentFragment == null) {
+                viewPagerContainer.setAdapter(new FragmentPagerAdapter(
+                        ((FragmentActivity) viewPagerContainer.getContext()).getSupportFragmentManager(), fragmentPageList));
+            } else {
+                viewPagerContainer.setAdapter(new FragmentPagerAdapter(
+                        parentFragment.getChildFragmentManager(), fragmentPageList));
+            }
             viewPagerContainer.setOffscreenPageLimit(fragmentPageList.size() - 1);
         }
         tabLayout.setupWithViewPager(viewPagerContainer);
@@ -413,9 +427,9 @@ public class TabPagerLinkage {
      */
     private View getTabViewFromTabViewContainer(View tabViewContainer) {
         try {
-            Field mTextViewField = tabViewContainer.getClass().getDeclaredField("mTextView");
+            Field mTextViewField = tabViewContainer.getClass().getDeclaredField("textView");
             mTextViewField.setAccessible(true);
-            Field mCustomViewField = tabViewContainer.getClass().getDeclaredField("mCustomView");
+            Field mCustomViewField = tabViewContainer.getClass().getDeclaredField("customView");
             mCustomViewField.setAccessible(true);
             // 优先查找自定义的View
             View mTextView = (View) mTextViewField.get(tabViewContainer);
@@ -432,7 +446,7 @@ public class TabPagerLinkage {
      */
     private void wrapTabViewFromTabViewContainer(View tabViewContainer, int index, int lineWidth) {
         try {
-            Field mCustomViewField = tabViewContainer.getClass().getDeclaredField("mCustomView");
+            Field mCustomViewField = tabViewContainer.getClass().getDeclaredField("customView");
             mCustomViewField.setAccessible(true);
             // 查找View
             View mCustomView = (View) mCustomViewField.get(tabViewContainer);
@@ -581,9 +595,9 @@ public class TabPagerLinkage {
             try {
                 LinearLayout mTabStrip = (LinearLayout) tabLayout.getChildAt(0);
 
-                Field mSelectedIndicatorPaintField = mTabStrip.getClass().getDeclaredField("mSelectedIndicatorPaint");
+                Field mSelectedIndicatorPaintField = mTabStrip.getClass().getDeclaredField("selectedIndicatorPaint");
                 mSelectedIndicatorPaintField.setAccessible(true);
-                Field mSelectedIndicatorHeightField = mTabStrip.getClass().getDeclaredField("mSelectedIndicatorHeight");
+                Field mSelectedIndicatorHeightField = mTabStrip.getClass().getDeclaredField("selectedIndicatorHeight");
                 mSelectedIndicatorHeightField.setAccessible(true);
 
                 Paint mSelectedIndicatorPaint = (Paint) mSelectedIndicatorPaintField.get(mTabStrip);

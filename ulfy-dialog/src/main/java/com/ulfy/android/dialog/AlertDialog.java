@@ -2,6 +2,7 @@ package com.ulfy.android.dialog;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.view.WindowManager;
 
 /**
  * 警告弹出框
@@ -84,6 +85,10 @@ public final class AlertDialog implements IDialog {
     @Override public void dismiss() {
         DialogRepository.getInstance().removeDialog(AlertDialog.this);
         systemDialog.dismiss();
+    }
+
+    @Override public void ignoreSoftInputMethod() {
+        systemDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
     }
 
     /**

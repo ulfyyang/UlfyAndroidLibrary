@@ -1,10 +1,12 @@
 package com.ulfy.android.ui_injection;
 
 import android.app.Activity;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -46,7 +48,7 @@ public final class InjectUtils {
 	 * @return 查找到的布局 id 信息；如果找不到，则返回 -1
 	 */
 	public static int findUILayoutFileID(Class<?> clazz) {
-		if(clazz == Activity.class || clazz == FragmentActivity.class || clazz == android.app.Fragment.class || clazz == android.support.v4.app.Fragment.class || clazz == ViewGroup.class) {
+		if(clazz == Activity.class || clazz == FragmentActivity.class || clazz == android.app.Fragment.class || clazz == Fragment.class || clazz == ViewGroup.class) {
 			return -1;
 		} else {
 			if(clazz.isAnnotationPresent(Layout.class)) {
@@ -78,7 +80,7 @@ public final class InjectUtils {
 	 * @return 查找到的成员变量列表集合
 	 */
 	private static List<Field> findUIViewByIdList(Class<?> clazz, List<Field> fieldList) {
-		if(clazz == Activity.class || clazz == FragmentActivity.class || clazz == android.app.Fragment.class || clazz == android.support.v4.app.Fragment.class || clazz == View.class) {
+		if(clazz == Activity.class || clazz == FragmentActivity.class || clazz == android.app.Fragment.class || clazz == Fragment.class || clazz == View.class) {
 			return fieldList;
 		}
 		for(Field field : clazz.getDeclaredFields()) {
@@ -145,7 +147,7 @@ public final class InjectUtils {
 	 * @return 查找到的成员方法列表集合
 	 */
 	private static List<Method> findUIViewClickList(Class<?> clazz, List<Method> methodList) {
-		if(clazz == Activity.class || clazz == FragmentActivity.class || clazz == android.app.Fragment.class || clazz == android.support.v4.app.Fragment.class || clazz == View.class) {
+		if(clazz == Activity.class || clazz == FragmentActivity.class || clazz == android.app.Fragment.class || clazz == Fragment.class || clazz == View.class) {
             return methodList;
         }
 		for(Method method : clazz.getDeclaredMethods()) {

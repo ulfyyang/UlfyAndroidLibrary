@@ -2,7 +2,9 @@ package com.ulfy.android.download_manager;
 
 import android.app.Application;
 import android.content.Context;
+import android.text.TextUtils;
 
+import com.arialyy.aria.core.Aria;
 import com.ulfy.android.bus.BusConfig;
 import com.ulfy.android.bus.BusUtils;
 import com.ulfy.android.cache.CacheConfig;
@@ -10,11 +12,20 @@ import com.ulfy.android.cache.ICache;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class DownloadManagerConfig {
     static boolean configured;
-    static Application context;
-    static ICache cache;
+    static Application context; static ICache cache;
+    public static final String DEFAULT_DOWNLOAD_MANAGER_ID = "ULFY_DEFAULT_DOWNLOAD_MANAGER_ID";
+
+    static String defaultIdIfEmpty(String downloadManagerId) {      // 为了保证从序列化恢复的正确性，所有需要用到管理器ID的地方都要用该方法矫正
+        if (TextUtils.isEmpty(downloadManagerId)) {
+            downloadManagerId = DEFAULT_DOWNLOAD_MANAGER_ID;
+        }
+        return downloadManagerId;
+    }
 
     /**
      * 初始化下载任务模块
@@ -24,25 +35,20 @@ public final class DownloadManagerConfig {
             configured = true;
 
             DownloadManagerConfig.context = context;
+
+            Aria.init(context);
+            Aria.get(context).getDownloadConfig().setMaxTaskNum(Integer.MAX_VALUE);
+
             cache = CacheConfig.newMemoryDiskCache(context, Config.recordInfoCacheDirName);
 
             Config.init(context);
-            DownloadLimitConfig.getInstance().initLimitCount(Config.limitCount);
-            DownloadingTaskRepository.getInstance().clearDownloadingFileIfNoDownloadRecord();
-            DownloadedTaskRepository.getInstance().clearDownloadedFileIfNoDownloadRecord();
-            DownloadManager.getInstance().init();
+            DownloadLimitConfig.initLimitCount(Config.limitCount);
+            DownloadingTaskRepository.deleteDownloadingFileWithoutRecord();
+            DownloadedTaskRepository.deleteDownloadedFileWithoutRecord();
 
             BusConfig.init(context);
             BusUtils.post(new DownloadManager.OnDownloadManagerStateChangeEvent());
         }
-    }
-
-    /**
-     * 销毁下载任务模块
-     *      通常情况下不需要调用
-     */
-    public static void deinit() {
-        DownloadManager.getInstance().deinit();
     }
 
     static void throwExceptionIfConfigNotConfigured() {
@@ -58,11 +64,11 @@ public final class DownloadManagerConfig {
         public static DirectoryConfig directoryConfig = new DefaultDirectoryConfig();                   // 目录配置接口。如果配置外部存储必须给予读写权限
         public static String recordInfoCacheDirName = "download_manager_cache";                         // 用于跟踪下载信息的缓存目录
         public static boolean startWaitingFirst = true;                                                 // 优先开启等待中任务
-        public static int limitCount = -1;                                                              // 默认的同时下载数量限制。<=0 表示无限制
-        public static String statusStringStart = "下载中";                                              // 任务开始状态显示的文字（调用DownloadTask.getStatusString()的配置）
-        public static String statusStringPause = "已暂停";                                              // 任务暂停状态显示的文字（调用DownloadTask.getStatusString()的配置）
-        public static String statusStringWaiting = "等待中";                                            // 任务等待状态显示的文字（调用DownloadTask.getStatusString()的配置）
-        public static String statusStringComplete = "已完成";                                           // 任务完成状态显示的文字（调用DownloadTask.getStatusString()的配置）
+        public static Map<String, Integer> limitCount = new HashMap<>();                                // 默认的同时下载数量限制。没有表示无限制
+        public static String statusStringStart = "下载中";                                               // 任务开始状态显示的文字（调用DownloadTask.getStatusString()的配置）
+        public static String statusStringPause = "已暂停";                                               // 任务暂停状态显示的文字（调用DownloadTask.getStatusString()的配置）
+        public static String statusStringWaiting = "等待中";                                             // 任务等待状态显示的文字（调用DownloadTask.getStatusString()的配置）
+        public static String statusStringComplete = "已完成";                                            // 任务完成状态显示的文字（调用DownloadTask.getStatusString()的配置）
         static File downloadingDirectory;                                                               // 下载中文件目录
         static File downloadedDirectory;                                                                // 下载完成文件目录
 
@@ -78,6 +84,24 @@ public final class DownloadManagerConfig {
             if (!downloadedDirectory.exists()) {
                 downloadedDirectory.mkdirs();
             }
+        }
+
+        static File getDownloadingDirectoryById(String id) {
+            id = defaultIdIfEmpty(id);
+            File directory = new File(downloadingDirectory, id);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            return directory;
+        }
+
+        static File getDownloadedDirectoryById(String id) {
+            id = defaultIdIfEmpty(id);
+            File directory = new File(downloadedDirectory, id);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            return directory;
         }
 
         /**
@@ -104,10 +128,10 @@ public final class DownloadManagerConfig {
          */
         public static class DefaultDirectoryConfig implements DirectoryConfig {
             @Override public File getDownloadingDirectory(Context context) {
-                return new File(context.getFilesDir(), "movie_downloading");
+                return new File(context.getCacheDir(), "downloading");
             }
             @Override public File getDownloadedDirectory(Context context) {
-                return new File(context.getFilesDir(), "movie_downloaded");
+                return new File(context.getFilesDir(), "downloaded");
             }
         }
     }
@@ -118,31 +142,78 @@ public final class DownloadManagerConfig {
      */
     public static class DownloadLimitConfig implements Serializable {
         private static final long serialVersionUID = 2180202361490555482L;
+        private String downloadManagerId;                                           // 存储仓库所属的下载管理器
         private int limitCount;             // 同时下载数量
         private boolean modifyByUser;       // 是否被用户修改过。被用户修改过以后就会
 
         /**
          * 私有化构造方法
          */
-        private DownloadLimitConfig() {}
+        private DownloadLimitConfig(String downloadManagerId) {
+            this.downloadManagerId = defaultIdIfEmpty(downloadManagerId);
+        }
+
+        final static class LimitCache implements Serializable {
+            private static final long serialVersionUID = -1168591889508822040L;
+            Map<String, DownloadLimitConfig> limitMap = new HashMap<>();
+
+            private LimitCache() { }
+
+            static LimitCache getInstance() {
+                ICache cache = DownloadManagerConfig.cache;
+                return cache.isCached(LimitCache.class) ? cache.getCache(LimitCache.class) : cache.cache(new LimitCache());
+            }
+        }
 
         /**
          * 获取实例
          */
         public static DownloadLimitConfig getInstance() {
-            ICache cache = DownloadManagerConfig.cache;
-            return cache.isCached(DownloadLimitConfig.class) ? cache.getCache(DownloadLimitConfig.class) : cache.cache(new DownloadLimitConfig());
+            return getInstance(DEFAULT_DOWNLOAD_MANAGER_ID);
+        }
+
+        /**
+         * 获取实例
+         */
+        public static DownloadLimitConfig getInstance(String downloadManagerId) {
+            downloadManagerId = defaultIdIfEmpty(downloadManagerId);
+            LimitCache cache = LimitCache.getInstance();
+            Map<String, DownloadLimitConfig> limitMap = cache.limitMap;
+            DownloadLimitConfig config = limitMap.get(downloadManagerId);
+            if (config == null) {
+                config = new DownloadLimitConfig(downloadManagerId);
+                limitMap.put(downloadManagerId, config);
+                DownloadManagerConfig.cache.cache(cache);
+            }
+            return config;
+        }
+
+        static void initLimitCount(Map<String, Integer> limitCountMap) {
+            boolean modify = false;
+            LimitCache cache = LimitCache.getInstance();
+            for (Map.Entry<String, Integer> entry : limitCountMap.entrySet()) {
+                String id = defaultIdIfEmpty(entry.getKey());
+                if (DownloadLimitConfig.getInstance(id).initLimitCountInner(entry.getValue())) {
+                    modify = true;
+                }
+            }
+            if (modify) {
+                DownloadManagerConfig.cache.cache(cache);
+            }
         }
 
         /**
          * 初始化同时下载数量
          *      该方法将使用Config配置的值
          *      当用户调用过updateLimitCount方法后该方法将不会再生效
+         * @return 是否修改了
          */
-        private void initLimitCount(int limitCount) {
+        private boolean initLimitCountInner(int limitCount) {
             if (!modifyByUser) {
                 this.limitCount = limitCount;
-                updateToCache();
+                return true;
+            } else {
+                return false;
             }
         }
 
@@ -170,14 +241,17 @@ public final class DownloadManagerConfig {
          * 是否可以开启下载任务
          */
         boolean canStartDownloadTask() {
-            return limitCount <= 0 || DownloadingTaskRepository.getInstance().getDownloadingTaskCount() < limitCount;
+            return limitCount <= 0 || DownloadingTaskRepository
+                    .getInstance(defaultIdIfEmpty(downloadManagerId)).getDownloadingTaskCount() < limitCount;
         }
 
         /**
          * 更新到缓存
          */
         private void updateToCache() {
-            DownloadManagerConfig.cache.cache(this);
+            LimitCache cache = LimitCache.getInstance();
+            cache.limitMap.put(defaultIdIfEmpty(downloadManagerId), this);
+            DownloadManagerConfig.cache.cache(cache);
         }
     }
 }

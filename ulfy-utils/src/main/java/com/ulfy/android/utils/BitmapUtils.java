@@ -14,14 +14,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * 和图像处理相关的工具类
@@ -45,19 +38,16 @@ public final class BitmapUtils {
     }
 
     /**
-     * Bitmap转GIF
-     *      所有的位图必须宽高必须一样大
-     *      该方法为耗时方法，期望大小越小越快，加工的图片数量越少速度越快（建议的图片在30张以内）
-     *      压缩为有透明度的图形PNG时需要消耗大量的时间，因此如果可以知道不需要支持透明度的话就不要支持
-     *      针对录制表情包：期望大小200x200以内、每秒5帧比较合适，在生成速度和显示质量上可以达到较好的平衡。视频200毫秒取一帧，GIF播放间隔设置为100毫秒一帧
-     * @param outputPath    输出位置
-     * @param delay         每帧的延迟
-     * @param alpha         是否是有透明度的图像
-     * @param bitmaps       生成GIF的Bitmap
-     * @return 生成的路径
+     * 生成GIF进度回调
      */
-    public static String bitmapBitmapToGif(String outputPath, int delay, boolean alpha, Bitmap... bitmaps) {
-        return bitmapBitmapToGif(outputPath, delay, alpha, 0, 0, Arrays.asList(bitmaps));
+    public interface BitmapToGifProcessListener {
+        /**
+         * 当处理每张图片时回调该方法，在处理之前回调
+         * @param bitmap    正在处理的图片，可能是压缩过的
+         * @param current   当前处理的第几张（从1开始）
+         * @param total     总共有几张
+         */
+        void onProcess(Bitmap bitmap, int current, int total);
     }
 
     /**
@@ -66,165 +56,71 @@ public final class BitmapUtils {
      *      该方法为耗时方法，期望大小越小越快，加工的图片数量越少速度越快（建议的图片在30张以内）
      *      压缩为有透明度的图形PNG时需要消耗大量的时间，因此如果可以知道不需要支持透明度的话就不要支持
      *      针对录制表情包：期望大小200x200以内、每秒5帧比较合适，在生成速度和显示质量上可以达到较好的平衡。视频200毫秒取一帧，GIF播放间隔设置为100毫秒一帧
-     * @param outputPath    输出位置
-     * @param delay         每帧的延迟
-     * @param alpha         是否是有透明度的图像
-     * @param bitmaps       生成GIF的Bitmap
+     * @param outputPath        输出位置
+     * @param delay             每帧的延迟（建议100）
+     * @param alpha             是否是有透明度的图像（这个根据业务需要，如果不确定就设置为true。透明图像会占用更多的时间）
+     * @param expectWidth       期望的宽度（0表示保持原大小，建议400）
+     * @param expectHeight      期望的高度（0表示保持原大小，建议400）
+     * @param bitmapList        生成GIF的Bitmap
+     * @param processListener   生成GIF进度回调
      * @return 生成的路径
      */
-    public static String bitmapFileToGif(String outputPath, int delay, boolean alpha, File... bitmaps) {
-        return bitmapFileToGif(outputPath, delay, alpha, 0, 0, Arrays.asList(bitmaps));
-    }
-
-    /**
-     * Bitmap转GIF
-     *      所有的位图必须宽高必须一样大
-     *      该方法为耗时方法，期望大小越小越快，加工的图片数量越少速度越快（建议的图片在30张以内）
-     *      压缩为有透明度的图形PNG时需要消耗大量的时间，因此如果可以知道不需要支持透明度的话就不要支持
-     *      针对录制表情包：期望大小200x200以内、每秒5帧比较合适，在生成速度和显示质量上可以达到较好的平衡。视频200毫秒取一帧，GIF播放间隔设置为100毫秒一帧
-     * @param outputPath    输出位置
-     * @param delay         每帧的延迟
-     * @param alpha         是否是有透明度的图像
-     * @param expectWidth   期望的宽度
-     * @param expectHeight  期望的高度
-     * @param bitmaps       生成GIF的Bitmap
-     * @return 生成的路径
-     */
-    public static String bitmapBitmapToGif(String outputPath, int delay, boolean alpha, int expectWidth, int expectHeight, Bitmap... bitmaps) {
-        return bitmapBitmapToGif(outputPath, delay, alpha, expectWidth, expectHeight, Arrays.asList(bitmaps));
-    }
-
-    /**
-     * Bitmap转GIF
-     *      所有的位图必须宽高必须一样大
-     *      该方法为耗时方法，期望大小越小越快，加工的图片数量越少速度越快（建议的图片在30张以内）
-     *      压缩为有透明度的图形PNG时需要消耗大量的时间，因此如果可以知道不需要支持透明度的话就不要支持
-     *      针对录制表情包：期望大小200x200以内、每秒5帧比较合适，在生成速度和显示质量上可以达到较好的平衡。视频200毫秒取一帧，GIF播放间隔设置为100毫秒一帧
-     * @param outputPath    输出位置
-     * @param delay         每帧的延迟
-     * @param alpha         是否是有透明度的图像
-     * @param expectWidth   期望的宽度
-     * @param expectHeight  期望的高度
-     * @param bitmaps       生成GIF的Bitmap
-     * @return 生成的路径
-     */
-    public static String bitmapFileToGif(String outputPath, int delay, boolean alpha, int expectWidth, int expectHeight, File... bitmaps) {
-        return bitmapFileToGif(outputPath, delay, alpha, expectWidth, expectHeight, Arrays.asList(bitmaps));
-    }
-
-    /**
-     * Bitmap转GIF
-     *      所有的位图必须宽高必须一样大
-     *      该方法为耗时方法，期望大小越小越快，加工的图片数量越少速度越快（建议的图片在30张以内）
-     *      压缩为有透明度的图形PNG时需要消耗大量的时间，因此如果可以知道不需要支持透明度的话就不要支持
-     *      针对录制表情包：期望大小200x200以内、每秒5帧比较合适，在生成速度和显示质量上可以达到较好的平衡。视频200毫秒取一帧，GIF播放间隔设置为100毫秒一帧
-     * @param outputPath    输出位置
-     * @param delay         每帧的延迟
-     * @param alpha         是否是有透明度的图像
-     * @param bitmapList    生成GIF的Bitmap
-     * @return 生成的路径
-     */
-    public static String bitmapBitmapToGif(String outputPath, final int delay, boolean alpha, List<Bitmap> bitmapList) {
-        return bitmapBitmapToGif(outputPath, delay, alpha, 0, 0, bitmapList);
-    }
-
-    /**
-     * Bitmap转GIF
-     *      所有的位图必须宽高必须一样大
-     *      该方法为耗时方法，期望大小越小越快，加工的图片数量越少速度越快（建议的图片在30张以内）
-     *      压缩为有透明度的图形PNG时需要消耗大量的时间，因此如果可以知道不需要支持透明度的话就不要支持
-     *      针对录制表情包：期望大小200x200以内、每秒5帧比较合适，在生成速度和显示质量上可以达到较好的平衡。视频200毫秒取一帧，GIF播放间隔设置为100毫秒一帧
-     * @param outputPath    输出位置
-     * @param delay         每帧的延迟
-     * @param alpha         是否是有透明度的图像
-     * @param bitmapList    生成GIF的Bitmap
-     * @return 生成的路径
-     */
-    public static String bitmapFileToGif(String outputPath, final int delay, boolean alpha, List<File> bitmapList) {
-        return bitmapFileToGif(outputPath, delay, alpha, 0, 0, bitmapList);
-    }
-
-    /**
-     * Bitmap转GIF
-     *      所有的位图必须宽高必须一样大
-     *      该方法为耗时方法，期望大小越小越快，加工的图片数量越少速度越快（建议的图片在30张以内）
-     *      压缩为有透明度的图形PNG时需要消耗大量的时间，因此如果可以知道不需要支持透明度的话就不要支持
-     *      针对录制表情包：期望大小200x200以内、每秒5帧比较合适，在生成速度和显示质量上可以达到较好的平衡。视频200毫秒取一帧，GIF播放间隔设置为100毫秒一帧
-     * @param outputPath    输出位置
-     * @param delay         每帧的延迟
-     * @param alpha         是否是有透明度的图像
-     * @param expectWidth   期望的宽度
-     * @param expectHeight  期望的高度
-     * @param bitmapList    生成GIF的Bitmap
-     * @return 生成的路径
-     */
-    public static String bitmapBitmapToGif(String outputPath, final int delay, final boolean alpha, final int expectWidth, final int expectHeight, List<Bitmap> bitmapList) {
+    public static String bitmapBitmapToGif(String outputPath, final int delay, final boolean alpha, final int expectWidth, final int expectHeight, List<Bitmap> bitmapList, BitmapToGifProcessListener processListener) {
         try {
-            // 进行图片大小压缩
-            ExecutorService executorService = Executors.newCachedThreadPool();
-            List<Future<Bitmap>> compressBitmapFutureList = new ArrayList<>();
-            for (final Bitmap bitmap : bitmapList) {
-                Future<Bitmap> compressBitmapFuture = executorService.submit(new Callable<Bitmap>() {
-                    @Override public Bitmap call() throws Exception {
-                        return compressBitmapWithSize(bitmap, alpha, expectWidth, expectHeight);
-                    }
-                });
-                compressBitmapFutureList.add(compressBitmapFuture);
+            GifEncoder encoder = new GifEncoder();
+            for (int i = 0; i < bitmapList.size(); i++) {
+                Bitmap bitmap = compressBitmapWithSize(bitmapList.get(i), alpha, expectWidth, expectHeight);
+                if (i == 0) {
+                    encoder.init(bitmap.getWidth(), bitmap.getHeight(), outputPath);     // 宽和高必须和原图一样
+                }
+                encoder.encodeFrame(bitmap, delay);
+                if (i == bitmapList.size() - 1) {
+                    encoder.close();
+                }
+                if (processListener != null) {
+                    processListener.onProcess(bitmap, i + 1, bitmapList.size());
+                }
             }
-            // 生成GIF图片
-            GifEncoder gifEncoder = new GifEncoder();
-            Bitmap firstFrameBitmap = compressBitmapFutureList.get(0).get();
-            gifEncoder.init(firstFrameBitmap.getWidth(), firstFrameBitmap.getHeight(), outputPath);     // 宽和高必须和原图一样
-            for (Future<Bitmap> compressBitmapFuture : compressBitmapFutureList) {
-                gifEncoder.encodeFrame(compressBitmapFuture.get(), delay);
-            }
-            gifEncoder.close();
             return outputPath;
         } catch (Exception e) {
             return "";
         }
     }
 
-
     /**
      * Bitmap转GIF
      *      所有的位图必须宽高必须一样大
      *      该方法为耗时方法，期望大小越小越快，加工的图片数量越少速度越快（建议的图片在30张以内）
      *      压缩为有透明度的图形PNG时需要消耗大量的时间，因此如果可以知道不需要支持透明度的话就不要支持
-     *      针对录制表情包：期望大小200x200以内、每秒5帧比较合适，在生成速度和显示质量上可以达到较好的平衡。视频200毫秒取一帧，GIF播放间隔设置为100毫秒一帧
-     * @param outputPath    输出位置
-     * @param delay         每帧的延迟
-     * @param alpha         是否是有透明度的图像
-     * @param expectWidth   期望的宽度
-     * @param expectHeight  期望的高度
-     * @param bitmapList    生成GIF的Bitmap
+     *      针对录制表情包：期望大小400x400以内、每秒5帧比较合适，在生成速度和显示质量上可以达到较好的平衡。视频200毫秒取一帧，GIF播放间隔设置为100毫秒一帧
+     * @param outputPath        输出位置
+     * @param delay             每帧的延迟（建议100）
+     * @param alpha             是否是有透明度的图像（这个根据业务需要，如果不确定就设置为true。透明图像会占用更多的时间）
+     * @param expectWidth       期望的宽度（0表示保持原大小，建议400）
+     * @param expectHeight      期望的高度（0表示保持原大小，建议400）
+     * @param bitmapFileList    生成GIF的Bitmap
+     * @param processListener   生成GIF进度回调
      * @return 生成的路径
      */
-    public static String bitmapFileToGif(String outputPath, final int delay, final boolean alpha, final int expectWidth, final int expectHeight, List<File> bitmapList) {
+    public static String bitmapFileToGif(String outputPath, final int delay, final boolean alpha, final int expectWidth, final int expectHeight, List<File> bitmapFileList, BitmapToGifProcessListener processListener) {
         try {
-            // 进行图片大小压缩
-            ExecutorService executorService = Executors.newCachedThreadPool();
-            List<Future<Bitmap>> compressBitmapFutureList = new ArrayList<>();
-            for (final File bitmap : new CopyOnWriteArrayList<>(bitmapList)) {
-                Future<Bitmap> compressBitmapFuture = executorService.submit(new Callable<Bitmap>() {
-                    @Override public Bitmap call() throws Exception {
-                        return compressBitmapWithSize(bitmap, alpha, expectWidth, expectHeight);
-                    }
-                });
-                compressBitmapFutureList.add(compressBitmapFuture);
+            GifEncoder encoder = new GifEncoder();
+            for (int i = 0; i < bitmapFileList.size(); i++) {
+                Bitmap bitmap = compressBitmapWithSize(bitmapFileList.get(i), alpha, expectWidth, expectHeight);
+                if (i == 0) {
+                    encoder.init(bitmap.getWidth(), bitmap.getHeight(), outputPath);     // 宽和高必须和原图一样
+                }
+                encoder.encodeFrame(bitmap, delay);
+                if (i == bitmapFileList.size() - 1) {
+                    encoder.close();
+                }
+                if (processListener != null) {
+                    processListener.onProcess(bitmap, i + 1, bitmapFileList.size());
+                }
             }
-            // 生成GIF图片
-            GifEncoder gifEncoder = new GifEncoder();
-            Bitmap firstFrameBitmap = compressBitmapFutureList.get(0).get();
-            gifEncoder.init(firstFrameBitmap.getWidth(), firstFrameBitmap.getHeight(), outputPath);     // 宽和高必须和原图一样
-            for (Future<Bitmap> compressBitmapFuture : compressBitmapFutureList) {
-                gifEncoder.encodeFrame(compressBitmapFuture.get(), delay);
-            }
-            gifEncoder.close();
             return outputPath;
         } catch (Exception e) {
-            e.printStackTrace();
-            return "";
+            e.printStackTrace(); return "";
         }
     }
 
@@ -243,11 +139,7 @@ public final class BitmapUtils {
             e.printStackTrace();
         } finally {
             if (bufferedOutputStream != null) {
-                try {
-                    bufferedOutputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                try { bufferedOutputStream.close(); } catch (IOException e) { e.printStackTrace(); }
             }
         }
         return file;

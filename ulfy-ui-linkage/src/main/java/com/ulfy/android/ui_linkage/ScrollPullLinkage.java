@@ -1,9 +1,10 @@
 package com.ulfy.android.ui_linkage;
 
-import android.support.v4.widget.NestedScrollView;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * 目前只支持NestedScrollView、RecyclerView。NestedScrollView会占用设置混动回调

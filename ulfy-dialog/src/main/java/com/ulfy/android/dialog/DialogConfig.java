@@ -2,6 +2,7 @@ package com.ulfy.android.dialog;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.os.Bundle;
 
 public final class DialogConfig {
@@ -29,5 +30,26 @@ public final class DialogConfig {
                 DialogRepository.getInstance().releaseDialogOnActivityDestoryed(activity);
             }
         });
+    }
+
+    public static final class Config {
+        public static ProgressDialogConfig progressDialogConfig;
+
+        static {
+            progressDialogConfig = new DefaultProgressDialogConfig();
+        }
+    }
+
+    public interface ProgressDialogConfig {
+        /**
+         * 进度弹出框使用的View
+         */
+        public IProgressView getProgressView(Context context);
+    }
+
+    public static class DefaultProgressDialogConfig implements ProgressDialogConfig {
+        @Override public IProgressView getProgressView(Context context) {
+            return new ProgressView(context, ProgressView.SHOW_MODE_PERCENT);
+        }
     }
 }

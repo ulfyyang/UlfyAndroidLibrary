@@ -19,7 +19,7 @@ ext {
     externalTargetSdkVersion = 29                                                                   // 编译用的目标SDK版本号
 
     /**
-     * ulfy各个模块
+     * 优菲各个模块
      */
     externalUlfyCache = 'com.ulfy.android:cache:0.2.0'                                              // 对象缓存框架
     externalUlfyBus = 'com.ulfy.android:bus:0.2.1'                                                  // 事件总线框架
@@ -49,33 +49,36 @@ ext {
     /**
      * 谷歌官方支持库
      */
-    externalAndroidAppCompatV7 = 'com.android.support:appcompat-v7:27.1.1'                          // 组件支持库
-    externalAndroidDesign = 'com.android.support:design:27.1.1'                                     // material design 库
+    externalAndroidAppCompatV7 = 'androidx.appcompat:appcompat:1.2.0'                               // 组件支持库
+    externalAndroidDesign = 'com.google.android.material:material:1.1.0'                            // material design 库
     externalAppBarLayoutBehavior = 'com.github.yuruiyin:AppbarLayoutBehavior:v1.0.2'                // 解决AppBarLayout上拉回弹问题
     externalAppBarLayout = 'io.github.iamyours:flingappbarlayout:1.0.7'                             // 官方AppBarLayout升级版
-    externalAndroidCardView = 'com.android.support:cardview-v7:27.1.1'                              // 卡片布局
-    externalConstraintLayout = 'com.android.support.constraint:constraint-layout:1.1.3'             // 约束布局
-    externalAndroidMultiDex = 'com.android.support:multidex:1.0.2'                                  // 分包打包
+    externalAndroidCardView = 'androidx.cardview:cardview:1.0.0'                                    // 卡片布局
+    externalConstraintLayout = 'androidx.constraintlayout:constraintlayout:2.0.4'                   // 约束布局
+    externalViewPager2 = 'androidx.viewpager2:viewpager2:1.0.0'                                     // ViewPager2
+    externalAndroidMultiDex = 'androidx.multidex:multidex:2.0.1'                                    // 分包打包
+    externalGoogleFindBugs = 'com.google.code.findbugs:jsr305:3.0.2'                                // 很多三方库依赖findbugs，不过版本不统一，如果编译出现findbugs版本冲突，则强制使用该版本
 
     /**
      * 测试库相关库
      */
-    externalRunner = "android.support.test.runner.AndroidJUnitRunner"                               // 测试Runner
+    externalRunner = "androidx.test.runner.AndroidJUnitRunner"                                      // 测试Runner
     externalJunit = 'junit:junit:4.12'                                                              // junit测试库
     externalHamcrestLibrary = 'org.hamcrest:hamcrest-library:2.2'                                   // 断言匹配库
     externalMockito = 'org.mockito:mockito-core:3.1.0'                                              // java测试mock库
     externalMockitoAndroid = "org.mockito:mockito-android:3.1.0"                                    // 安卓测试mock库
     externalRobolectic = 'org.robolectric:robolectric:4.2'                                          // java测试安卓库
-    externalAndroidTestRunner = 'com.android.support.test:runner:1.0.2'                             // 安卓测试Runner
-    externalAndroidTestRules = 'com.android.support.test:rules:1.0.2'                               // espresso规则
-    externalAndroidTestEspresso = 'com.android.support.test.espresso:espresso-core:3.0.2'           // espresso核心
+    externalAndroidTestRunner = 'androidx.test:runner:1.1.0'                                        // 安卓测试Runner
+    externalAndroidTestRules = 'androidx.test:rules:1.1.0'                                          // espresso规则
+    externalAndroidTestEspresso = 'androidx.test.espresso:espresso-core:3.1.0'                      // espresso核心
     externalAndroidTestSupport = 'com.novoda:espresso-support:1.0.0'                                // espresso扩展支持
     externalAndroidTestSupportExtra = 'com.novoda:espresso-support-extras:1.0.0'                    // espresso扩展支持组件
-    externalAndroidTestUiAutomator = 'com.android.support.test.uiautomator:uiautomator-v18:2.1.3'   // uiautomator库
+    externalAndroidTestUiAutomator = 'androidx.test.uiautomator:uiautomator:2.2.0'                  // uiautomator库
 
     /**
      * 三方控件
      */
+    externalShaowLayout = 'com.github.lihangleo2:ShadowLayout:3.1.9'                                // 阴影布局
     externalXBanner = 'com.github.xiaohaibin:XBanner:1.7.4'                                         // 轮播图
     externalPhotoView = 'com.github.chrisbanes:PhotoView:2.1.3'                                     // 图片放大预览
     externalImageWatcher = 'com.github.iielse:ImageWatcher:1.1.5'                                   // 仿微信大图预览
@@ -106,6 +109,8 @@ ext {
     externalGuava = 'com.google.guava:guava:24.0-android'                                           // 谷歌基础工具包
     externalJodaTime = 'joda-time:joda-time:2.9.9'                                                  // 日期处理库
     externalPermission = 'com.yanzhenjie:permission:1.1.2'                                          // 动态权限申请
+    externalRxJava = 'io.reactivex.rxjava3:rxjava:3.0.11-RC3'                                       // RxJava
+    externalRxAndroid = 'io.reactivex.rxjava3:rxandroid:3.0.0'                                      // RxAndroid
 
     /**
      * 其它杂项功能
@@ -119,7 +124,9 @@ ext {
     externalPinyin = 'com.belerweb:pinyin4j:2.5.0'                                                  // 汉语转拼音
     externalTinyPinyin = 'com.github.promeg:tinypinyin:2.0.3'                                       // 汉字转拼音
     externalPictureCompressor = 'id.zelory:compressor:2.1.0'                                        // 图片压缩
-    externalOkDownload = 'com.liulishuo.okdownload:okdownload:1.0.5'                                // 下载引擎
-    externalOkDownloadSqlite = 'com.liulishuo.okdownload:sqlite:1.0.5'                              // 下载引擎：添加该依赖可提供断点下载功能
-    externalOkDownloadOkHttp = 'com.liulishuo.okdownload:okhttp:1.0.5'                              // 下载引擎：添加该依赖会采用okhttp作为网络工具
+    externalAria = 'com.arialyy.aria:core:3.8.15'                                                   // 下载引擎：Aria
+    externalAriaAnnotationProcesser = 'com.arialyy.aria:compiler:3.8.15'                            // 下载引擎：Aria预编译
+    externalOkDownload = 'com.liulishuo.okdownload:okdownload:1.0.7'                                // 下载引擎（OkDownload存在很多BUG，建议使用Aria）
+    externalOkDownloadSqlite = 'com.liulishuo.okdownload:sqlite:1.0.7'                              // 下载引擎：添加该依赖可提供断点下载功能
+    externalOkDownloadOkHttp = 'com.liulishuo.okdownload:okhttp:1.0.7'                              // 下载引擎：添加该依赖会采用okhttp作为网络工具
 }

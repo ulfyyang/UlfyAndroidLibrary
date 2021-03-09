@@ -121,9 +121,9 @@ public final class ActivityUtils {
 	}
 
 	private static void processPickMedia(ReceiveDataState receiveDataState, Activity target, int request, Intent data) {
-		int search = data == null ? 0 : data.getExtras().getInt("search");
-		int max = data == null ? 0 : data.getExtras().getInt("max");
-		List<MediaEntity> entities = data == null ? null : (List<MediaEntity>) data.getExtras().getSerializable("entities");
+		int search = data == null ? 0 : data.getExtras().getInt(MediaPickerActivity.KEY_SEARCH);
+		int max = data == null ? 0 : data.getExtras().getInt(MediaPickerActivity.KEY_MAX);
+		List<MediaEntity> entities = data == null ? null : (List<MediaEntity>) data.getExtras().getSerializable(MediaPickerActivity.KEY_ENTITIES);
 		BusUtils.post(target, new OnPickMediaEvent(request, search, max, entities));
 		initActivityState(receiveDataState);
 	}
@@ -483,9 +483,9 @@ public final class ActivityUtils {
 				// 构造意图
 				Intent intent = new Intent(topActivity, MediaPickerActivity.class);
 				Bundle data = new Bundle();
-				data.putInt("search", search);
-				data.putInt("max", max);
-				data.putSerializable("entities", (Serializable) entities);
+				data.putInt(MediaPickerActivity.KEY_SEARCH, search);
+				data.putInt(MediaPickerActivity.KEY_MAX, max);
+				data.putSerializable(MediaPickerActivity.KEY_ENTITIES, (Serializable) entities);
 				intent.putExtras(data);
 				// 启动选择
 				state.state = ReceiveDataState.PICK_MEDIA;

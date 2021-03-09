@@ -4,9 +4,8 @@ import com.ulfy.android.mvvm.IView;
 import com.ulfy.android.mvvm.IViewModel;
 
 class MediaOverMaxSelectCountVM implements IViewModel {
+    private String unitName, typeName;
     private int maxCount;
-    private String unitName;
-    private String typeName;
 
     MediaOverMaxSelectCountVM(int maxCount, int typeName) {
         this.maxCount = maxCount;
@@ -30,8 +29,7 @@ class MediaOverMaxSelectCountVM implements IViewModel {
         return String.format("您最多只能选择%d%s%s", maxCount, unitName, typeName);
     }
 
-    @Override
-    public Class<? extends IView> getViewClass() {
+    @Override public Class<? extends IView> getViewClass() {
         return MediaOverMaxSelectCountView.class;
     }
 }

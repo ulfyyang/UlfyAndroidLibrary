@@ -7,6 +7,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 /**
@@ -100,6 +101,10 @@ public final class NormalDialog extends Dialog implements IDialog {
     @Override public final void dismiss() {
         DialogRepository.getInstance().removeDialog(NormalDialog.this);
         super.dismiss();
+    }
+
+    @Override public void ignoreSoftInputMethod() {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
     }
 
     @Override public final Context getDialogContext() {

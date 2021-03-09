@@ -1,7 +1,7 @@
 package com.ulfy.android.multi_domain_picker;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.uiautomator.UiDevice;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;

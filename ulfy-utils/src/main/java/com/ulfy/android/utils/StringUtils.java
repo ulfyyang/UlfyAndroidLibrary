@@ -1,10 +1,5 @@
 package com.ulfy.android.utils;
 
-import android.os.Build;
-import android.support.annotation.RequiresApi;
-
-import java.util.List;
-
 /**
  * 字符串辅助工具类
  */

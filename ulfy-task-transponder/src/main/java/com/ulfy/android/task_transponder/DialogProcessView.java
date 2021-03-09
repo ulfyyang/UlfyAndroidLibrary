@@ -1,11 +1,12 @@
 package com.ulfy.android.task_transponder;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 /**
  * 弹出框加载时使用的界面

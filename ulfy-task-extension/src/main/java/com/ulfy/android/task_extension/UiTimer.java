@@ -18,6 +18,7 @@ public final class UiTimer {
     private TimerDriver timerDriver;                                                                // 定时器的内核驱动器
     private boolean isSchedule;                                                                     // 是否已经开始了循环，这个表示循环是否终止
     private long delay;                                                                             // 每次执行间隔的时间
+    private long delayStart;                                                                        // 延迟指定时间后启动定时器任务循环
     private List<OnTimerStartListener> onTimerStartListenerList = new ArrayList<>();                // 定时器启动时的回调
     private List<BackgroundTimerExecuteBody> backgroundTimerExecuteBodyList = new ArrayList<>();    // 定时器执行的任务
     private List<UiTimerExecuteBody> uiTimerExecuteBodyList = new ArrayList<>();                    // 定时器执行的任务
@@ -36,6 +37,14 @@ public final class UiTimer {
         this.timerDriver = new DefaultTimerDriver();
         this.setUiTimerExecuteBody(uiTimerExecuteBody);
         this.setOnTimerFinishListener(onTimerFinishListener);
+    }
+
+    /**
+     * 设置延迟启动定时器循环的时间
+     */
+    public UiTimer setDelayStart(long delayStart) {
+        this.delayStart = delayStart;
+        return this;
     }
 
     /**
@@ -68,25 +77,16 @@ public final class UiTimer {
         if (!isSchedule) {
             isSchedule = true;
             if (Looper.myLooper() == Looper.getMainLooper()) {
-                scheduleInner();
+                timerDriver.startDrive(this);
             } else {
                 uiHandler.post(new Runnable() {
                     @Override public void run() {
-                        scheduleInner();
+                        timerDriver.startDrive(UiTimer.this);
                     }
                 });
             }
         }
         return this;
-    }
-
-    private synchronized void scheduleInner() {
-        for (OnTimerStartListener onTimerStartListener : onTimerStartListenerList) {
-            if (onTimerStartListener != null) {
-                onTimerStartListener.onTimerStart(this, timerDriver);
-            }
-        }
-        timerDriver.startDrive(this);
     }
 
     /**
@@ -105,14 +105,54 @@ public final class UiTimer {
             isSchedule = false;
             timerDriver.stopDrive(this);
             if (executeFinishCallback) {
-                for (OnTimerFinishListener onTimerFinishListener : onTimerFinishListenerList) {
-                    if (onTimerFinishListener != null) {
-                        onTimerFinishListener.onTimerFinish(this, timerDriver);
-                    }
-                }
+                callOnTimerFinisherListener();
             }
         }
         return this;
+    }
+
+    /**
+     * 执行定时器开始监听回调
+     */
+    private void callOnTimerStartListener() {
+        for (OnTimerStartListener onTimerStartListener : onTimerStartListenerList) {
+            if (onTimerStartListener != null) {
+                onTimerStartListener.onTimerStart(this, timerDriver);
+            }
+        }
+    }
+
+    /**
+     * 执行执行体监听回调
+     */
+    private void callExecuteBodyListener(final TimerDriver timerDriver) {
+        if (backgroundTimerExecuteBodyList.size() > 0) {
+            executorService.execute(new Runnable() {
+                @Override public void run() {
+                    for (BackgroundTimerExecuteBody backgroundTimerExecuteBody : backgroundTimerExecuteBodyList) {
+                        if (backgroundTimerExecuteBody != null) {
+                            backgroundTimerExecuteBody.onExecute(UiTimer.this, timerDriver);
+                        }
+                    }
+                }
+            });
+        }
+        for (UiTimerExecuteBody uiTimerExecuteBody : uiTimerExecuteBodyList) {
+            if (uiTimerExecuteBody != null) {
+                uiTimerExecuteBody.onExecute(this, timerDriver);
+            }
+        }
+    }
+
+    /**
+     * 执行定时器结束监听回调
+     */
+    private void callOnTimerFinisherListener() {
+        for (OnTimerFinishListener onTimerFinishListener : onTimerFinishListenerList) {
+            if (onTimerFinishListener != null) {
+                onTimerFinishListener.onTimerFinish(this, timerDriver);
+            }
+        }
     }
 
     public UiTimer setTimerDriver(TimerDriver timerDriver) {
@@ -234,11 +274,17 @@ public final class UiTimer {
             if (timerHandler != null) {
                 timerHandler.stopTimer();
             }
-            timerHandler = new TimerHandler(uiTimer, new Runnable() {
-                @Override public void run() {
-                    timerExec(uiTimer);
-                }
-            });
+            timerHandler = new TimerHandler(uiTimer,
+                    new Runnable() {
+                        @Override public void run() {
+                            uiTimer.callOnTimerStartListener();
+                        }
+                    },
+                    new Runnable() {
+                        @Override public void run() {
+                            uiTimer.callExecuteBodyListener(DefaultTimerDriver.this);
+                        }
+                    });
             timerHandler.startTimer();
         }
 
@@ -247,32 +293,13 @@ public final class UiTimer {
                 timerHandler.stopTimer();
             }
         }
-
-        private void timerExec(final UiTimer uiTimer) {
-            if (uiTimer.backgroundTimerExecuteBodyList.size() > 0) {
-                uiTimer.executorService.execute(new Runnable() {
-                    @Override public void run() {
-                        for (BackgroundTimerExecuteBody backgroundTimerExecuteBody : uiTimer.backgroundTimerExecuteBodyList) {
-                            if (backgroundTimerExecuteBody != null) {
-                                backgroundTimerExecuteBody.onExecute(uiTimer, DefaultTimerDriver.this);
-                            }
-                        }
-                    }
-                });
-            }
-            for (UiTimerExecuteBody uiTimerExecuteBody : uiTimer.uiTimerExecuteBodyList) {
-                if (uiTimerExecuteBody != null) {
-                    uiTimerExecuteBody.onExecute(uiTimer, DefaultTimerDriver.this);
-                }
-            }
-        }
     }
 
     public static class NumberTimerDriver implements TimerDriver {
         private TimerHandler timerHandler;
         private int startNumber;
         private int endNumber;
-        private int currentNumber;
+        private int currentNumber, nextNumber;      // 当前的数字，下一次要执行的数字
         private int step = 1;
         private boolean loop;
         private boolean reverse;
@@ -296,14 +323,15 @@ public final class UiTimer {
 
         public void initCurrentNumber() {
             this.currentNumber = this.startNumber;
+            this.nextNumber = this.startNumber;
         }
 
-        private void optCurrentNumber() {
-            this.currentNumber += this.startNumber < this.endNumber ? this.step : -this.step;
+        private void optNextNumber() {
+            this.nextNumber += this.startNumber < this.endNumber ? this.step : -this.step;
         }
 
         private boolean shouldStop() {
-            return this.startNumber < this.endNumber ? this.currentNumber > this.endNumber : this.currentNumber < this.endNumber;
+            return this.startNumber < this.endNumber ? this.nextNumber > this.endNumber : this.nextNumber < this.endNumber;
         }
 
         public int getCurrentNumber() {
@@ -314,11 +342,18 @@ public final class UiTimer {
             if (timerHandler != null) {
                 timerHandler.stopTimer();
             }
-            timerHandler = new TimerHandler(uiTimer, new Runnable() {
-                @Override public void run() {
-                    timerExec(uiTimer);
-                }
-            });
+            this.nextNumber = this.currentNumber;       // 启动时将下次的数字设置为当前，保持上一次的状态
+            timerHandler = new TimerHandler(uiTimer,
+                    new Runnable() {
+                        @Override public void run() {
+                            uiTimer.callOnTimerStartListener();
+                        }
+                    },
+                    new Runnable() {
+                        @Override public void run() {
+                            timerExec(uiTimer);
+                        }
+                    });
             timerHandler.startTimer();
         }
 
@@ -328,33 +363,19 @@ public final class UiTimer {
             }
         }
 
-        private void timerExec(final UiTimer uiTimer) {
-            if (uiTimer.backgroundTimerExecuteBodyList.size() > 0) {
-                uiTimer.executorService.execute(new Runnable() {
-                    @Override public void run() {
-                        for (BackgroundTimerExecuteBody backgroundTimerExecuteBody : uiTimer.backgroundTimerExecuteBodyList) {
-                            if (backgroundTimerExecuteBody != null) {
-                                backgroundTimerExecuteBody.onExecute(uiTimer, NumberTimerDriver.this);
-                            }
-                        }
-                    }
-                });
-            }
-            for (UiTimerExecuteBody uiTimerExecuteBody : uiTimer.uiTimerExecuteBodyList) {
-                if (uiTimerExecuteBody != null && !shouldStop()) {
-                    uiTimerExecuteBody.onExecute(uiTimer, NumberTimerDriver.this);
-                }
-            }
+        private void timerExec(UiTimer uiTimer) {
             if (shouldStop()) {
-                if (loop) {
+                if (loop) {     // 如果是循环，则反转数字。反转数字之后又是一个新的状态，需要重新回调一次
                     reverseStatusIfNeed();
                     initCurrentNumber();
-                    timerExec(uiTimer);
+                    uiTimer.callExecuteBodyListener(this);
                 } else {
                     uiTimer.cancel();
                 }
             } else {
-                optCurrentNumber();
+                this.currentNumber = this.nextNumber;       // 执行时移动到下一次的数组
+                uiTimer.callExecuteBodyListener(this);
+                optNextNumber();
             }
         }
     }
@@ -365,17 +386,24 @@ public final class UiTimer {
     private static class TimerHandler extends Handler {
         private UiTimer uiTimer;
         private int identityId;
-        private Runnable timerExecuteBody;
+        private Runnable timerStartExecuteBody, timerExecuteBody;
+        private boolean firstMessage = true;        // 是否是第一个消息
 
-        public TimerHandler(UiTimer uiTimer, Runnable timerExecuteBody) {
+        public TimerHandler(UiTimer uiTimer, Runnable timerStartExecuteBody, Runnable timerExecuteBody) {
             super(Looper.getMainLooper());
             this.uiTimer = uiTimer;
             this.identityId = hashCode();
+            this.timerStartExecuteBody = timerStartExecuteBody;
             this.timerExecuteBody = timerExecuteBody;
         }
 
         public void startTimer() {
-            sendMessage(obtainMessage(identityId));
+            firstMessage = true;
+            if (uiTimer.delayStart > 0) {
+                sendMessageDelayed(obtainMessage(identityId), uiTimer.delayStart);
+            } else {
+                sendMessage(obtainMessage(identityId));
+            }
         }
 
         public void stopTimer() {
@@ -383,8 +411,16 @@ public final class UiTimer {
         }
 
         public void handleMessage(Message msg) {
-            if (msg.what == identityId && uiTimer.isSchedule && timerExecuteBody != null) {
-                timerExecuteBody.run();
+            if (msg.what == identityId && uiTimer.isSchedule) {
+                if (firstMessage) {
+                    if (timerStartExecuteBody != null) {
+                        timerStartExecuteBody.run();
+                    }
+                    firstMessage = false;
+                }
+                if (timerExecuteBody != null) {
+                    timerExecuteBody.run();
+                }
                 sendMessageDelayed(obtainMessage(identityId), uiTimer.delay);
             }
         }

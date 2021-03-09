@@ -22,9 +22,13 @@ public class MediaEntity implements Serializable {
         this.size = size;
     }
 
-    @Override public final boolean equals(Object obj) {
-        return this.getClass() == obj.getClass() && this.id == ((MediaEntity)obj).id;
-//        return (this.filePath.equals(((MediaEntity)obj).filePath)) && this.id == ((MediaEntity)obj).id;
+    /**
+     * 这个方法比较重要：在选中的视频中取出、添加会根据这个方法来判断；在Wrapper中也会根据这个方法来判断是否选中
+     */
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MediaEntity)) return false;
+        return id == ((MediaEntity) o).id;
     }
 
     public final boolean exists() {

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/ulfy_system_background_media_max_select_count"
@@ -10,28 +9,28 @@
         android:id="@+id/maxCountTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="20dp"
         android:paddingLeft="50dp"
-        android:paddingRight="50dp"
         android:paddingTop="20dp"
+        android:paddingRight="50dp"
+        android:paddingBottom="20dp"
         android:text="您最多只能选9张照片"
         android:textColor="#fff"
-        android:textSize="16sp"/>
+        android:textSize="16sp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#353535"/>
+        android:background="#353535" />
 
     <TextView
         android:id="@+id/haveKnowTV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:paddingBottom="15dp"
         android:paddingTop="15dp"
+        android:paddingBottom="15dp"
         android:text="知道了"
         android:textColor="#89d663"
-        android:textSize="16sp"/>
+        android:textSize="16sp" />
 
 </LinearLayout>
