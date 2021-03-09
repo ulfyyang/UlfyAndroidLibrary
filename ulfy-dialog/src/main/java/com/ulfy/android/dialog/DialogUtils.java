@@ -194,6 +194,10 @@ public final class DialogUtils {
 		showQuickPick(context, title, onItemClickListener, Arrays.asList(list));
 	}
 
+	public static void showQuickPick(Context context, boolean is_comment, String title, IQuickPickView.OnItemClickListener onItemClickListener, CharSequence... list) {
+		showQuickPick(context, is_comment, title, onItemClickListener, Arrays.asList(list));
+	}
+
 	/**
 	 * 弹出一个弹窗
 	 * 		用于在一组字符串中快速选择出一个
@@ -208,7 +212,15 @@ public final class DialogUtils {
 		builder.setDialogAnimationId(R.style.window_anim_bottom).build().show();
 	}
 
-
+	public static void showQuickPick(Context context, boolean is_comment, String title, IQuickPickView.OnItemClickListener onItemClickListener, List<CharSequence> list) {
+		IQuickPickView quickPickView = Config.quickPickConfig.getQuickPickView(context);
+		quickPickView.setTitle(title);
+		quickPickView.setData(list, is_comment);
+		quickPickView.setOnItemClickListener(onItemClickListener);
+		NormalDialog.Builder builder = new NormalDialog.Builder(context, (View) quickPickView);
+		quickPickView.setDialogId(builder.getDialogId());
+		builder.setDialogAnimationId(R.style.window_anim_bottom).build().show();
+	}
 
 	/**
 	 * 关闭默认的弹出框

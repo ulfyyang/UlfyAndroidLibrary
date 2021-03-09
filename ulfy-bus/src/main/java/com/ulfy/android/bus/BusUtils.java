@@ -54,5 +54,4 @@ public final class BusUtils {
         BusConfig.throwExceptionIfConfigNotConfigured();
         UlfyBus.with(context).post(event);
     }
-
 }

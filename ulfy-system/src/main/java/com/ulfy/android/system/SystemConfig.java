@@ -1,6 +1,7 @@
 package com.ulfy.android.system;
 
 import android.app.Application;
+import android.os.Environment;
 
 import java.io.File;
 import java.util.HashMap;
@@ -24,11 +25,23 @@ public final class SystemConfig {
          */
         public static final String THIRD_APP_PACKAGE_NAME_QQ = "com.tencent.mobileqq";
         public static final String THIRD_APP_PACKAGE_NAME_WECHAT = "com.tencent.mm";
+        public static final String THIRD_APP_PACKAGE_NAME_TAOBAO = "com.taobao.taobao";
+        public static final String THIRD_APP_PACKAGE_NAME_JD = "com.jingdong.app.mall";
+        public static final String THIRD_APP_PACKAGE_NAME_TM = "com.tmall.wireless";
+        public static final String THIRD_APP_PACKAGE_NAME_BAIDUNETDISK = "com.baidu.netdisk";
+        public static final String THIRD_APP_PACKAGE_NAME_XUNLEI = "com.xunlei.downloadprovider";
+        public static final String THIRD_APP_PACKAGE_NAME_QCLOUD = "com.qq.qcloud";
         private static final Map<String, String> packageNameClazzMap = new HashMap<>();
 
         static  {
             packageNameClazzMap.put(THIRD_APP_PACKAGE_NAME_QQ, "com.tencent.mobileqq.activity.SplashActivity");
             packageNameClazzMap.put(THIRD_APP_PACKAGE_NAME_WECHAT, "com.tencent.mm.ui.LauncherUI");
+            packageNameClazzMap.put(THIRD_APP_PACKAGE_NAME_TAOBAO, "com.taobao.tao.welcome.Welcome");
+            packageNameClazzMap.put(THIRD_APP_PACKAGE_NAME_JD, "com.jingdong.app.mall.main.MainActivity");
+            packageNameClazzMap.put(THIRD_APP_PACKAGE_NAME_TM, "com.tmall.wireless.splash.TMSplashActivity");
+            packageNameClazzMap.put(THIRD_APP_PACKAGE_NAME_BAIDUNETDISK, "com.baidu.netdisk.ui.MainActivity");
+            packageNameClazzMap.put(THIRD_APP_PACKAGE_NAME_XUNLEI, "com.xunlei.downloadprovider.frame.MainTabActivity");
+            packageNameClazzMap.put(THIRD_APP_PACKAGE_NAME_QCLOUD, "com.qq.qcloud.global.ui.MainFrameActivity");
         }
 
         public static String getLaunchClazzByPackageName(String packageName) {
@@ -43,7 +56,12 @@ public final class SystemConfig {
      * 获得拍照图片缓存目录
      */
     static File getTakePhotoPictureCacheDir() {
-        File dir = new File(SystemConfig.context.getFilesDir(), "tack_photo_cache");
+        File dir = null;
+        if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+            dir = new File(Environment.getExternalStorageDirectory(), "/DCIM/camera/");
+        }else {
+            dir = new File(Environment.getDataDirectory(), "camera");
+        }
         if(!dir.exists()) {
             dir.mkdirs();
         }

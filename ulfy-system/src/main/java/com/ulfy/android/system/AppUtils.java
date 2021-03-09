@@ -39,6 +39,7 @@ import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -502,15 +503,15 @@ public final class AppUtils {
             return;
         } else {
             url = complementUrl(url);
-            if (url.endsWith(".apk")) {
-                downloadApkThenInstall(url, false);
-            } else {
+//            if (url.endsWith(".apk")) {
+//                downloadApkThenInstall(url, false);
+//            } else {
                 Activity topActivity = ActivityUtils.getTopActivity();
                 Intent intent = new Intent();
                 intent.setAction("android.intent.action.VIEW");
                 intent.setData(Uri.parse(url));
                 topActivity.startActivity(intent);
-            }
+//            }
         }
     }
 
@@ -565,6 +566,24 @@ public final class AppUtils {
                     break;
                 case SystemConfig.Config.THIRD_APP_PACKAGE_NAME_WECHAT:
                     Toast.makeText(SystemConfig.context, "请安装微信", Toast.LENGTH_LONG).show();
+                    break;
+                case SystemConfig.Config.THIRD_APP_PACKAGE_NAME_TAOBAO:
+                    Toast.makeText(SystemConfig.context, "请安装淘宝", Toast.LENGTH_LONG).show();
+                    break;
+                case SystemConfig.Config.THIRD_APP_PACKAGE_NAME_TM:
+                    Toast.makeText(SystemConfig.context, "请安装天猫", Toast.LENGTH_LONG).show();
+                    break;
+                case SystemConfig.Config.THIRD_APP_PACKAGE_NAME_JD:
+                    Toast.makeText(SystemConfig.context, "请安装京东", Toast.LENGTH_LONG).show();
+                    break;
+                case SystemConfig.Config.THIRD_APP_PACKAGE_NAME_BAIDUNETDISK:
+                    Toast.makeText(SystemConfig.context, "请安装百度网盘", Toast.LENGTH_LONG).show();
+                    break;
+                case SystemConfig.Config.THIRD_APP_PACKAGE_NAME_XUNLEI:
+                    Toast.makeText(SystemConfig.context, "请安装迅雷网盘", Toast.LENGTH_LONG).show();
+                    break;
+                case SystemConfig.Config.THIRD_APP_PACKAGE_NAME_QCLOUD:
+                    Toast.makeText(SystemConfig.context, "请安装腾讯微云", Toast.LENGTH_LONG).show();
                     break;
             }
         }
@@ -1211,4 +1230,6 @@ public final class AppUtils {
     private static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
+
+
 }

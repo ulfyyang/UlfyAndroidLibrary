@@ -47,7 +47,7 @@ public final class ImageConfig {
          *      该动画的开启需要指定具有ImageLevel属性的Drawable作为占位图
          *      使用占位图动画需要指定加载失败的占位图，否则当加载失败时动画停止会看起来怪怪的
          */
-        public static boolean imageLoadingAnimator = false;
+        public static boolean imageLoadingAnimator = true;
         /**
          * 加载图片时是否使用过渡动画（加载完成时缓慢显示的动画）
          *      尽量不要开启，设置占位图且ImageView设置了CENTER_CROP属性会导致图片显示错乱或抖动错位

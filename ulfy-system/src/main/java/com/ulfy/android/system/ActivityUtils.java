@@ -290,6 +290,11 @@ public final class ActivityUtils {
 		return intent == null ? null : intent.getExtras();
 	}
 
+	public static Serializable getSerializableData(String key) {
+		Intent intent = getTopActivity().getIntent();
+		return intent == null ? null : intent.getSerializableExtra(key);
+	}
+
 	public static void returnData(String key, Serializable value) {
 		Bundle data = new Bundle();
 		data.putSerializable(key, value);
