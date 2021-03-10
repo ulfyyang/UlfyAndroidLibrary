@@ -47,11 +47,7 @@ public final class LoadDataUiTask extends UiTask {
 		if (transponder == null) {		// 没有设置响应器则不执行
 			return;
 		}
-		runOnUiThread(new Runnable() {
-			@Override public void run() {
-				transponder.onTranspondMessage(new Message(Message.TYPE_START, tipData));
-			}
-		});
+		runOnUiThread(() -> transponder.onTranspondMessage(new Message(Message.TYPE_START, tipData)));
 	}
 
 	/**
@@ -61,11 +57,9 @@ public final class LoadDataUiTask extends UiTask {
 		if (transponder == null) {		// 没有设置响应器则不执行
 			return;
 		}
-		runOnUiThread(new Runnable() {
-			@Override public void run() {
-				transponder.onTranspondMessage(new Message(Message.TYPE_SUCCESS, tipData));
-				transponder.onTranspondMessage(new Message(Message.TYPE_FINISH, tipData));
-			}
+		runOnUiThread(() -> {
+			transponder.onTranspondMessage(new Message(Message.TYPE_SUCCESS, tipData));
+			transponder.onTranspondMessage(new Message(Message.TYPE_FINISH, tipData));
 		});
 	}
 
@@ -83,11 +77,9 @@ public final class LoadDataUiTask extends UiTask {
 		if (transponder == null) {		// 没有设置响应器则不执行
 			return;
 		}
-		runOnUiThread(new Runnable() {
-			@Override public void run() {
-				transponder.onTranspondMessage(new Message(Message.TYPE_FAIL, tipData));
-				transponder.onTranspondMessage(new Message(Message.TYPE_FINISH, tipData));
-			}
+		runOnUiThread(() -> {
+			transponder.onTranspondMessage(new Message(Message.TYPE_FAIL, tipData));
+			transponder.onTranspondMessage(new Message(Message.TYPE_FINISH, tipData));
 		});
 	}
 
@@ -98,11 +90,7 @@ public final class LoadDataUiTask extends UiTask {
 		if (transponder == null) {		// 没有设置响应器则不执行
 			return;
 		}
-		runOnUiThread(new Runnable() {
-			@Override public void run() {
-				transponder.onTranspondMessage(new Message(Message.TYPE_UPDATE, data));
-			}
-		});
+		runOnUiThread(() -> transponder.onTranspondMessage(new Message(Message.TYPE_UPDATE, data)));
 	}
 
 	/**

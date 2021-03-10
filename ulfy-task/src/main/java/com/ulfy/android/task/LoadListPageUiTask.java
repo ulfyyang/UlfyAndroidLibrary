@@ -63,24 +63,18 @@ public final class LoadListPageUiTask extends UiTask {
 		if (transponder == null) {		// 没有设置响应器则不执行
 			return;
 		}
-		runOnUiThread(new Runnable() {
-			@Override public void run() {
-				transponder.onTranspondMessage(new Message(Message.TYPE_START, tipData));
-			}
-		});
+		runOnUiThread(() -> transponder.onTranspondMessage(new Message(Message.TYPE_START, tipData)));
 	}
 
 	/**
 	 * 通知任务成功了
 	 */
 	public final void notifySuccess(final Object tipData) {
-		runOnUiThread(new Runnable() {
-			@Override public void run() {
-				taskInfo.combileData();
-				if (transponder != null) {
-					transponder.onTranspondMessage(new Message(Message.TYPE_SUCCESS, tipData));
-					transponder.onTranspondMessage(new Message(Message.TYPE_FINISH, tipData));
-				}
+		runOnUiThread(() -> {
+			taskInfo.combileTempListToDataList();
+			if (transponder != null) {
+				transponder.onTranspondMessage(new Message(Message.TYPE_SUCCESS, tipData));
+				transponder.onTranspondMessage(new Message(Message.TYPE_FINISH, tipData));
 			}
 		});
 	}
@@ -96,13 +90,11 @@ public final class LoadListPageUiTask extends UiTask {
 	 * 通知任务失败了
 	 */
 	public final void notifyFail(final Object tipData) {
-		runOnUiThread(new Runnable() {
-			@Override public void run() {
-				taskInfo.clearTemp();
-				if (transponder != null) {
-					transponder.onTranspondMessage(new Message(Message.TYPE_FAIL, tipData));
-					transponder.onTranspondMessage(new Message(Message.TYPE_FINISH, tipData));
-				}
+		runOnUiThread(() -> {
+			taskInfo.clearTemp();
+			if (transponder != null) {
+				transponder.onTranspondMessage(new Message(Message.TYPE_FAIL, tipData));
+				transponder.onTranspondMessage(new Message(Message.TYPE_FINISH, tipData));
 			}
 		});
 	}
@@ -165,7 +157,7 @@ public final class LoadListPageUiTask extends UiTask {
 		数据合并与清除
 		 */
 
-		final void combileData() {
+		final void combileTempListToDataList() {
 			// 加载起始页或者重新加载
 			if (loadingStatus == LOAD_START_PAGE || loadingStatus == LOAD_RELOAD_ALL) {
 				dataList.clear();
@@ -173,7 +165,7 @@ public final class LoadListPageUiTask extends UiTask {
 			}
 			// 加载下一页
 			else if (loadingStatus == LOAD_NEXT_PAGE) {
-				isLoadTempListEmpty = tempList.size() == 0;
+				isLoadTempListEmpty = tempList.isEmpty();
 				dataList.addAll(tempList);
 			}
 			// 如果加载了数据则回调数据合并接口

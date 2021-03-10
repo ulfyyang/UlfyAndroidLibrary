@@ -1,24 +1,12 @@
 package com.ulfy.android.task;
 
+import android.util.Log;
+
 /**
  * 抽象任务，任务执行器 {@link ITaskExecutor} 执行的对象。
  */
 public abstract class Task implements Runnable {
-
-    /**
-     * 任务执行生命周期的回调
-     */
-    public interface LifecycleCallback {
-        /**
-         * 当任务开始时的回调（该回调不会在 UI 线程中执行）
-         */
-        void onStart(Task task);
-        /**
-         * 当任务结束时的回调（该回调不会在 UI 线程中执行）
-         */
-        void onFinish(Task task);
-    }
-
+    private static final String TAG = Task.class.getName();
     private boolean isRunning;                      // 记录任务是否正在执行，记录的是后台运行的部分
     private LifecycleCallback lifecycleCallback;    // 生命周期回调
 
@@ -35,7 +23,7 @@ public abstract class Task implements Runnable {
         try {// 如果子类不处理异常，则这里拦获并静默处理（确保任务能够正常结束）
             run(this);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.w(TAG, "task execute faile without handling!", e);
         }
         isRunning = false;      // 在任务结束回调的时候，任务必然已经结束了
         if (lifecycleCallback != null) {
@@ -58,8 +46,22 @@ public abstract class Task implements Runnable {
     /**
      * 设置生命周期回调监听
      */
-    public final Task setLifecycleCallback(LifecycleCallback lifecycleCallback) {
+    final void setLifecycleCallback(LifecycleCallback lifecycleCallback) {
         this.lifecycleCallback = lifecycleCallback;
-        return this;
+    }
+
+
+    /**
+     * 任务执行生命周期的回调
+     */
+    public interface LifecycleCallback {
+        /**
+         * 当任务开始时的回调（该回调不会在 UI 线程中执行）
+         */
+        void onStart(Task task);
+        /**
+         * 当任务结束时的回调（该回调不会在 UI 线程中执行）
+         */
+        void onFinish(Task task);
     }
 }

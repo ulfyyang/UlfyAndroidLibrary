@@ -5,17 +5,18 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
 import java.util.Objects;
 
 /**
- * 可以执行 ui 处理的任务，为子类提供更新 ui 的能力，并受到关联 Activity
- * 生命周期的限制。
+ * 可以执行 ui 处理的任务，为子类提供更新 ui 的能力，并受到关联 Activity 生命周期的限制。
  * @see TaskRepository {@link #runOnUiThread(Runnable)}
  */
 public abstract class UiTask extends Task {
-	private Context context;						// 任务关联的 Activity 上下文，用于跟随上下文的生命周期
+	private static final String TAG = UiTask.class.getName();
 	private Handler uiHandler = new UiHandler();	// 为任务提供更新 ui 的能力
+	private Context context;						// 任务关联的 Activity 上下文，用于跟随上下文的生命周期
 	private int identityId = hashCode();			// 为每一个任务定义唯一标识，避免任务回调混乱
 	private boolean cancelUiHandler;				// 是否取消更新 ui，如果取消则更新 ui 的操作不会执行
 
@@ -26,10 +27,11 @@ public abstract class UiTask extends Task {
 	 */
 	public UiTask(Context context) {
 		Objects.requireNonNull(context, "context can not be null");
-		if (!(context instanceof Activity)) {
+		if (context instanceof Activity) {
+			this.context = context;
+		} else {
 			throw new IllegalArgumentException("a ui task must associate with a activity context");
 		}
-		this.context = context;
 	}
 
 	/**
@@ -59,6 +61,15 @@ public abstract class UiTask extends Task {
 		}
 	}
 
+	private class UiHandler extends Handler {
+		UiHandler() { super(Looper.getMainLooper()); }
+		@Override public void handleMessage(Message msg) {
+			if (msg.what == identityId && msg.obj instanceof Runnable && !cancelUiHandler) {
+				((Runnable) msg.obj).run();
+			}
+		}
+	}
+
 	/**
 	 * 设置取消 ui 操作
 	 */
@@ -67,6 +78,8 @@ public abstract class UiTask extends Task {
 		if (cancelUiHandler) {
 			uiHandler.removeMessages(identityId);
 		}
+		Log.v(TAG, String.format("the ability of task associated with %s of update ui has been %s!",
+				context.getClass().getName(), cancelUiHandler ? "canceled" : "granted"));
 	}
 
 	/**
@@ -74,18 +87,5 @@ public abstract class UiTask extends Task {
 	 */
 	public synchronized boolean isCancelUiHandler() {
 		return cancelUiHandler;
-	}
-
-	private class UiHandler extends Handler {
-
-		UiHandler() {
-			super(Looper.getMainLooper());
-		}
-
-		@Override public void handleMessage(Message msg) {
-			if (msg.what == identityId && msg.obj instanceof Runnable && !cancelUiHandler) {
-				((Runnable)msg.obj).run();
-			}
-		}
 	}
 }

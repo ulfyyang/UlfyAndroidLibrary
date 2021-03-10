@@ -9,9 +9,7 @@ import java.util.concurrent.Executors;
 final class ConcurrentTaskExecutor implements ITaskExecutor {
 	private Executor executor = Executors.newCachedThreadPool();
 
-	@Override public void post(Task task) {
-		if (task != null) {
-			executor.execute(task);
-		}
+	@Override public synchronized void post(Task task) {
+		if (task != null) executor.execute(task);
 	}
 }

@@ -43,11 +43,7 @@ public final class NetUiTask extends UiTask {
         // 没有打开网络连接开关 或 网络连接开关已经打开，但是无网络连接
         if (networkInfo == null || !networkInfo.isConnectedOrConnecting()) {
             if (transponder != null) {		// 没有设置响应器则不执行
-                runOnUiThread(new Runnable() {  // 执行无网络回调
-                    @Override public void run() {
-                        transponder.onTranspondMessage(new Message(Message.TYPE_NO_NET_CONNECTION, TaskConfig.Config.NO_NET_CONNECTION_TIP));
-                    }
-                });
+                runOnUiThread(() -> transponder.onTranspondMessage(new Message(Message.TYPE_NO_NET_CONNECTION, TaskConfig.Config.NO_NET_CONNECTION_TIP)));
             }
         }
 
@@ -60,11 +56,7 @@ public final class NetUiTask extends UiTask {
                 proxyTask.run();
             } catch (final Exception e) {
                 if (transponder != null) {		// 没有设置响应器则不执行
-                    runOnUiThread(new Runnable() {
-                        @Override public void run() {
-                            transponder.onTranspondMessage(new Message(Message.TYPE_NET_ERROR, e.getMessage()));
-                        }
-                    });
+                    runOnUiThread(() -> transponder.onTranspondMessage(new Message(Message.TYPE_NET_ERROR, e.getMessage())));
                 }
             }
         }
