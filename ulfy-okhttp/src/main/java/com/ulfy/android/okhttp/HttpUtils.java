@@ -165,7 +165,8 @@ public final class HttpUtils {
     }
 
     /**
-     * 生成 Multipart 表单请求体（包含文件、二进制）
+     * 生成 Multipart 表单请求体（包含文件、二进制），如果传递的是文件数组的话，则可以自己按照命名要求生成KEY
+     *      - 比如：imgs[0]、imgs[1]
      */
     public static RequestBody generateMultipartFormBody(Map<Object, Object> params, Map<Object, File> files) {
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
