@@ -40,6 +40,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation externalAndroidAppCompatV7
+    implementation externalAndroidDesign
     implementation project(':ulfy-lib:ulfy-task-extension')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0'
