@@ -12,7 +12,7 @@ import com.google.android.material.appbar.AppBarLayout;
 
 public class AppBarLayoutBehavior extends AppBarLayout.Behavior {     // 不需要特殊定制了，貌似AndroidX版本没有下拉回弹这些BUG了
     private static final String TAG = AppBarLayoutBehavior.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private boolean needLimit;          // 是否需要做出一些限制（只有当滚动区域的高度无法填充容器的时候才需要）
     private int distance = 0;           // 显示中的内容与容器高度的差值
 
