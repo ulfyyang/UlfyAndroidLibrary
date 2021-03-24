@@ -39,7 +39,6 @@ import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -631,6 +630,7 @@ public final class AppUtils {
     /**
      * 保存图片到本地
      *      由于直接采用了Bitmap对象，因此不会留下痕迹
+     * @param title 文件在系统中显示的标题，如果传null则会采用系统自动生成的显示名（猜测是时间戳）
      * @param runnable 当插入成功之后执行的回调
      */
     public static void insertPictureToSystem(final Bitmap bitmap, final String title, final Runnable runnable) {
@@ -657,6 +657,7 @@ public final class AppUtils {
      * 保存图片到本地
      *      file尽量是不会被系统扫描的地方。否则会在相册中生成两张文件
      *      如果是调用系统相机拍照产生的图片，建议直接发布广播通知
+     * @param title 文件在系统中显示的标题，如果传null则会采用系统自动生成的显示名（猜测是时间戳）
      * @param runnable 当插入成功之后执行的回调
      */
     public static void insertPictureToSystem(final File file, final String title, final Runnable runnable) {
