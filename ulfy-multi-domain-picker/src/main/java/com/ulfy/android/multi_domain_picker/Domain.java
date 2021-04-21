@@ -23,27 +23,21 @@ class Domain implements Serializable {
                 targetUrl = converter == null ? originalUrl : converter.convert(originalUrl);
             }
             valid = testSuccess;
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             valid = false;
         }
-
         return valid;
     }
 
     String getOriginalUrl() {
         return originalUrl;
     }
-
     String getTargetUrl() {
         return targetUrl;
     }
-
     void invalidate() {
         valid = false;
     }
-
     boolean isValid() {
         return valid;
     }

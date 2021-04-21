@@ -8,23 +8,23 @@ import java.net.URL;
  *      通过对目标域名进行ping测试来判断域名是否可以访问
  */
 public final class PingDomainTester implements DomainTester {
+    private String host;        // 记录被测试的host域名
 
     // 获取一行ping的结果，deadline是5秒钟
     @Override public boolean test(String originalUrl) throws Exception {
         if (originalUrl == null || originalUrl.length() == 0) {
             return false;
         }
-
         if (!originalUrl.startsWith("http://") && !originalUrl.startsWith("https://")) {
             originalUrl = "http://" + originalUrl;
         }
-
-        String host = new URL(originalUrl).getHost();
+        host = new URL(originalUrl).getHost();
         Process process = Runtime.getRuntime().exec("ping -c 1 -w 5 " + host);
         int exitCode = process.waitFor();
-        boolean isSuccess = exitCode == 0;
-
-        return isSuccess;
+        return exitCode == 0;
     }
 
+    String getHost() {
+        return host;
+    }
 }

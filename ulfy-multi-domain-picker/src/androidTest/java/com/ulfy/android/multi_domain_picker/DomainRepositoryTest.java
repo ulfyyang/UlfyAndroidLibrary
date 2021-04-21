@@ -1,13 +1,11 @@
 package com.ulfy.android.multi_domain_picker;
 
-import androidx.test.InstrumentationRegistry;
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 
 import java.util.Arrays;
 
@@ -22,35 +20,30 @@ import static org.mockito.Mockito.when;
 /**
  * 域名仓库测试
  */
-@RunWith(AndroidJUnit4.class)
 public class DomainRepositoryTest extends BaseAndroidTest {
-    public String urlBaidu = "http://www.baidu.com";
-    public String urlGoogle = "http://www.google.com";
-    public String[] urls = new String[]{urlBaidu, urlGoogle};
+    private DomainTester baiduSuccessTester, googleSuccessTester, failTester;
+    private DomainConverter baiduConverter, googleConverter;
 
-    public DomainTester baiduSuccessTester;
-    public DomainTester googleSuccessTester;
-    public DomainTester failTester;
-    public DomainConverter baiduConverter;
-    public DomainConverter googleConverter;
+    private String urlBaidu = "http://www.baidu.com";
+    private String urlGoogle = "http://www.google.com";
+    private String[] urls = new String[]{urlBaidu, urlGoogle};
 
     @Rule public final ExpectedException expectedException = ExpectedException.none();
 
     @Before public void init() throws Exception {
         baiduSuccessTester = mock(DomainTester.class);
-        when(baiduSuccessTester.test(anyString())).thenReturn(true);
         googleSuccessTester = mock(DomainTester.class);
-        when(googleSuccessTester.test(anyString())).thenReturn(true);
-
         failTester = mock(DomainTester.class);
+        when(baiduSuccessTester.test(anyString())).thenReturn(true);
+        when(googleSuccessTester.test(anyString())).thenReturn(true);
         when(failTester.test(anyString())).thenReturn(false);
 
         baiduConverter = mock(DomainConverter.class);
-        when(baiduConverter.convert(anyString())).thenReturn(urlBaidu);
         googleConverter = mock(DomainConverter.class);
+        when(baiduConverter.convert(anyString())).thenReturn(urlBaidu);
         when(googleConverter.convert(anyString())).thenReturn(urlGoogle);
 
-        MultiDomainPickerConfig.init(InstrumentationRegistry.getContext(), Arrays.asList(urls));
+        MultiDomainPickerConfig.init(InstrumentationRegistry.getInstrumentation().getContext(), Arrays.asList(urls));
         MultiDomainPicker.getInstance().reset();
     }
 

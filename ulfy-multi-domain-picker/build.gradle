@@ -53,10 +53,11 @@ dependencies {
     implementation project(':ulfy-lib:ulfy-cache')
 
     testImplementation externalJunit
-    testImplementation externalHamcrestLibrary
     testImplementation externalMockito
-    androidTestImplementation externalMockitoAndroid
     testImplementation externalRobolectic
+    testImplementation externalHamcrestLibrary
+
+    androidTestImplementation externalMockitoAndroid
     androidTestImplementation externalAndroidTestRunner
     androidTestImplementation externalAndroidTestRules
     androidTestImplementation externalAndroidTestEspresso
