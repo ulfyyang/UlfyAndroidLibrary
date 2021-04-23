@@ -1,20 +1,20 @@
 package com.ulfy.android.multi_domain_picker;
 
+import android.content.Context;
+
+import androidx.test.platform.app.InstrumentationRegistry;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 
-@RunWith(RobolectricTestRunner.class)
 public class MultiDomainPickerConfigTest {
     @Rule public final ExpectedException exception = ExpectedException.none();
 
@@ -29,7 +29,8 @@ public class MultiDomainPickerConfigTest {
      */
     @Test public void testConfiguredEntrace() {
         MultiDomainPickerConfig.configured = false;
-        MultiDomainPickerConfig.init(RuntimeEnvironment.application, Arrays.asList(new String[]{"", ""}));
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        MultiDomainPickerConfig.init(context, Arrays.asList("", ""));
         MultiDomainPicker.getInstance().reset();
     }
 
@@ -39,7 +40,8 @@ public class MultiDomainPickerConfigTest {
     @Test public void testNotConfiguredEntrace() {
         MultiDomainPickerConfig.configured = false;
         exception.expect(IllegalStateException.class);
-        exception.expectMessage("MultiDomainPicker not configured in Application entrace, please add MultiDomainPickerConfig.init(this); to Application");
+        exception.expectMessage("MultiDomainPicker not configured in Application entrance, " +
+                "please add MultiDomainPickerConfig.init(this); to Application");
         MultiDomainPicker.getInstance().reset();
     }
 
@@ -49,7 +51,6 @@ public class MultiDomainPickerConfigTest {
     @Test public void testProvideDefaultDomainTester() {
         DomainTester tester = MultiDomainPickerConfig.Config.findDomainTesterByUrl("abc");
         DomainConverter converter = MultiDomainPickerConfig.Config.findDomainConverterByUrl("abc");
-
         assertEquals(tester, MultiDomainPickerConfig.Config.domainTester);
         assertEquals(converter, MultiDomainPickerConfig.Config.domainConverter);
     }
@@ -72,7 +73,6 @@ public class MultiDomainPickerConfigTest {
         MultiDomainPickerConfig.Config.configUrlTester("", new PingDomainTester());
         MultiDomainPickerConfig.Config.configUrlConverter(null, new CopyDomainConverter());
         MultiDomainPickerConfig.Config.configUrlConverter("", new CopyDomainConverter());
-
         assertNull(MultiDomainPickerConfig.Config.findDomainTesterByUrl(null));
         assertNull(MultiDomainPickerConfig.Config.findDomainTesterByUrl(""));
         assertNull(MultiDomainPickerConfig.Config.findDomainConverterByUrl(null));
@@ -85,10 +85,9 @@ public class MultiDomainPickerConfigTest {
     @Test public void testExceptionWithoutTester() {
         MultiDomainPickerConfig.Config.configUrlTester("def", new PingDomainTester());
         MultiDomainPickerConfig.Config.domainTester = null;
-
         exception.expect(IllegalStateException.class);
-        exception.expectMessage("Cant not find DomainTester for the specific url, you must config it for url or ratain the default tester");
-
+        exception.expectMessage("Cant not find DomainTester for the specific url, " +
+                "you must config it for url or retain the default tester");
         MultiDomainPickerConfig.Config.findDomainTesterByUrl("abc");
     }
 
@@ -98,10 +97,9 @@ public class MultiDomainPickerConfigTest {
     @Test public void testExceptionWithoutConverter() {
         MultiDomainPickerConfig.Config.configUrlConverter("def", new CopyDomainConverter());
         MultiDomainPickerConfig.Config.domainConverter = null;
-
         exception.expect(IllegalStateException.class);
-        exception.expectMessage("Cant not find DomainConverter for the specific url, you must config it for url or ratain the default converter");
-
+        exception.expectMessage("Cant not find DomainConverter for the specific url, " +
+                "you must config it for url or retain the default converter");
         MultiDomainPickerConfig.Config.findDomainConverterByUrl("abc");
     }
 
@@ -111,10 +109,8 @@ public class MultiDomainPickerConfigTest {
     @Test public void testSpecificUrlTesterConverter() {
         DomainTester tester = mock(DomainTester.class);
         DomainConverter converter = mock(DomainConverter.class);
-
         MultiDomainPickerConfig.Config.configUrlTester("abc", tester);
         MultiDomainPickerConfig.Config.configUrlConverter("abc", converter);
-
         assertEquals(tester, MultiDomainPickerConfig.Config.findDomainTesterByUrl("abc"));
         assertEquals(converter, MultiDomainPickerConfig.Config.findDomainConverterByUrl("abc"));
     }

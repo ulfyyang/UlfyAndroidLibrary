@@ -10,25 +10,42 @@ import java.util.List;
 import java.util.Map;
 
 public final class MultiDomainPickerConfig {
-    static boolean configured;
-    static Context context;
-    static ICache cache;                                                             // 用于管理持久化状态的缓存对象
+    static boolean configured; static Context context;
+    static ICache cache;        // 用于管理持久化状态的缓存对象
 
     /**
      * 初始化
      */
     public static void init(Context context, List<String> originalDomainList) {
+        init(context, null, originalDomainList);
+    }
+
+    /**
+     * 初始化
+     * @param key           跟踪的场景KEY
+     */
+    public static void init(Context context, String key, List<String> originalDomainList) {
         if (!configured) {
-            configured = true;
+            MultiDomainPickerConfig.configured = true;
             MultiDomainPickerConfig.context = context;
-            cache = CacheConfig.newMemoryDiskCache(context, Config.recordInfoCacheDirName);
-            DomainRepository.getInstance().init(originalDomainList);
+            MultiDomainPickerConfig.cache = CacheConfig.newMemoryDiskCache(context, Config.recordInfoCacheDirName);
         }
+        DomainRepository.getInstance(key).initOriginalDomainList(originalDomainList);
     }
 
     static void throwExceptionIfConfigNotConfigured() {
         if (!configured) {
-            throw new IllegalStateException("MultiDomainPicker not configured in Application entrace, please add MultiDomainPickerConfig.init(this); to Application");
+            throw new IllegalStateException("MultiDomainPicker not configured in Application entrance, " +
+                    "please add MultiDomainPickerConfig.init(this); to Application");
+        }
+    }
+
+    static class DomainTesterConverterProviderInner implements DomainTesterConverterProvider {
+        @Override public DomainTester tester(String url) {
+            return Config.findDomainTesterByUrl(url);
+        }
+        @Override public DomainConverter converter(String url) {
+            return Config.findDomainConverterByUrl(url);
         }
     }
 
@@ -64,13 +81,11 @@ public final class MultiDomainPickerConfig {
             if (url == null || url.length() == 0) {
                 return null;
             }
-
             DomainTester tester = urlDomainTesterMap.containsKey(url) ? urlDomainTesterMap.get(url) : domainTester;
-
             if (tester == null) {
-                throw new IllegalStateException("Cant not find DomainTester for the specific url, you must config it for url or ratain the default tester");
+                throw new IllegalStateException("Cant not find DomainTester for the specific url, " +
+                        "you must config it for url or retain the default tester");
             }
-
             return tester;
         }
 
@@ -78,13 +93,11 @@ public final class MultiDomainPickerConfig {
             if (url == null || url.length() == 0) {
                 return null;
             }
-
             DomainConverter converter = urlDomainConverterMap.containsKey(url) ? urlDomainConverterMap.get(url) : domainConverter;
-
             if (converter == null) {
-                throw new IllegalStateException("Cant not find DomainConverter for the specific url, you must config it for url or ratain the default converter");
+                throw new IllegalStateException("Cant not find DomainConverter for the specific url, " +
+                        "you must config it for url or retain the default converter");
             }
-
             return converter;
         }
 
