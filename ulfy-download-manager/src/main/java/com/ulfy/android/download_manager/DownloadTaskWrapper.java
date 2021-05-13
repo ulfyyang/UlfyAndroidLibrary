@@ -304,12 +304,16 @@ public class DownloadTaskWrapper<T extends DownloadTaskInfo> implements Serializ
         Aria会将同一个下载地址对应的多个任务关联起来，这样不利于任务逻辑的维护。通过将下载地址和下载文件名合并起来标识单个任务可以解决这个问题
      */
     private String combineDownloadLink() {
-        return String.format("%s?file=%s", downloadTaskInfo.provideDownloadFileLink(), generateDownloadFilePath());
+        String connector = downloadTaskInfo.provideDownloadFileLink().contains("?") ? "&" : "?";
+        return String.format("%s%sfile=%s", downloadTaskInfo.provideDownloadFileLink(), connector, generateDownloadFilePath());
     }
     private String generateDownloadFilePath() {
-        return new File(DownloadManagerConfig.Config
-                .getDownloadingDirectoryById(defaultIdIfEmpty(downloadManagerId)), downloadTaskInfo.provideDownloadFileName())
-                .getAbsolutePath();
+        File file = new File(DownloadManagerConfig.Config
+                .getDownloadingDirectoryById(defaultIdIfEmpty(downloadManagerId)), downloadTaskInfo.provideDownloadFileName());
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+        return file.getAbsolutePath();
     }
 
     /**
