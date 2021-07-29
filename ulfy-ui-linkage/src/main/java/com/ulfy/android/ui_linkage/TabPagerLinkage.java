@@ -356,25 +356,48 @@ public class TabPagerLinkage {
                 if (lineWidth == LINE_WIDTH_WRAP_CONTENT) {
                     LinearLayout mTabStrip = (LinearLayout) tabLayout.getChildAt(0);
 
-                    for (int i = 0; i < mTabStrip.getChildCount(); i++) {
-                        View tabViewContainer = mTabStrip.getChildAt(i);
+                    // 线条包裹内容下均分不支持间隔，改为间隔均分布局
+                    if (tabLayout.getTabMode() == TabLayout.MODE_FIXED) {
 
-                        View tabView = getTabViewFromTabViewContainer(tabViewContainer);
-                        tabView.measure(0, 0);
-                        int tabViewWidth = tabView.getMeasuredWidth();
+                        int totalTabViewWidth = 0; List<Integer> tabViewWidthList = new ArrayList<>();
+                        List<View> tabViewList = new ArrayList<>(); List<View> tabViewContainerList = new ArrayList<>();
 
-                        LinearLayout.LayoutParams tabViewContainerLayoutParams = (LinearLayout.LayoutParams) tabViewContainer.getLayoutParams();
-
-                        // 线条包裹内容下均分不支持间隔
-                        if (tabLayout.getTabMode() == TabLayout.MODE_FIXED) {
-                            tabViewContainer.setPadding(0, 0, 0, 0);
-                            int harfMargin = (tabViewContainerInitWidthList.get(i) - tabViewWidth) / 2;
-                            tabViewContainerLayoutParams.width = tabViewWidth;
-                            tabViewContainerLayoutParams.leftMargin = harfMargin;
-                            tabViewContainerLayoutParams.rightMargin = harfMargin;
+                        for (int i = 0; i < mTabStrip.getChildCount(); i++) {
+                            View tabViewContainer = mTabStrip.getChildAt(i);
+                            tabViewContainerList.add(tabViewContainer);
+                            View tabView = getTabViewFromTabViewContainer(tabViewContainer);
+                            tabViewList.add(tabView);
+                            tabView.measure(0, 0);
+                            totalTabViewWidth += tabView.getMeasuredWidth();
+                            tabViewWidthList.add(tabView.getMeasuredWidth());
                         }
-                        // 线条包裹内容下滚动支持间隔，但是是通过padding的方式实现的，因此线会多出一点
-                        else {
+
+                        int divider = (mTabStrip.getWidth() - totalTabViewWidth) / (mTabStrip.getChildCount() + 1);
+
+                        for (View view : tabViewContainerList) {
+                            view.setPadding(0, 0, 0, 0);
+                        }
+                        for (int i = 0; i < tabViewContainerList.size(); i++) {
+                            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams)
+                                    tabViewContainerList.get(i).getLayoutParams();
+                            layoutParams.width = tabViewWidthList.get(i);
+                            layoutParams.leftMargin = divider;
+                            layoutParams.rightMargin = i == tabViewContainerList.size() - 1 ? divider : 0;
+                        }
+
+                        return;
+                    }
+
+                    // 线条包裹内容下滚动支持间隔，但是是通过padding的方式实现的，因此线会多出一点
+                    if (tabLayout.getTabMode() == TabLayout.MODE_SCROLLABLE) {
+                        for (int i = 0; i < mTabStrip.getChildCount(); i++) {
+
+                            View tabViewContainer = mTabStrip.getChildAt(i);
+                            View tabView = getTabViewFromTabViewContainer(tabViewContainer);
+                            tabView.measure(0, 0);
+                            int tabViewWidth = tabView.getMeasuredWidth();
+                            LinearLayout.LayoutParams tabViewContainerLayoutParams = (LinearLayout.LayoutParams) tabViewContainer.getLayoutParams();
+
                             if (useWrapperOnScrollMode) {
                                 wrapTabViewFromTabViewContainer(tabViewContainer, i, tabViewWidth);
                             } else {
@@ -383,10 +406,12 @@ public class TabPagerLinkage {
                                 tabViewContainerLayoutParams.leftMargin =  0;
                                 tabViewContainerLayoutParams.rightMargin = 0;
                             }
+
+                            tabViewContainer.setLayoutParams(tabViewContainerLayoutParams);
+                            tabViewContainer.invalidate();
                         }
 
-                        tabViewContainer.setLayoutParams(tabViewContainerLayoutParams);
-                        tabViewContainer.invalidate();
+                        return;
                     }
                 }
             }
