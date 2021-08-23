@@ -358,6 +358,7 @@ public class DownloadTaskWrapper<T extends DownloadTaskInfo> implements Serializ
      */
     private synchronized void onDownloadCompletedInner() {
         complete = true;                    // 设置状态要放到迁移仓库的前面，否则这些状态不会被序列化到
+        currentOffset = totalLength;
         stateUpdateForPublish = true;
         // 将下载中文件移动到下载完成目录中（表示下载完成）
         File downloadingFile = new File(DownloadManagerConfig.Config
