@@ -3,6 +3,7 @@ package com.ulfy.android.image;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+import android.widget.ImageView;
 
 import com.ulfy.android.cache.CacheConfig;
 import com.ulfy.android.cache.ICache;
@@ -57,8 +58,9 @@ public final class ImageConfig {
          * 是否开始缩略图支持，0表示不开启
          *      尽量开启缩略图，因为大部分页面开启缩略图肉眼看不出来区别；开启缩略图能延迟加载真正图片的时间
          *      提高框架获取真实ImageView大小的概率
+         * 注释原因：{@link GlideWrapper#loadImageInner(String, int, int, ImageView, BitmapProcessNode)}
          */
-        public static float scale = 0.5f;
+//        public static float scale = 0.5f;
         /**
          * 用于跟踪下载信息的缓存目录
          */

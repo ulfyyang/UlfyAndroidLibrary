@@ -153,9 +153,12 @@ class GlideWrapper {
         if (errorholder > 0) {                                  // 错误图
             requestBuilder.error(errorholder);
         }
-        if (ImageConfig.Config.scale != 0) {                    // 缩略图
-            requestBuilder.thumbnail(ImageConfig.Config.scale);
-        }
+        // 不能开启缩略图功能，否则若缩略图加载的比原图慢则会导致加载失败
+        // 具体bug参考com/bumptech/glide/request/ThumbnailRequestCoordinator.java#onRequestSuccess方法
+        // 在缩略图没有完成的情况下会导致加载任务取消，进而一系列的回调导致最终调用到notifyFail从而失败
+//        if (ImageConfig.Config.scale != 0) {                    // 缩略图
+//            requestBuilder.thumbnail(ImageConfig.Config.scale);
+//        }
         if (bitmapProcessNode != null) {                        // 图片转换
             requestBuilder.transform(new ImageTransform(bitmapProcessNode));
         }
@@ -166,12 +169,23 @@ class GlideWrapper {
         // url地址失效
         requestBuilder.signature(new ObjectKey(GlideCache.getInstance().getGlideSignature()));
 
+        // 专门添加一个监听用于收集加载失败问题
+        requestBuilder.addListener(new RequestListener<Drawable>() {
+            @Override public boolean onLoadFailed(GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                e.logRootCauses("GlideWrapper");        // 加载失败打印为什么失败，方便排查错误(图片加载涉及前后端、图片格式等问题，不易排查)
+                return false;
+            }
+            @Override public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                return false;
+            }
+        });
+
         // 加载时占位图动画
         if (ImageConfig.Config.imageLoadingAnimator) {
             ImageLoadingAnimatorRepository.getInstance().updateImageUrlMapping(imageView, url);
             ImageLoadingAnimatorRepository.getInstance().startLoading(url);
 
-            requestBuilder.listener(new RequestListener<Drawable>() {
+            requestBuilder.addListener(new RequestListener<Drawable>() {
                 @Override public boolean onLoadFailed(GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                     ImageLoadingAnimatorRepository.getInstance().stopLoading(model.toString());
                     return false;

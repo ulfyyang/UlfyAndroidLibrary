@@ -97,9 +97,9 @@ ext {
      * 核心功能库
      *      核心功能库中的组件采用的版本号有可能会相互依赖，不要随意升级版本
      */
-    externalGlide = 'com.github.bumptech.glide:glide:4.9.0'                                         // 图片加载：Glide
-    externalGlideOkHttp = 'com.github.bumptech.glide:okhttp3-integration:4.8.0'                     // 图片加载：添加该依赖Glide将采用okhttp作为加载引擎
-    externalGlideAnnotationProcessor = 'com.github.bumptech.glide:compiler:4.8.0'                   // 图片加载：注解处理器
+    externalGlide = 'com.github.bumptech.glide:glide:4.12.0'                                         // 图片加载：Glide
+    externalGlideOkHttp = 'com.github.bumptech.glide:okhttp3-integration:4.12.0'                     // 图片加载：添加该依赖Glide将采用okhttp作为加载引擎
+    externalGlideAnnotationProcessor = 'com.github.bumptech.glide:compiler:4.12.0'                   // 图片加载：注解处理器
     externalOKHTTP = 'com.squareup.okhttp3:okhttp:3.9.1'                                            // 网络访问库：okhttp
     externalOkHttpUrlConnection = 'com.squareup.okhttp3:okhttp-urlconnection:3.9.1'                 // 网络访问库：提供cookie持久化1
     externalOkHttpPersistentCookieJar = 'com.github.franmontiel:PersistentCookieJar:v1.0.1'         // 网络访问库：提供cookie持久化2
