@@ -87,7 +87,7 @@ ext {
     externalAgentWeb = 'com.just.agentweb:agentweb:4.0.2'                                           // 加强版WebView
     externalAgentWebDownload = 'com.just.agentweb:download:4.0.2'                                   // 加强版WebView
     externalGifDrawable = 'pl.droidsonroids.gif:android-gif-drawable:1.2.16'                        // 高性能gif加载控件
-    externalMagicIndicator = 'com.github.hackware1993:MagicIndicator:1.5.0'                         // 三方ViewPager滑动指示器
+    externalMagicIndicator = 'com.github.hackware1993:MagicIndicator:1.7.0'                         // 三方ViewPager滑动指示器
     externalPtrLoadMore = 'in.srain.cube:ptr-load-more:1.0.1'                                       // 下拉刷新：ptr版 有bug不建议使用
     externalSmartRefreshLayout = 'com.ulfy.android:smart-refresh-layout:1.1.0'                      // 下拉刷新：smart版 兼容性较好建议使用
     externalSmartRefreshHeader = 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0'                 // 下拉刷新：smart版 内置的一些header样式
