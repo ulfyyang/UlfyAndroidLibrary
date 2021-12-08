@@ -6,6 +6,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -160,34 +161,18 @@ public class TabPagerLinkage {
                 }
             }
         });
-        /*
-        先进行一轮测量，当所需宽度不够时根据模式自动切换到滚动模式
-         */
-        changeScrollModeIfContainerNotBigEnough();
-        /*
-        在Fix模式下通过设置Item的左右边距设置间隔
-         */
-        setDividerWidthForFixed();
-        /*
-        如果线条为包裹内容
-            则需要先记录各个Item容器的初始宽度
-            然后通过设置左右边距的方式缩短线条宽度
-         */
-        recordTabViewContainerInitWidth();
-        wrapContentIfNeed();
-        /*
-        如果线条为固定长度
-            则通过一个Wrap布局替换原有的线
-         */
-        wrapTabViewForFixLineWidth();
-        /*
-        在Scroll模式下通过设置线的宽度达到间距的设置
-         */
-        setDividerWidthForScroll();
-        /*
-        根据模式设置原生下划线
-         */
-        setTabLayoutIndicatorHeight();
+        tabLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override public void onGlobalLayout() {
+                changeScrollModeIfContainerNotBigEnough();      // 先进行一轮测量，当所需宽度不够时根据模式自动切换到滚动模式
+                setDividerWidthForFixed();                      // 在Fix模式下通过设置Item的左右边距设置间隔
+                recordTabViewContainerInitWidth();              // 如果线条为包裹内容：则需要先记录各个Item容器的初始宽度，然后通过设置左右边距的方式缩短线条宽度
+                wrapContentIfNeed();
+                wrapTabViewForFixLineWidth();                   // 如果线条为固定长度，则通过一个Wrap布局替换原有的线
+                setDividerWidthForScroll();                     // 在Scroll模式下通过设置线的宽度达到间距的设置
+                setTabLayoutIndicatorHeight();                  // 根据模式设置原生下划线
+                tabLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
         return this;
     }
 
@@ -282,67 +267,55 @@ public class TabPagerLinkage {
      * 当TabView需要的宽度超出了容器的宽度，切换为可滚动模式
      */
     private void changeScrollModeIfContainerNotBigEnough() {
-        tabLayout.post(new Runnable() {
-            @Override public void run() {
-                if (autoScrollMode) {
-                    int totleTabViewNeedWidth = 0;
-                    // 计算每个TabView的宽度和
-                    LinearLayout mTabStrip = (LinearLayout) tabLayout.getChildAt(0);
-                    for (int i = 0; i < mTabStrip.getChildCount(); i++) {
-                        View tabView = getTabViewFromTabViewContainer(mTabStrip.getChildAt(i));
-                        tabView.measure(0, 0);
-                        totleTabViewNeedWidth += tabView.getMeasuredWidth();
-                    }
-                    // 添加它们需要的间隔
-                    totleTabViewNeedWidth += dividerWidth * (mTabStrip.getChildCount() - 1);
-                    // 根据是否超出范围切换为滚动模式
-                    if (totleTabViewNeedWidth > tabLayout.getWidth()) {
-                        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-                        if (lineWidth == LINE_WIDTH_MATCH_PARENT) {
-                            lineWidth = LINE_WIDTH_WRAP_CONTENT;
-                        }
-                    }
+        if (autoScrollMode) {
+            int totleTabViewNeedWidth = 0;
+            // 计算每个TabView的宽度和
+            LinearLayout mTabStrip = (LinearLayout) tabLayout.getChildAt(0);
+            for (int i = 0; i < mTabStrip.getChildCount(); i++) {
+                View tabView = getTabViewFromTabViewContainer(mTabStrip.getChildAt(i));
+                tabView.measure(0, 0);
+                totleTabViewNeedWidth += tabView.getMeasuredWidth();
+            }
+            // 添加它们需要的间隔
+            totleTabViewNeedWidth += dividerWidth * (mTabStrip.getChildCount() - 1);
+            // 根据是否超出范围切换为滚动模式
+            if (totleTabViewNeedWidth > tabLayout.getMeasuredWidth()) {
+                tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+                if (lineWidth == LINE_WIDTH_MATCH_PARENT) {
+                    lineWidth = LINE_WIDTH_WRAP_CONTENT;
                 }
             }
-        });
+        }
     }
 
     /**
      * 设置每一项之间的间隔
      */
     private void setDividerWidthForFixed() {
-        tabLayout.post(new Runnable() {
-            @Override public void run() {
-                if (tabLayout.getTabMode() == TabLayout.MODE_FIXED) {
-                    LinearLayout mTabStrip = (LinearLayout) tabLayout.getChildAt(0);
-                    for (int i = 0; i < mTabStrip.getChildCount(); i++) {
-                        View tabViewContainer = mTabStrip.getChildAt(i);
-                        tabViewContainer.setPadding(0, 0, 0, 0);
-                        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) tabViewContainer.getLayoutParams();
-                        layoutParams.leftMargin = i == 0 ? 0 : (int) (dividerWidth / 2);
-                        layoutParams.rightMargin = i == mTabStrip.getChildCount() - 1 ? 0 : (int) (dividerWidth / 2);
-                        tabViewContainer.invalidate();
-                    }
-                }
+        if (tabLayout.getTabMode() == TabLayout.MODE_FIXED) {
+            LinearLayout mTabStrip = (LinearLayout) tabLayout.getChildAt(0);
+            for (int i = 0; i < mTabStrip.getChildCount(); i++) {
+                View tabViewContainer = mTabStrip.getChildAt(i);
+                tabViewContainer.setPadding(0, 0, 0, 0);
+                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) tabViewContainer.getLayoutParams();
+                layoutParams.leftMargin = i == 0 ? 0 : (int) (dividerWidth / 2);
+                layoutParams.rightMargin = i == mTabStrip.getChildCount() - 1 ? 0 : (int) (dividerWidth / 2);
+                tabViewContainer.invalidate();
             }
-        });
+        }
     }
 
     /**
      * 记录TabView容器的原始宽度
      */
     private void recordTabViewContainerInitWidth() {
-        tabLayout.post(new Runnable() {
-            @Override public void run() {
-                if (lineWidth == LINE_WIDTH_WRAP_CONTENT) {
-                    tabViewContainerInitWidthList.clear();
-                    LinearLayout mTabStrip = (LinearLayout) tabLayout.getChildAt(0);
-                    for (int i = 0; i < mTabStrip.getChildCount(); i++) {
-                        tabViewContainerInitWidthList.add(mTabStrip.getChildAt(i).getWidth());
-                    }
-                }
+        if (lineWidth == LINE_WIDTH_WRAP_CONTENT) {
+            tabViewContainerInitWidthList.clear();
+            LinearLayout mTabStrip = (LinearLayout) tabLayout.getChildAt(0);
+            for (int i = 0; i < mTabStrip.getChildCount(); i++) {
+                tabViewContainerInitWidthList.add(mTabStrip.getChildAt(i).getMeasuredWidth());
             }
-        });
+        }
     }
 
     /**
@@ -351,100 +324,92 @@ public class TabPagerLinkage {
      *      MODE_SCROLLABLE:    以内边距方式实现间隔（线条变长）
      */
     public void wrapContentIfNeed() {
-        tabLayout.post(new Runnable() {
-            @Override public void run() {
-                if (lineWidth == LINE_WIDTH_WRAP_CONTENT) {
-                    LinearLayout mTabStrip = (LinearLayout) tabLayout.getChildAt(0);
+        if (lineWidth == LINE_WIDTH_WRAP_CONTENT) {
+            LinearLayout mTabStrip = (LinearLayout) tabLayout.getChildAt(0);
 
-                    // 线条包裹内容下均分不支持间隔，改为间隔均分布局
-                    if (tabLayout.getTabMode() == TabLayout.MODE_FIXED) {
+            // 线条包裹内容下均分不支持间隔，改为间隔均分布局
+            if (tabLayout.getTabMode() == TabLayout.MODE_FIXED) {
 
-                        int totalTabViewWidth = 0; List<Integer> tabViewWidthList = new ArrayList<>();
-                        List<View> tabViewList = new ArrayList<>(); List<View> tabViewContainerList = new ArrayList<>();
+                int totalTabViewWidth = 0; List<Integer> tabViewWidthList = new ArrayList<>();
+                List<View> tabViewList = new ArrayList<>(); List<View> tabViewContainerList = new ArrayList<>();
 
-                        for (int i = 0; i < mTabStrip.getChildCount(); i++) {
-                            View tabViewContainer = mTabStrip.getChildAt(i);
-                            tabViewContainerList.add(tabViewContainer);
-                            View tabView = getTabViewFromTabViewContainer(tabViewContainer);
-                            tabViewList.add(tabView);
-                            tabView.measure(0, 0);
-                            totalTabViewWidth += tabView.getMeasuredWidth();
-                            tabViewWidthList.add(tabView.getMeasuredWidth());
-                        }
-
-                        int divider = (mTabStrip.getWidth() - totalTabViewWidth) / (mTabStrip.getChildCount() + 1);
-
-                        for (View view : tabViewContainerList) {
-                            view.setPadding(0, 0, 0, 0);
-                        }
-                        for (int i = 0; i < tabViewContainerList.size(); i++) {
-                            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams)
-                                    tabViewContainerList.get(i).getLayoutParams();
-                            layoutParams.width = tabViewWidthList.get(i);
-                            layoutParams.leftMargin = divider;
-                            layoutParams.rightMargin = i == tabViewContainerList.size() - 1 ? divider : 0;
-                        }
-
-                        return;
-                    }
-
-                    // 线条包裹内容下滚动支持间隔，但是是通过padding的方式实现的，因此线会多出一点
-                    if (tabLayout.getTabMode() == TabLayout.MODE_SCROLLABLE) {
-                        for (int i = 0; i < mTabStrip.getChildCount(); i++) {
-
-                            View tabViewContainer = mTabStrip.getChildAt(i);
-                            View tabView = getTabViewFromTabViewContainer(tabViewContainer);
-                            tabView.measure(0, 0);
-                            int tabViewWidth = tabView.getMeasuredWidth();
-                            LinearLayout.LayoutParams tabViewContainerLayoutParams = (LinearLayout.LayoutParams) tabViewContainer.getLayoutParams();
-
-                            if (useWrapperOnScrollMode) {
-                                wrapTabViewFromTabViewContainer(tabViewContainer, i, tabViewWidth);
-                            } else {
-                                tabViewContainer.setPadding((int) (dividerWidth / 2), 0, (int) (dividerWidth / 2), 0);
-                                tabViewContainerLayoutParams.width = (int) (tabViewWidth + dividerWidth);
-                                tabViewContainerLayoutParams.leftMargin =  0;
-                                tabViewContainerLayoutParams.rightMargin = 0;
-                            }
-
-                            tabViewContainer.setLayoutParams(tabViewContainerLayoutParams);
-                            tabViewContainer.invalidate();
-                        }
-
-                        return;
-                    }
+                for (int i = 0; i < mTabStrip.getChildCount(); i++) {
+                    View tabViewContainer = mTabStrip.getChildAt(i);
+                    tabViewContainerList.add(tabViewContainer);
+                    View tabView = getTabViewFromTabViewContainer(tabViewContainer);
+                    tabViewList.add(tabView);
+                    tabView.measure(0, 0);
+                    totalTabViewWidth += tabView.getMeasuredWidth();
+                    tabViewWidthList.add(tabView.getMeasuredWidth());
                 }
+
+                int divider = (mTabStrip.getMeasuredWidth() - totalTabViewWidth) / (mTabStrip.getChildCount() + 1);
+
+                for (View view : tabViewContainerList) {
+                    view.setPadding(0, 0, 0, 0);
+                }
+                for (int i = 0; i < tabViewContainerList.size(); i++) {
+                    LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams)
+                            tabViewContainerList.get(i).getLayoutParams();
+                    layoutParams.width = tabViewWidthList.get(i);
+                    layoutParams.leftMargin = divider;
+                    layoutParams.rightMargin = i == tabViewContainerList.size() - 1 ? divider : 0;
+                }
+
+                return;
             }
-        });
+
+            // 线条包裹内容下滚动支持间隔，但是是通过padding的方式实现的，因此线会多出一点
+            if (tabLayout.getTabMode() == TabLayout.MODE_SCROLLABLE) {
+                for (int i = 0; i < mTabStrip.getChildCount(); i++) {
+
+                    View tabViewContainer = mTabStrip.getChildAt(i);
+                    View tabView = getTabViewFromTabViewContainer(tabViewContainer);
+                    tabView.measure(0, 0);
+                    int tabViewWidth = tabView.getMeasuredWidth();
+                    LinearLayout.LayoutParams tabViewContainerLayoutParams = (LinearLayout.LayoutParams) tabViewContainer.getLayoutParams();
+
+                    if (useWrapperOnScrollMode) {
+                        wrapTabViewFromTabViewContainer(tabViewContainer, i, tabViewWidth);
+                    } else {
+                        tabViewContainer.setPadding((int) (dividerWidth / 2), 0, (int) (dividerWidth / 2), 0);
+                        tabViewContainerLayoutParams.width = (int) (tabViewWidth + dividerWidth);
+                        tabViewContainerLayoutParams.leftMargin =  0;
+                        tabViewContainerLayoutParams.rightMargin = 0;
+                    }
+
+                    tabViewContainer.setLayoutParams(tabViewContainerLayoutParams);
+                    tabViewContainer.invalidate();
+                }
+
+                return;
+            }
+        }
     }
 
     /**
      * 针对固定宽度的线条执行TabView包裹操作
      */
     private void wrapTabViewForFixLineWidth() {
-        tabLayout.post(new Runnable() {
-            @Override public void run() {
-                if (lineWidth != LINE_WIDTH_MATCH_PARENT && lineWidth != LINE_WIDTH_WRAP_CONTENT) {
-                    LinearLayout mTabStrip = (LinearLayout) tabLayout.getChildAt(0);
+        if (lineWidth != LINE_WIDTH_MATCH_PARENT && lineWidth != LINE_WIDTH_WRAP_CONTENT) {
+            LinearLayout mTabStrip = (LinearLayout) tabLayout.getChildAt(0);
 
-                    for (int i = 0; i < mTabStrip.getChildCount(); i++) {
-                        View tabViewContainer = mTabStrip.getChildAt(i);
-                        wrapTabViewFromTabViewContainer(tabViewContainer, i, lineWidth);
+            for (int i = 0; i < mTabStrip.getChildCount(); i++) {
+                View tabViewContainer = mTabStrip.getChildAt(i);
+                wrapTabViewFromTabViewContainer(tabViewContainer, i, lineWidth);
 
-                        View tabView = getTabViewFromTabViewContainer(tabViewContainer);
-                        tabView.measure(0, 0);
-                        int tabViewWidth = tabView.getMeasuredWidth();
+                View tabView = getTabViewFromTabViewContainer(tabViewContainer);
+                tabView.measure(0, 0);
+                int tabViewWidth = tabView.getMeasuredWidth();
 
-                        LinearLayout.LayoutParams tabViewContainerLayoutParams = (LinearLayout.LayoutParams) tabViewContainer.getLayoutParams();
+                LinearLayout.LayoutParams tabViewContainerLayoutParams = (LinearLayout.LayoutParams) tabViewContainer.getLayoutParams();
 
-                        tabViewContainer.setPadding((int) (dividerWidth / 2), 0, (int) (dividerWidth / 2), 0);
-                        tabViewContainerLayoutParams.width = (int) (tabViewWidth + dividerWidth);
-                        tabViewContainerLayoutParams.leftMargin =  0;
-                        tabViewContainerLayoutParams.rightMargin = 0;
-                    }
-                }
+                tabViewContainer.setPadding((int) (dividerWidth / 2), 0, (int) (dividerWidth / 2), 0);
+                tabViewContainerLayoutParams.width = (int) (tabViewWidth + dividerWidth);
+                tabViewContainerLayoutParams.leftMargin =  0;
+                tabViewContainerLayoutParams.rightMargin = 0;
             }
-        });
+        }
     }
 
     /**
@@ -491,45 +456,37 @@ public class TabPagerLinkage {
      * 设置滚动模式下的分割线宽度
      */
     private void setDividerWidthForScroll() {
-        tabLayout.post(new Runnable() {
-            @Override public void run() {
-                if (tabLayout.getTabMode() == TabLayout.MODE_SCROLLABLE) {
-                    LinearLayout mTabStrip = (LinearLayout) tabLayout.getChildAt(0);
-                    for (int i = 0; i < mTabStrip.getChildCount(); i++) {
-                        View tabViewContainer = mTabStrip.getChildAt(i);
+        if (tabLayout.getTabMode() == TabLayout.MODE_SCROLLABLE) {
+            LinearLayout mTabStrip = (LinearLayout) tabLayout.getChildAt(0);
+            for (int i = 0; i < mTabStrip.getChildCount(); i++) {
+                View tabViewContainer = mTabStrip.getChildAt(i);
 
-                        View tabView = getTabViewFromTabViewContainer(tabViewContainer);
-                        tabView.measure(0, 0);
-                        int tabViewWidth = tabView.getMeasuredWidth();
+                View tabView = getTabViewFromTabViewContainer(tabViewContainer);
+                tabView.measure(0, 0);
+                int tabViewWidth = tabView.getMeasuredWidth();
 
-                        LinearLayout.LayoutParams tabViewContainerLayoutParams = (LinearLayout.LayoutParams) tabViewContainer.getLayoutParams();
-                        tabViewContainer.setPadding((int) (dividerWidth / 2), 0, (int) (dividerWidth / 2), 0);
-                        tabViewContainerLayoutParams.width = (int) (tabViewWidth + dividerWidth);
-                        tabViewContainerLayoutParams.leftMargin =  0;
-                        tabViewContainerLayoutParams.rightMargin = 0;
-                        tabViewContainer.invalidate();
-                    }
-                }
+                LinearLayout.LayoutParams tabViewContainerLayoutParams = (LinearLayout.LayoutParams) tabViewContainer.getLayoutParams();
+                tabViewContainer.setPadding((int) (dividerWidth / 2), 0, (int) (dividerWidth / 2), 0);
+                tabViewContainerLayoutParams.width = (int) (tabViewWidth + dividerWidth);
+                tabViewContainerLayoutParams.leftMargin =  0;
+                tabViewContainerLayoutParams.rightMargin = 0;
+                tabViewContainer.invalidate();
             }
-        });
+        }
     }
 
     /**
      * 根据模式设置原生下划线
      */
     private void setTabLayoutIndicatorHeight() {
-        tabLayout.post(new Runnable() {
-            @Override public void run() {
-                // 当设置了固定宽度后取消原生下划线显示
-                if (lineWidth != LINE_WIDTH_MATCH_PARENT && lineWidth != LINE_WIDTH_WRAP_CONTENT) {
-                    tabLayout.setSelectedTabIndicatorHeight(0);
-                }
-                // 当在滚动模式下且设置了自动使用包裹器则取消原生下划线显示
-                else if (tabLayout.getTabMode() == TabLayout.MODE_SCROLLABLE && useWrapperOnScrollMode) {
-                    tabLayout.setSelectedTabIndicatorHeight(0);
-                }
-            }
-        });
+        // 当设置了固定宽度后取消原生下划线显示
+        if (lineWidth != LINE_WIDTH_MATCH_PARENT && lineWidth != LINE_WIDTH_WRAP_CONTENT) {
+            tabLayout.setSelectedTabIndicatorHeight(0);
+        }
+        // 当在滚动模式下且设置了自动使用包裹器则取消原生下划线显示
+        else if (tabLayout.getTabMode() == TabLayout.MODE_SCROLLABLE && useWrapperOnScrollMode) {
+            tabLayout.setSelectedTabIndicatorHeight(0);
+        }
     }
 
     private TabPagerLinkage onPageShow(int index) {
