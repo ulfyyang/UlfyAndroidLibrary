@@ -24,10 +24,10 @@ public class ContentDataInsideLoader extends NoNetConnectionTransponder {
         if (view instanceof InsideLoaderView) {
             insideLoader = ((InsideLoaderView) view).proviceInsideLoader();
         } else {
-            throw new IllegalStateException("view must be a instace of InsideLoaderView");
+            throw new IllegalStateException("view must be a instance of InsideLoaderView");
         }
         contentDataLoaderInsideConfig = TaskTransponderConfig.Config.contentDataLoaderInsideConfig;
-        onCreatView(this, view);
+        onCreateView(this, view);
         UiUtils.displayViewOnViewGroup(view, container);
     }
 
@@ -70,7 +70,7 @@ public class ContentDataInsideLoader extends NoNetConnectionTransponder {
     /**
      * 当创建view的时候会调用该方法
      */
-    protected void onCreatView(ContentDataInsideLoader loader, View createdView) {}
+    protected void onCreateView(ContentDataInsideLoader loader, View createdView) {}
 
     /**
      * 获取加载成功界面，该方法在onSuccess回调中调用才有内容

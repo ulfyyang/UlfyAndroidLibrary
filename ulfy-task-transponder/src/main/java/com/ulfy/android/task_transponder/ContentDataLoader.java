@@ -24,7 +24,7 @@ public class ContentDataLoader extends NoNetConnectionTransponder {
         this.contentDataLoaderConfig = TaskTransponderConfig.Config.contentDataLoaderConfig;
         if (showFirst) {        // 如果优先显示则直接显示到界面上
             this.view = UiUtils.createViewFromClazz(container.getContext(), (Class<? extends View>) model.getViewClass());
-            onCreatView(this, this.view);
+            onCreateView(this, this.view);
             UiUtils.displayViewOnViewGroup(this.view, container);
         }
     }
@@ -52,7 +52,7 @@ public class ContentDataLoader extends NoNetConnectionTransponder {
         } else {
             view = UiUtils.createViewFromClazz(container.getContext(), (Class<? extends View>) model.getViewClass());
             ((IView)view).bind(model);
-            onCreatView(this, view);
+            onCreateView(this, view);
             UiUtils.displayViewOnViewGroup(view, container);
         }
     }
@@ -76,7 +76,7 @@ public class ContentDataLoader extends NoNetConnectionTransponder {
     /**
      * 当创建view的时候会调用该方法
      */
-    protected void onCreatView(ContentDataLoader loader, View createdView) {}
+    protected void onCreateView(ContentDataLoader loader, View createdView) {}
 
     /**
      * 获取加载成功界面，该方法在onSuccess回调中调用才有内容
