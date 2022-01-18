@@ -1,16 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
-
-publish {
-    userOrg = 'ulfyyang'
-    repoName = 'ulfy-maven'
-    groupId = 'com.ulfy.android'
-    artifactId = 'umeng'
-    publishVersion = '0.2.0'
-    uploadName = 'ulfy-umeng'
-    desc = '对于友盟的整体封装，便于一次性集成使用'
-    website = 'https://github.com/ulfyyang/ulfy-android-master'
-}
 
 android {
     compileSdkVersion externalCompileSdkVersion

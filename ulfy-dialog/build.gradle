@@ -1,16 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
-
-publish {
-    userOrg = 'ulfyyang'
-    repoName = 'ulfy-maven'
-    groupId = 'com.ulfy.android'
-    artifactId = 'dialog'
-    publishVersion = '0.2.7'
-    uploadName = 'ulfy-dialog'
-    desc = '弹出框框架'
-    website = 'https://github.com/ulfyyang/ulfy-android-master'
-}
 
 android {
     compileSdkVersion externalCompileSdkVersion

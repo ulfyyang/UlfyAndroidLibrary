@@ -1,16 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
-
-publish {
-    userOrg = 'ulfyyang'
-    repoName = 'ulfy-maven'
-    groupId = 'com.ulfy.android'
-    artifactId = 'smart-refresh-layout'
-    publishVersion = '1.1.0'
-    uploadName = 'ulfy-smart-refresh-layout'
-    desc = 'SmartRefreshLayout的改进版，版本号跟随官方版本'
-    website = 'https://github.com/ulfyyang/ulfy-android-master'
-}
 
 android {
     compileSdkVersion externalCompileSdkVersion
