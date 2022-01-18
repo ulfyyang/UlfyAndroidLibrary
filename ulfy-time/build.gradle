@@ -1,20 +1,16 @@
-apply plugin: 'com.android.library'
+plugins {
+    id 'com.android.library'
+}
 
 android {
     compileSdkVersion externalCompileSdkVersion
     buildToolsVersion externalBuildToolsVersion
 
-    lintOptions {
-        abortOnError false
-    }
-
     defaultConfig {
         minSdkVersion externalMinSdkVersion
         targetSdkVersion externalTargetSdkVersion
-        versionCode 1
-        versionName "1.0"
         consumerProguardFiles 'proguard-rules.pro'
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner TestRunner
     }
 
     buildTypes {
@@ -24,10 +20,10 @@ android {
         }
     }
 
-    testOptions {
-        unitTests {
-            includeAndroidResources = true
-        }
+    lintOptions.abortOnError false
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
     }
 }
 
@@ -37,11 +33,8 @@ dependencies {
     implementation project(':ulfy-lib:ulfy-task-extension')
     implementation externalJodaTime
     implementation externalAndroidAppCompatV7
-    testImplementation externalJunit
-    testImplementation externalHamcrestLibrary
-    testImplementation externalMockito
-    testImplementation externalRobolectic
-    androidTestImplementation externalAndroidTestRunner
-    androidTestImplementation externalAndroidTestRules
-    androidTestImplementation externalAndroidTestEspresso
+    testImplementation TestJunit
+    testImplementation TestKotlinCoroutines
+    androidTestImplementation TestJunitExt
+    androidTestImplementation TestEspresso
 }

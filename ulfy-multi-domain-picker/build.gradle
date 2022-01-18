@@ -1,20 +1,16 @@
-apply plugin: 'com.android.library'
+plugins {
+    id 'com.android.library'
+}
 
 android {
     compileSdkVersion externalCompileSdkVersion
     buildToolsVersion externalBuildToolsVersion
 
-    lintOptions {
-        abortOnError false
-    }
-
     defaultConfig {
         minSdkVersion externalMinSdkVersion
         targetSdkVersion externalTargetSdkVersion
-        versionCode 1
-        versionName "1.0"
         consumerProguardFiles 'proguard-rules.pro'
-        testInstrumentationRunner externalRunner
+        testInstrumentationRunner TestRunner
     }
 
     buildTypes {
@@ -24,32 +20,18 @@ android {
         }
     }
 
+    lintOptions.abortOnError false
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
-    }
-
-    testOptions {
-        unitTests {
-            includeAndroidResources = true
-        }
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':ulfy-lib:ulfy-cache')
-
-    testImplementation externalJunit
-    testImplementation externalMockito
-    testImplementation externalRobolectic
-    testImplementation externalHamcrestLibrary
-
-    androidTestImplementation externalMockitoAndroid
-    androidTestImplementation externalAndroidTestRunner
-    androidTestImplementation externalAndroidTestRules
-    androidTestImplementation externalAndroidTestEspresso
-    androidTestImplementation externalAndroidTestSupport
-    debugImplementation externalAndroidTestSupportExtra
-    androidTestImplementation externalAndroidTestUiAutomator
+    testImplementation TestJunit
+    testImplementation TestKotlinCoroutines
+    androidTestImplementation TestJunitExt
+    androidTestImplementation TestEspresso
 }
