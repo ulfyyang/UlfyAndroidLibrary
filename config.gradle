@@ -1,19 +1,34 @@
+// Kotlin基础相关配置
+ext {
+    KotlinGradlePlugin = 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.32'
+    KotlinStdlib = 'org.jetbrains.kotlin:kotlin-stdlib:1.4.32'
+    KotlinCoroutinesAndroid = 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
+}
+
+// 测试相关库配置
+ext {
+    // 测试运行器
+    TestRunner = "androidx.test.runner.AndroidJUnitRunner"
+    // Java测试库
+    TestJunit = 'junit:junit:4.13.2'
+    TestKotlinCoroutines = 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1'
+    // Android测试库
+    TestJunitExt = 'androidx.test.ext:junit:1.1.3'
+    TestEspresso = 'androidx.test.espresso:espresso-core:3.4.0'
+}
+
 ext {
 
     /**
      * 编译插件，配置在根gradle文件中
      */
-    externalAndroidBuildGradlePlugin = 'com.android.tools.build:gradle:3.4.1'                       // 编译工具版本
+    externalAndroidBuildGradlePlugin = 'com.android.tools.build:gradle:4.1.3'                       // 编译工具版本
 
-    /**
-     * 版本库发布工具，配置在各个library中
-     */
-    externalBintrayRelease = 'com.novoda:bintray-release:0.9.1'                                     // library发布插件
 
     /**
      * 模块编译参数设置
      */
-    externalBuildToolsVersion = '28.0.3'                                                            // 模块编译工具版本
+    externalBuildToolsVersion = '29.0.2'                                                            // 模块编译工具版本
     externalCompileSdkVersion = 29                                                                  // 编译用的模块SDK版本号
     externalMinSdkVersion = 19                                                                      // 编译用的最小SDK版本号
     externalTargetSdkVersion = 29                                                                   // 编译用的目标SDK版本号
@@ -59,21 +74,7 @@ ext {
     externalAndroidMultiDex = 'androidx.multidex:multidex:2.0.1'                                    // 分包打包
     externalGoogleFindBugs = 'com.google.code.findbugs:jsr305:3.0.2'                                // 很多三方库依赖findbugs，不过版本不统一，如果编译出现findbugs版本冲突，则强制使用该版本
 
-    /**
-     * 测试库相关库
-     */
-    externalRunner = "androidx.test.runner.AndroidJUnitRunner"                                      // 测试Runner
-    externalJunit = 'junit:junit:4.12'                                                              // junit测试库
-    externalHamcrestLibrary = 'org.hamcrest:hamcrest-library:2.2'                                   // 断言匹配库
-    externalMockito = 'org.mockito:mockito-core:3.1.0'                                              // java测试mock库
-    externalMockitoAndroid = "org.mockito:mockito-android:3.1.0"                                    // 安卓测试mock库
-    externalRobolectic = 'org.robolectric:robolectric:4.2'                                          // java测试安卓库
-    externalAndroidTestRunner = 'androidx.test:runner:1.1.0'                                        // 安卓测试Runner
-    externalAndroidTestRules = 'androidx.test:rules:1.1.0'                                          // espresso规则
-    externalAndroidTestEspresso = 'androidx.test.espresso:espresso-core:3.1.0'                      // espresso核心
-    externalAndroidTestSupport = 'com.novoda:espresso-support:1.0.0'                                // espresso扩展支持
-    externalAndroidTestSupportExtra = 'com.novoda:espresso-support-extras:1.0.0'                    // espresso扩展支持组件
-    externalAndroidTestUiAutomator = 'androidx.test.uiautomator:uiautomator:2.2.0'                  // uiautomator库
+
 
     /**
      * 三方控件
