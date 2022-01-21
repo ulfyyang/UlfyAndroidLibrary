@@ -20,11 +20,11 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
-# 不需要保留ViewById字段，如果有其它地方用到了会自动保留
-#-keepclassmembers class ** {
-#    @com.ulfy.android.ui_injection.ViewById <fields>;
-#}
-# 必须保留View点击方法，因为这种方法通常不会被其它地方引用
+# 必须保留ViewById字段
+-keepclassmembers class ** {
+    @com.ulfy.android.ui_injection.ViewById <fields>;
+}
+# 必须保留View点击方法
 -keepclassmembers class ** {
     @com.ulfy.android.ui_injection.ViewClick <methods>;
 }
