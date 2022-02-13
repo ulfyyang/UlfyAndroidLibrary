@@ -12,10 +12,12 @@ public final class ReceiveDataState {
 	public static final int PICK_PICTURE = 2;
 	/** 选择拍照图片 */
 	public static final int TAKE_PICTURE = 3;
+	/** 拍摄视频 */
+	public static final int TAKE_VIDEO = 4;
 	/** 对图片进行裁切 */
-	public static final int CROP_PICTURE = 4;
+	public static final int CROP_PICTURE = 5;
 	/** 选择媒体 **/
-	public static final int PICK_MEDIA = 5;
+	public static final int PICK_MEDIA = 6;
 
 	/*
 	由于调用原生问题选择视频兼容性非常差，因此舍弃调用系统方法选择视频的功能

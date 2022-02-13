@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import com.ulfy.android.system.event.OnPickPictureEvent;
 import com.ulfy.android.system.event.OnReceiveDataEvent;
 import com.ulfy.android.system.event.OnTakePhotoEvent;
 import com.ulfy.android.system.event.OnTakePhotoOrPickPictureEvent;
+import com.ulfy.android.system.event.OnTakeVideoEvent;
 import com.ulfy.android.system.media_picker.MediaEntity;
 import com.ulfy.android.system.media_picker.MediaPickerActivity;
 import com.ulfy.android.ui_injection.InjectUtils;
@@ -82,6 +84,8 @@ public final class ActivityUtils {
 			processReceivePictureThenCropIfCan(receiveDataState, activity, requestCode, data);
 		} else if (receiveDataState.state == ReceiveDataState.TAKE_PICTURE) {
 			processTakePictureThenCropIfCan(receiveDataState, activity, requestCode, data);
+		} else if (receiveDataState.state == ReceiveDataState.TAKE_VIDEO) {
+			processTakeVideo(receiveDataState, activity, requestCode, data);
 		} else if (receiveDataState.state == ReceiveDataState.CROP_PICTURE) {
 			processCropPicture(receiveDataState, activity, requestCode);
 		} else if (receiveDataState.state == ReceiveDataState.PICK_MEDIA) {
@@ -113,6 +117,17 @@ public final class ActivityUtils {
 		} else {
 			cropImage(requestCode, OUTPUT_FILE, cropImageParam);
 		}
+	}
+
+	private static void processTakeVideo(ReceiveDataState receiveDataState, Activity target, int requestCode, Intent data) {
+		Cursor cursor = target.getContentResolver().query(data.getData(), null, null, null, null);
+		if (cursor.moveToFirst()) {
+			String filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+			long duration = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
+			BusUtils.post(target, new OnTakeVideoEvent(requestCode, new File(filePath), duration));
+		}
+		cursor.close();
+		initActivityState(receiveDataState);
 	}
 
 	private static void processCropPicture(ReceiveDataState receiveDataState, Activity target, int requestCode) {
@@ -342,7 +357,7 @@ public final class ActivityUtils {
 	 */
 	public static void pickPicture(final int requestCode, final CropImageParam param) {
 		AppUtils.requestPermission(new AppUtils.OnRequestPermissionListener() {
-			public void onSuccess() {
+			@Override public void onSuccess() {
 				if (requestCode <= 0) {
 					throw new IllegalArgumentException("cannot pick picture, request code must larger than zero");
 				}
@@ -385,9 +400,9 @@ public final class ActivityUtils {
 	 */
 	public static void takePhoto(final int requestCode, final CropImageParam param) {
 		AppUtils.requestPermission(new AppUtils.OnRequestPermissionListener() {
-			public void onSuccess() {
+			@Override public void onSuccess() {
 				if (requestCode <= 0) {
-					throw new IllegalArgumentException("cannot tack photo, request code must larger than zero");
+					throw new IllegalArgumentException("cannot take photo, request code must larger than zero");
 				}
 				// 获取顶部Activity的基本信息
 				ActivityInfo activityInfo = ActivityRepository.getInstance().getTopActivityInfo();
@@ -407,7 +422,37 @@ public final class ActivityUtils {
 					topActivity.startActivityForResult(intent, requestCode);
 					cropImageParam = param;
 				} catch (ActivityNotFoundException e) {
-					Toast.makeText(SystemConfig.context, "device not support tack photo", Toast.LENGTH_LONG).show();
+					Toast.makeText(SystemConfig.context, "device not support take photo", Toast.LENGTH_LONG).show();
+				}
+			}
+			public void onFail() {
+				Toast.makeText(SystemConfig.context, "获取相机授权失败", Toast.LENGTH_LONG).show();
+			}
+		}, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+	}
+
+	/**
+	 * 录制视频
+	 */
+	public static void takeVideo(final int requestCode) {
+		AppUtils.requestPermission(new AppUtils.OnRequestPermissionListener() {
+			@Override public void onSuccess() {
+				if (requestCode <= 0) {
+					throw new IllegalArgumentException("cannot take photo, request code must larger than zero");
+				}
+				// 获取顶部Activity的基本信息
+				ActivityInfo activityInfo = ActivityRepository.getInstance().getTopActivityInfo();
+				Activity topActivity = activityInfo.activity;
+				ReceiveDataState state = activityInfo.receiveDataState;
+				// 构造意图
+				Intent intent = new Intent();
+				intent.setAction(MediaStore.ACTION_VIDEO_CAPTURE);
+				// 发送意图
+				try {
+					state.state = ReceiveDataState.TAKE_VIDEO;
+					topActivity.startActivityForResult(intent, requestCode);
+				} catch (ActivityNotFoundException e) {
+					Toast.makeText(SystemConfig.context, "device not support take video", Toast.LENGTH_LONG).show();
 				}
 			}
 			public void onFail() {
@@ -421,7 +466,7 @@ public final class ActivityUtils {
 	 */
 	public static void cropImage(final int requestCode, final File cropFile, final CropImageParam param) {
 		AppUtils.requestPermission(new AppUtils.OnRequestPermissionListener() {
-			public void onSuccess() {
+			@Override public void onSuccess() {
 				// 获取顶部Activity的基本信息
 				ActivityInfo activityInfo = ActivityRepository.getInstance().getTopActivityInfo();
 				Activity topActivity = activityInfo.activity;
