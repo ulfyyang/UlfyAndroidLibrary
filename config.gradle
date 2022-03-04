@@ -15,7 +15,7 @@ ext {
 // 编译相关配置
 ext {
     // 根build.gradle配置
-    externalAndroidBuildGradlePlugin = 'com.android.tools.build:gradle:4.1.3'
+    externalAndroidBuildGradlePlugin = 'com.android.tools.build:gradle:7.0.4'
     // 模块build.gradle配置
     externalCompileSdkVersion = 29
     externalBuildToolsVersion = '29.0.2'
