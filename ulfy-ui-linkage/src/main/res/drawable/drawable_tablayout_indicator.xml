@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 未设置高度则为TabLayout设置的指示器高度 -->
+    <!-- 未设置宽度则为TabLayout设置的指示器宽度 -->
+    <item android:gravity="center">
+        <!-- 设置宽高不生效，但是可以设置其它属性 -->
+        <!-- 不设置颜色则为TabLayout设置的指示器颜色 -->
+        <shape />
+    </item>
+</layer-list>

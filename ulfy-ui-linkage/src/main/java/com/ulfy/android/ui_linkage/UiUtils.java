@@ -73,13 +73,13 @@ class UiUtils {
         }
     }
 
-    static Activity findActivityFromContext(Context cont) {
-        if (cont == null) {
+    static Activity findActivityFromContext(Context context) {
+        if (context == null) {
             return null;
-        } else if (cont instanceof Activity) {
-            return (Activity) cont;
-        } else if (cont instanceof ContextWrapper) {
-            return findActivityFromContext(((ContextWrapper) cont).getBaseContext());
+        } else if (context instanceof Activity) {
+            return (Activity) context;
+        } else if (context instanceof ContextWrapper) {
+            return findActivityFromContext(((ContextWrapper) context).getBaseContext());
         } else {
             return null;
         }
