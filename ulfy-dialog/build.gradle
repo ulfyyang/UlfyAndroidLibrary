@@ -21,9 +21,9 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation externalAndroidAppCompatV7
     implementation externalAndroidDesign
+    implementation AndroidXStartUp
     implementation project(':ulfy-lib:ulfy-views')
     implementation project(':ulfy-lib:ulfy-mvvm')
     implementation project(':ulfy-lib:ulfy-adapter')

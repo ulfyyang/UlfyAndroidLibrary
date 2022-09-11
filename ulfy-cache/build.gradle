@@ -21,7 +21,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation AndroidXStartUp
     testImplementation TestJunit
     testImplementation TestKotlinCoroutines
     androidTestImplementation TestJunitExt

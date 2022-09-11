@@ -17,7 +17,6 @@ public final class TimeRecorder {
      * 开启记录
      */
     public synchronized static void startRecord(String key) {
-        TimeConfig.throwExceptionIfConfigNotConfigured();
         TimeRecorderDriver driver = TimeRecorderDriverRepository.getInstance().findDriverByKey(key);
         if (driver != null) {
             if (driver.getOnDriveListener() == null) {
@@ -35,7 +34,6 @@ public final class TimeRecorder {
      * 停止记录
      */
     public synchronized static void stopRecord(String key) {
-        TimeConfig.throwExceptionIfConfigNotConfigured();
         TimeRecorderDriver driver = TimeRecorderDriverRepository.getInstance().findDriverByKey(key);
         if (driver != null) {
             driver.stopDrive();
@@ -47,7 +45,6 @@ public final class TimeRecorder {
      *      回调运行在UI线程
      */
     public synchronized static void setOnTimeRecordListener(String key, OnTimeRecordListener onTimeRecordListener) {
-        TimeConfig.throwExceptionIfConfigNotConfigured();
         TimeRecorderDriver driver = TimeRecorderDriverRepository.getInstance().findDriverByKey(key);
         if (driver != null) {
             driver.setOnTimeRecordListener(onTimeRecordListener);
@@ -58,7 +55,6 @@ public final class TimeRecorder {
      * 获取记录的秒数
      */
     public synchronized static long getRecordSecond(String key) {
-        TimeConfig.throwExceptionIfConfigNotConfigured();
         TimeRecorderItemData itemData = TimeRecorderItemDataRepository.getInstance().findItemByKey(key);
         return itemData == null ? 0 : itemData.getRecordSecond();
     }
@@ -67,7 +63,6 @@ public final class TimeRecorder {
      * 是否到达了指定的秒时间
      */
     public synchronized static boolean isSecondTimeArrived(String key, long seconds) {
-        TimeConfig.throwExceptionIfConfigNotConfigured();
         TimeRecorderItemData itemData = TimeRecorderItemDataRepository.getInstance().findItemByKey(key);
         return itemData != null && itemData.isSecondTimeArrived(seconds);
     }
@@ -76,7 +71,6 @@ public final class TimeRecorder {
      * 是否到达了指定的分时间
      */
     public synchronized static boolean isMinuteTimeArrived(String key, long minutes) {
-        TimeConfig.throwExceptionIfConfigNotConfigured();
         TimeRecorderItemData itemData = TimeRecorderItemDataRepository.getInstance().findItemByKey(key);
         return itemData != null && itemData.isMinuteTimeArrived(minutes);
     }
@@ -85,7 +79,6 @@ public final class TimeRecorder {
      * 设置记录范围
      */
     public synchronized static void setRecordScope(String key, int recordScope) {
-        TimeConfig.throwExceptionIfConfigNotConfigured();
         TimeRecorderItemData itemData = TimeRecorderItemDataRepository.getInstance().findItemByKey(key);
         if (itemData != null) {
             itemData.setRecordScope(recordScope);
@@ -96,7 +89,6 @@ public final class TimeRecorder {
      * 重置当前时间记录
      */
     public synchronized static void resetTimeRecorder(String key) {
-        TimeConfig.throwExceptionIfConfigNotConfigured();
         TimeRecorderItemData itemData = TimeRecorderItemDataRepository.getInstance().findItemByKey(key);
         if (itemData != null) {
             itemData.initTimeRecord();
@@ -107,7 +99,6 @@ public final class TimeRecorder {
      * 重置所有时间记录
      */
     public synchronized static void resetTimeRecorder() {
-        TimeConfig.throwExceptionIfConfigNotConfigured();
         TimeRecorderItemDataRepository.getInstance().clear();
     }
 }

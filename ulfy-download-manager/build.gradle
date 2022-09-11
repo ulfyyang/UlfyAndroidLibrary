@@ -21,13 +21,13 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':ulfy-lib:ulfy-cache')                      // 对象缓存包
-    implementation project(':ulfy-lib:ulfy-bus')                        // 事件总线包
-    implementation project(':ulfy-lib:ulfy-task-extension')             // 任务扩展包
     implementation externalRxJava                                       // RxJava
     implementation externalAria                                         // 下载引擎
     annotationProcessor externalAriaAnnotationProcesser                 // 下载引擎预编译
+    implementation AndroidXStartUp
+    implementation project(':ulfy-lib:ulfy-cache')                      // 对象缓存包
+    implementation project(':ulfy-lib:ulfy-bus')                        // 事件总线包
+    implementation project(':ulfy-lib:ulfy-task-extension')             // 任务扩展包
     testImplementation TestJunit
     testImplementation TestKotlinCoroutines
     androidTestImplementation TestJunitExt

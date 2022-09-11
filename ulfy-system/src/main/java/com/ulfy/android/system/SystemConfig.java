@@ -13,7 +13,7 @@ public final class SystemConfig {
     /**
      * 初始化系统模块
      */
-    public static void init(Application context) {
+    static void init(Application context) {
         SystemConfig.context = context;
         NetStateListener.listenNetStateChanged(context);
         BackgroundRunningDetector.init(context);

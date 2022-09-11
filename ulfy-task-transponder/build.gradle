@@ -21,13 +21,13 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation externalAndroidDesign
     implementation externalAndroidCardView
+    implementation externalGifDrawable
+    implementation AndroidXStartUp
     implementation project(':ulfy-lib:ulfy-task')
     implementation project(':ulfy-lib:ulfy-mvvm')
     implementation project(':ulfy-lib:ulfy-adapter')
-    implementation externalGifDrawable
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'

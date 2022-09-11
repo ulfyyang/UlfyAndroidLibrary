@@ -8,7 +8,7 @@ import android.view.Gravity;
 public final class UtilsConfig {
     static Application context;
 
-    public static void init(Application context) {
+    static void init(Application context) {
         UtilsConfig.context = context;
         context.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override public void onActivityCreated(Activity activity, Bundle savedInstanceState) { }

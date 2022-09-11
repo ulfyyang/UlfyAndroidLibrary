@@ -21,8 +21,8 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation externalAndroidAppCompatV7
+    implementation AndroidXStartUp
     testImplementation TestJunit
     testImplementation TestKotlinCoroutines
     androidTestImplementation TestJunitExt

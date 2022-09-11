@@ -21,11 +21,11 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation externalAndroidAppCompatV7
+    implementation externalJodaTime
+    implementation AndroidXStartUp
     implementation project(':ulfy-lib:ulfy-cache')
     implementation project(':ulfy-lib:ulfy-task-extension')
-    implementation externalJodaTime
-    implementation externalAndroidAppCompatV7
     testImplementation TestJunit
     testImplementation TestKotlinCoroutines
     androidTestImplementation TestJunitExt

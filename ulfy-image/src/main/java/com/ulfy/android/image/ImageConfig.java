@@ -9,34 +9,27 @@ import com.ulfy.android.cache.CacheConfig;
 import com.ulfy.android.cache.ICache;
 
 public final class ImageConfig {
-    static boolean configured;
     static Application context;
     static ICache cache;
 
     /**
      * 初始化图片模块
      */
-    public static void init(Application context) {
-        if (!configured) {
-
-            configured = true;
-            ImageConfig.context = context;
-            cache = CacheConfig.newMemoryDiskCache(context, Config.recordInfoCacheDirName);
-
-            ImageWatcherWrapper.getInstance().init(context);
-
-            context.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
-                @Override public void onActivityCreated(Activity activity, Bundle savedInstanceState) { }
-                @Override public void onActivityStarted(Activity activity) { }
-                @Override public void onActivityResumed(Activity activity) { }
-                @Override public void onActivityPaused(Activity activity) { }
-                @Override public void onActivityStopped(Activity activity) { }
-                @Override public void onActivitySaveInstanceState(Activity activity, Bundle outState) { }
-                @Override public void onActivityDestroyed(Activity activity) {
-                    ImageLoadingAnimatorRepository.getInstance().releaseOnActivityDestoryed(activity);
-                }
-            });
-        }
+    static void init(Application context) {
+        ImageConfig.context = context;
+        cache = CacheConfig.newMemoryDiskCache(context, Config.recordInfoCacheDirName);
+        ImageWatcherWrapper.getInstance().init(context);
+        context.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
+            @Override public void onActivityCreated(Activity activity, Bundle savedInstanceState) { }
+            @Override public void onActivityStarted(Activity activity) { }
+            @Override public void onActivityResumed(Activity activity) { }
+            @Override public void onActivityPaused(Activity activity) { }
+            @Override public void onActivityStopped(Activity activity) { }
+            @Override public void onActivitySaveInstanceState(Activity activity, Bundle outState) { }
+            @Override public void onActivityDestroyed(Activity activity) {
+                ImageLoadingAnimatorRepository.getInstance().releaseOnActivityDestoryed(activity);
+            }
+        });
     }
 
     /**
@@ -65,11 +58,5 @@ public final class ImageConfig {
          * 用于跟踪下载信息的缓存目录
          */
         public static String recordInfoCacheDirName = "image_cache";
-    }
-
-    static void throwExceptionIfConfigNotConfigured() {
-        if (!configured) {
-            throw new IllegalStateException("Image not configured in Application entrace, please add ImageConfig.init(this); to Application");
-        }
     }
 }

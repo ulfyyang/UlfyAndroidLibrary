@@ -14,7 +14,6 @@ public final class TimeJudger {
      *      天数是按照日期计算的，只要日期不在同一天则表示不同的天数，计时不够24小时也会被算作一天
      */
     public static boolean isInDays(String key, int days) {
-        TimeConfig.throwExceptionIfConfigNotConfigured();
         TimeJudgerItemData itemData = TimeJudgerItemDataRepository.getInstance().findItemByKey(key);
         return itemData != null && itemData.isInDays(days);
     }
@@ -25,7 +24,6 @@ public final class TimeJudger {
      *      小时是按照具体的小时个数计算的，如1天有24个小时
      */
     public static boolean isInHours(String key, int hours) {
-        TimeConfig.throwExceptionIfConfigNotConfigured();
         TimeJudgerItemData itemData = TimeJudgerItemDataRepository.getInstance().findItemByKey(key);
         return itemData != null && itemData.isInHours(hours);
     }
@@ -35,7 +33,6 @@ public final class TimeJudger {
      *      这里的重置会将时间重置为当前的时间
      */
     public synchronized static void initTimeJudger(String key) {
-        TimeConfig.throwExceptionIfConfigNotConfigured();
         TimeJudgerItemData itemData = TimeJudgerItemDataRepository.getInstance().findItemByKey(key);
         if (itemData != null) {
             itemData.initTimeJudger();
@@ -47,7 +44,6 @@ public final class TimeJudger {
      *      这里的清除相当于清除所有的数据，下次使用又从未初始化为起点开始
      */
     public synchronized static void clearTimeJudger() {
-        TimeConfig.throwExceptionIfConfigNotConfigured();
         TimeJudgerItemDataRepository.getInstance().clear();
     }
 

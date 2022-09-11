@@ -21,7 +21,6 @@ public final class MultiDomainPicker {
      * @param useCache      是否使用缓存
      */
     public final String getTargetDomainUrl(String key, boolean useCache) throws Exception {
-        MultiDomainPickerConfig.throwExceptionIfConfigNotConfigured();
         DomainRepository domainRepository = DomainRepository.getInstance(key);
         domainRepository.init(new SerialDomainFilter(), new MultiDomainPickerConfig.DomainTesterConverterProviderInner(),
                 new AndroidNetworkDetector(MultiDomainPickerConfig.context));
@@ -42,7 +41,6 @@ public final class MultiDomainPicker {
      * @param key           跟踪的场景KEY
      */
     public final void invalidateDomain(String key) {
-        MultiDomainPickerConfig.throwExceptionIfConfigNotConfigured();
         DomainRepository.getInstance(key).invalidateTargetDomain();
     }
 
@@ -62,7 +60,6 @@ public final class MultiDomainPicker {
      * @param key           跟踪的场景KEY
      */
     public final void reset(String key) {
-        MultiDomainPickerConfig.throwExceptionIfConfigNotConfigured();
         DomainRepository.getInstance(key).reset();
     }
 }

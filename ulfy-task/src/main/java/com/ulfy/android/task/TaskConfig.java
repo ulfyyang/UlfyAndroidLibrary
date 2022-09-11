@@ -9,7 +9,7 @@ public final class TaskConfig {
     /**
      * 初始化任务模块
      */
-    public static void init(Application context) {
+    static void init(Application context) {
         context.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override public void onActivityCreated(Activity activity, Bundle savedInstanceState) { }
             @Override public void onActivityStarted(Activity activity) { }

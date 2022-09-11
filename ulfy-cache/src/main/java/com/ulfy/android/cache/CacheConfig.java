@@ -3,7 +3,6 @@ package com.ulfy.android.cache;
 import android.content.Context;
 
 public final class CacheConfig {
-    static boolean defaultConfigured;
     static ICache defaultMemoryCache;
     static ICache defaultWeakMemoryCache;
     static ICache defaultDiskCache;
@@ -17,14 +16,11 @@ public final class CacheConfig {
      * 初始化主缓存
      *      如果使用默认的缓存，则必须在Application中初始化
      */
-    public static void initDefaultCache(Context context) {
-        if (!defaultConfigured) {
-            defaultConfigured = true;
-            defaultMemoryCache = new MemoryCache();
-            defaultWeakMemoryCache = new WeakMemoryCache();
-            defaultDiskCache = new DiskCache(context, Config.recordInfoCacheDirName);
-            defaultMemoryDiskCache = new MemoryDiskCache(defaultWeakMemoryCache, defaultDiskCache);
-        }
+    static void initDefaultCache(Context context) {
+        defaultMemoryCache = new MemoryCache();
+        defaultWeakMemoryCache = new WeakMemoryCache();
+        defaultDiskCache = new DiskCache(context, Config.recordInfoCacheDirName);
+        defaultMemoryDiskCache = new MemoryDiskCache(defaultWeakMemoryCache, defaultDiskCache);
     }
 
     /**
@@ -64,11 +60,5 @@ public final class CacheConfig {
 
     public static final class Config {
         public static String recordInfoCacheDirName = "local_entity_cache";                         // 用于跟踪下载信息的缓存目录
-    }
-
-    static void throwExceptionIfDefaultConfigNotConfigured() {
-        if (!defaultConfigured) {
-            throw new IllegalStateException("Cache not configured for default config in Application entrace, please add CacheConfig.initDefaultCache(this); to Application");
-        }
     }
 }

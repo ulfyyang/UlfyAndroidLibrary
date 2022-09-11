@@ -21,11 +21,11 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation externalOKHTTP
     implementation externalOkHttpUrlConnection
     implementation externalOkHttpPersistentCookieJar
     implementation externalOkHttpLogging
     implementation externalGuava
     implementation externalFastJson
+    implementation AndroidXStartUp
 }

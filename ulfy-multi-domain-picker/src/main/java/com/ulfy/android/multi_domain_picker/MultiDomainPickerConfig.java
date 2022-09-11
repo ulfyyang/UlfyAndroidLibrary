@@ -10,34 +10,27 @@ import java.util.List;
 import java.util.Map;
 
 public final class MultiDomainPickerConfig {
-    static boolean configured; static Context context;
+    static Context context;
     static ICache cache;        // 用于管理持久化状态的缓存对象
+
+    static void init(Context context) {
+        MultiDomainPickerConfig.context = context;
+        MultiDomainPickerConfig.cache = CacheConfig.newMemoryDiskCache(context, Config.recordInfoCacheDirName);
+    }
 
     /**
      * 初始化
      */
-    public static void init(Context context, List<String> originalDomainList) {
-        init(context, null, originalDomainList);
+    public static void init(List<String> originalDomainList) {
+        init(null, originalDomainList);
     }
 
     /**
      * 初始化
      * @param key           跟踪的场景KEY
      */
-    public static void init(Context context, String key, List<String> originalDomainList) {
-        if (!configured) {
-            MultiDomainPickerConfig.configured = true;
-            MultiDomainPickerConfig.context = context;
-            MultiDomainPickerConfig.cache = CacheConfig.newMemoryDiskCache(context, Config.recordInfoCacheDirName);
-        }
+    public static void init(String key, List<String> originalDomainList) {
         DomainRepository.getInstance(key).initOriginalDomainList(originalDomainList);
-    }
-
-    static void throwExceptionIfConfigNotConfigured() {
-        if (!configured) {
-            throw new IllegalStateException("MultiDomainPicker not configured in Application entrance, " +
-                    "please add MultiDomainPickerConfig.init(this); to Application");
-        }
     }
 
     static class DomainTesterConverterProviderInner implements DomainTesterConverterProvider {

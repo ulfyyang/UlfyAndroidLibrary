@@ -1,2 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ulfy.android.time" />
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.ulfy.android.time">
+
+    <application>
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data android:name="com.ulfy.android.time.TimeInitializer" android:value="androidx.startup" />
+        </provider>
+
+    </application>
+
+</manifest>

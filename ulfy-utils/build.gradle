@@ -21,11 +21,11 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation externalAndroidDesign
     implementation externalOKHTTP
     implementation externalFastJson
     implementation externalGifEnDeCoder
+    implementation AndroidXStartUp
     implementation project(':ulfy-lib:ulfy-adapter')
     implementation project(':ulfy-lib:ulfy-mvvm')
     testImplementation TestJunit

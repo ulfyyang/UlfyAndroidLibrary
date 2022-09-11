@@ -18,7 +18,7 @@ public final class DialogConfig {
     /**
      * 初始化弹出框模块
      */
-    public static void init(Application context) {
+    static void init(Application context) {
         context.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override public void onActivityCreated(Activity activity, Bundle savedInstanceState) { }
             @Override public void onActivityStarted(Activity activity) { }

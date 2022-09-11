@@ -5,8 +5,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(RobolectricTestRunner.class)
 public class CacheConfigTest {
@@ -14,14 +12,6 @@ public class CacheConfigTest {
 
     @Before public void init() {
         CacheConfig.defaultConfigured = false;
-    }
-
-    /**
-     * 如果配置了入口正常执行
-     */
-    @Test public void testConfiguredEntrace() {
-        CacheConfig.initDefaultCache(RuntimeEnvironment.application);
-        CacheUtils.isCached(TestEntity1.class);
     }
 
     /**

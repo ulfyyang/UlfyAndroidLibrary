@@ -80,7 +80,6 @@ public final class DownloadManager {
      * @param downloadManagerId 下载管理ID，用户自定义的用于跟踪的KEY
      */
     public static DownloadManager getInstance(String downloadManagerId) {
-        DownloadManagerConfig.throwExceptionIfConfigNotConfigured();
         downloadManagerId = defaultIdIfEmpty(downloadManagerId);
         DownloadManager downloadManager = downloadManagerMap.get(downloadManagerId);
         if (downloadManager == null) {

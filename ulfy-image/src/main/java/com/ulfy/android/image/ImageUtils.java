@@ -45,17 +45,14 @@ public final class ImageUtils {
     }
 
     public static void loadImage(String url, int placeholder, int errorholder, ImageView imageView, BitmapProcessNode bitmapProcessNode) {
-        ImageConfig.throwExceptionIfConfigNotConfigured();
         GlideWrapper.getInstance().loadImage(url, placeholder, errorholder, imageView, bitmapProcessNode);
     }
 
     public static void preload(String url) {
-        ImageConfig.throwExceptionIfConfigNotConfigured();
         GlideWrapper.getInstance().preload(url);
     }
 
     public static File download(String url) throws Exception {
-        ImageConfig.throwExceptionIfConfigNotConfigured();
         return GlideWrapper.getInstance().download(url);
     }
 
@@ -84,12 +81,10 @@ public final class ImageUtils {
     }
 
     public static void loadImage(File file, int placeholder, int errorholder, ImageView imageView, BitmapProcessNode bitmapProcessNode) {
-        ImageConfig.throwExceptionIfConfigNotConfigured();
         GlideWrapper.getInstance().loadImage(file.getPath(), placeholder, errorholder, imageView, bitmapProcessNode);
     }
 
     public static void preload(File file) {
-        ImageConfig.throwExceptionIfConfigNotConfigured();
         GlideWrapper.getInstance().preload(file.getAbsolutePath());
     }
 
@@ -97,7 +92,6 @@ public final class ImageUtils {
      * 获取缓存大小
      */
     public static long getCacheSize() {
-        ImageConfig.throwExceptionIfConfigNotConfigured();
         return GlideWrapper.getInstance().getCacheSize();
     }
 
@@ -106,7 +100,6 @@ public final class ImageUtils {
      *      只能在主线程执行
      */
     public static void clearMemoryCache() {
-        ImageConfig.throwExceptionIfConfigNotConfigured();
         GlideWrapper.getInstance().clearImageMemoryCache();
     }
 
@@ -115,7 +108,6 @@ public final class ImageUtils {
      *      只能在后台线程运行
      */
     public static void clearDiskCache() {
-        ImageConfig.throwExceptionIfConfigNotConfigured();
         GlideWrapper.getInstance().clearImageDiskCache();
     }
 
@@ -130,7 +122,6 @@ public final class ImageUtils {
      * @param imagePathList 预览的图片集合
      */
     public static ImageWatcher preview(Context context, List<String> imagePathList) {
-        ImageConfig.throwExceptionIfConfigNotConfigured();
         return ImageWatcherWrapper.getInstance().preview(context, imagePathList, 0);
     }
 
@@ -141,7 +132,6 @@ public final class ImageUtils {
      * @param showPosition  默认显示的位置
      */
     public static ImageWatcher preview(Context context, List<String> imagePathList, int showPosition) {
-        ImageConfig.throwExceptionIfConfigNotConfigured();
         return ImageWatcherWrapper.getInstance().preview(context, imagePathList, showPosition);
     }
 
@@ -151,7 +141,6 @@ public final class ImageUtils {
      * @param imagePathList 预览的图片集合
      */
     public static ImageWatcher preview(ViewGroup viewGroup, List<String> imagePathList) {
-        ImageConfig.throwExceptionIfConfigNotConfigured();
         return ImageWatcherWrapper.getInstance().preview(viewGroup, imagePathList, 0);
     }
 
@@ -162,7 +151,6 @@ public final class ImageUtils {
      * @param showPosition  默认的显示位置
      */
     public static ImageWatcher preview(ViewGroup viewGroup, List<String> imagePathList, int showPosition) {
-        ImageConfig.throwExceptionIfConfigNotConfigured();
         return ImageWatcherWrapper.getInstance().preview(viewGroup, imagePathList, showPosition);
     }
 
@@ -174,7 +162,6 @@ public final class ImageUtils {
      *      }
      */
     public static boolean handlePreviewBackPressed(Activity activity) {
-        ImageConfig.throwExceptionIfConfigNotConfigured();
         return ImageWatcherWrapper.getInstance().handlePreviewBackPressed(activity);
     }
 

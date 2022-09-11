@@ -28,8 +28,6 @@ public final class BlurBitmapNode extends BitmapProcessNode {
     }
 
     @Override protected Bitmap onProcessBitmap(Bitmap bitmap) {
-        ImageConfig.throwExceptionIfConfigNotConfigured();
-
         if (bitmap == null) {
             return null;
         }

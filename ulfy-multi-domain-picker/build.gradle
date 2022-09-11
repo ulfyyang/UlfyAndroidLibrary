@@ -21,7 +21,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation AndroidXStartUp
     implementation project(':ulfy-lib:ulfy-cache')
     testImplementation TestJunit
     testImplementation TestKotlinCoroutines

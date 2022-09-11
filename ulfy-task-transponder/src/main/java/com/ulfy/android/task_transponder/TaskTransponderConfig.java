@@ -11,7 +11,7 @@ public final class TaskTransponderConfig {
     /**
      * 初始化任务详情器模块
      */
-    public static void init(Application context) {
+    static void init(Application context) {
         TaskTransponderConfig.context = context;
         NetStateListener.listenNetStateChanged(context);
         context.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {

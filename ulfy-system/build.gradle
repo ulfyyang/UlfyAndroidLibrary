@@ -21,7 +21,6 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation externalAndroidAppCompatV7
     implementation externalPermission
     implementation externalOKHTTP
@@ -29,6 +28,7 @@ dependencies {
     implementation externalGlideAnnotationProcessor
     annotationProcessor externalGlideAnnotationProcessor
     implementation externalGuava                                // JAVA基础工具库
+    implementation AndroidXStartUp
     implementation project(':ulfy-lib:ulfy-bus')
     implementation project(':ulfy-lib:ulfy-dialog')
     implementation project(':ulfy-lib:ulfy-ui-injection')

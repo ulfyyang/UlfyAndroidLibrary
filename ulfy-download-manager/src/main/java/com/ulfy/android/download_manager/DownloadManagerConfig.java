@@ -5,7 +5,6 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.arialyy.aria.core.Aria;
-import com.ulfy.android.bus.BusConfig;
 import com.ulfy.android.bus.BusUtils;
 import com.ulfy.android.cache.CacheConfig;
 import com.ulfy.android.cache.ICache;
@@ -16,7 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class DownloadManagerConfig {
-    static boolean configured;
     static Application context; static ICache cache;
     public static final String DEFAULT_DOWNLOAD_MANAGER_ID = "ULFY_DEFAULT_DOWNLOAD_MANAGER_ID";
 
@@ -30,10 +28,7 @@ public final class DownloadManagerConfig {
     /**
      * 初始化下载任务模块
      */
-    public static void init(Application context) {
-        if (!configured) {
-            configured = true;
-
+    static void init(Application context) {
             DownloadManagerConfig.context = context;
 
             Aria.init(context);
@@ -46,15 +41,7 @@ public final class DownloadManagerConfig {
             DownloadingTaskRepository.deleteDownloadingFileWithoutRecord();
             DownloadedTaskRepository.deleteDownloadedFileWithoutRecord();
 
-            BusConfig.init(context);
             BusUtils.post(new DownloadManager.OnDownloadManagerStateChangeEvent());
-        }
-    }
-
-    static void throwExceptionIfConfigNotConfigured() {
-        if (!configured) {
-            throw new IllegalStateException("DownloadManager not configured in Application entrace, please add DownloadManagerConfig.init(this); to Application");
-        }
     }
 
     /**

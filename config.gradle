@@ -10,6 +10,7 @@ ext {
     AndroidXCore = 'androidx.core:core:1.6.0'
     AndroidXCoreKtx = 'androidx.core:core-ktx:1.6.0'
     AndroidXActivity = 'androidx.activity:activity:1.2.4'
+    AndroidXStartUp = 'androidx.startup:startup-runtime:1.1.1'
 }
 
 // 编译相关配置
@@ -17,8 +18,8 @@ ext {
     // 根build.gradle配置
     externalAndroidBuildGradlePlugin = 'com.android.tools.build:gradle:7.0.4'
     // 模块build.gradle配置
-    externalCompileSdkVersion = 29
-    externalBuildToolsVersion = '29.0.2'
+    externalCompileSdkVersion = 31
+    externalBuildToolsVersion = '31.0.0'
     externalMinSdkVersion = 19
     externalTargetSdkVersion = 29
 }

@@ -15,7 +15,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public final class HttpConfig {
     static Application context;
 
-    public static void init(Application context) {
+    static void init(Application context) {
         HttpConfig.context = context;
     }
 
