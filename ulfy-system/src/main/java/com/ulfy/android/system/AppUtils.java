@@ -3,6 +3,7 @@ package com.ulfy.android.system;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentUris;
@@ -388,6 +389,34 @@ public final class AppUtils {
     public static String getPackageName() {
         return SystemConfig.context.getPackageName();
     }
+
+    /**
+     * 获取当前进程名
+     */
+    public static String getCurrentProcessName(Context context) {
+        int pid = android.os.Process.myPid();
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningAppProcessInfo appProcess : activityManager.getRunningAppProcesses()) {
+            if (appProcess.pid == pid) {
+                return appProcess.processName;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 判断是否是当前App包名进程。通常主进程与包名相同，但是有的三方库会建立新进程，如：友盟
+     *  1. 该方法判断当前进程是否是包名所在进程
+     *  2. 通过该方法可以过滤多进程下Application.onCreate多次调用部分库初始化崩溃问题
+     */
+    public static boolean isPackageProcess(Context context) {
+        String currentProcessName = getCurrentProcessName(context);
+        if (TextUtils.isEmpty(currentProcessName)) {
+            return false;
+        }
+        return currentProcessName.equals(context.getPackageName());
+    }
+
 
     ///////////////////////////////////////////////////////////////////////////
     // 系统相关交互
