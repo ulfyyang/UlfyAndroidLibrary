@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,11 @@ public final class VideoUtils {
         MediaMetadataRetriever media = new MediaMetadataRetriever();
         media.setDataSource(video.getAbsolutePath());
         Bitmap bitmap = media.getFrameAtTime();
-        media.release();
+        try {
+            media.release();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return bitmap;
     }
 
@@ -79,7 +84,11 @@ public final class VideoUtils {
         } catch (Exception e) {
             throw new IllegalStateException(e);
         } finally {
-            media.release();
+            try {
+                media.release();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return fileList;
     }
@@ -92,7 +101,11 @@ public final class VideoUtils {
         media.setDataSource(video.getAbsolutePath());
         String w = media.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
         String h = media.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
-        media.release();
+        try {
+            media.release();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         int width = StringUtils.isEmpty(w) ? -1 : Integer.valueOf(w);
         int height = StringUtils.isEmpty(h) ? -1 : Integer.valueOf(h);
         return new Size(width, height);
@@ -105,7 +118,11 @@ public final class VideoUtils {
         MediaMetadataRetriever media = new MediaMetadataRetriever();
         media.setDataSource(video.getAbsolutePath());
         String d = media.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-        media.release();
+        try {
+            media.release();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return StringUtils.isEmpty(d) ? -1 : Long.valueOf(d);
     }
 
@@ -116,7 +133,11 @@ public final class VideoUtils {
         MediaMetadataRetriever media = new MediaMetadataRetriever();
         media.setDataSource(video.getAbsolutePath());
         String r = media.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-        media.release();
+        try {
+            media.release();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return StringUtils.isEmpty(r) ? -1 : Integer.valueOf(r);
     }
 

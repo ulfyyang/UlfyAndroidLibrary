@@ -3,12 +3,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion externalCompileSdkVersion
-    buildToolsVersion externalBuildToolsVersion
+    compileSdk CompileSdk
 
     defaultConfig {
-        minSdkVersion externalMinSdkVersion
-        targetSdkVersion externalTargetSdkVersion
+        minSdk MinSdk
+        targetSdk TargetSdk
         consumerProguardFiles 'proguard-rules.pro'
         testInstrumentationRunner TestRunner
     }
@@ -21,10 +20,10 @@ android {
 }
 
 dependencies {
-    implementation externalAndroidDesign
-    implementation externalOKHTTP
-    implementation externalFastJson
-    implementation externalGifEnDeCoder
+    implementation AndroidMaterial
+    implementation OKHTTP
+    implementation FastJson
+    implementation GifEnDeCoder
     implementation AndroidXStartUp
     implementation project(':ulfy-lib:ulfy-adapter')
     implementation project(':ulfy-lib:ulfy-mvvm')

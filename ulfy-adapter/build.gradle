@@ -3,12 +3,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion externalCompileSdkVersion
-    buildToolsVersion externalBuildToolsVersion
+    compileSdk CompileSdk
 
     defaultConfig {
-        minSdkVersion externalMinSdkVersion
-        targetSdkVersion externalTargetSdkVersion
+        minSdk MinSdk
+        targetSdk TargetSdk
         consumerProguardFiles 'proguard-rules.pro'
         testInstrumentationRunner TestRunner
     }
@@ -22,8 +21,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation externalAndroidAppCompatV7
-    implementation externalAndroidDesign
+    implementation AndroidXAppCompat
+    implementation AndroidMaterial
     implementation project(':ulfy-lib:ulfy-mvvm')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0'

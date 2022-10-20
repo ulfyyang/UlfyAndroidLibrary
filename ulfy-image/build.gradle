@@ -3,12 +3,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion externalCompileSdkVersion
-    buildToolsVersion externalBuildToolsVersion
+    compileSdk CompileSdk
 
     defaultConfig {
-        minSdkVersion externalMinSdkVersion
-        targetSdkVersion externalTargetSdkVersion
+        minSdk MinSdk
+        targetSdk TargetSdk
         consumerProguardFiles 'proguard-rules.pro'
         testInstrumentationRunner TestRunner
     }
@@ -21,13 +20,12 @@ android {
 }
 
 dependencies {
-    implementation externalGlide
-//    implementation externalGlideOkHttp                    // 对于自建证书的 https 图片会加载失败，因此通过源码依赖修正这个问题
-    implementation externalGlideAnnotationProcessor
-    annotationProcessor externalGlideAnnotationProcessor
-    implementation externalOKHTTP
+    implementation Glide
+//    implementation GlideOkHttp                    // 对于自建证书的 https 图片会加载失败，因此通过源码依赖修正这个问题
+    annotationProcessor GlideAnnotationProcessor
+    implementation OKHTTP
     implementation AndroidXStartUp
-    api externalImageWatcher
+    api ImageWatcher
     implementation project(':ulfy-lib:ulfy-cache')
     testImplementation TestJunit
     testImplementation TestKotlinCoroutines

@@ -1,0 +1,6 @@
+dependencies {
+    testImplementation TestJunit
+    testImplementation TestKotlinCoroutines
+    androidTestImplementation TestJunitExt
+    androidTestImplementation TestEspresso
+}

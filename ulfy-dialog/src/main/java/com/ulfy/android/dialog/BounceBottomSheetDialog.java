@@ -1,5 +1,6 @@
 package com.ulfy.android.dialog;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
@@ -19,7 +20,6 @@ import android.widget.FrameLayout;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StyleRes;
-import androidx.appcompat.app.AppCompatDialog;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
@@ -33,7 +33,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
  *      BottomSheetDialog对于输入框的支持会有各种各样的问题，因此对于需要输入的内容建议采用一个新的弹窗单独把输入框顶起来
  *      无论哪种模式的输入法模式，在输入框被顶起来的时候都会导致窗口的整个位移，目前无法解决
  */
-class BounceBottomSheetDialog extends AppCompatDialog implements IDialog {
+class BounceBottomSheetDialog extends Dialog implements IDialog {
     private Context context;
     private String dialogId;
 
@@ -67,13 +67,13 @@ class BounceBottomSheetDialog extends AppCompatDialog implements IDialog {
         super(context, getThemeResId(context, theme));
         // We hide the title bar for any style configuration. Otherwise, there will be a gap
         // above the bottom sheet when it is expanded.
-        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+//        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
     }
 
     protected BounceBottomSheetDialog(@NonNull Context context, boolean cancelable,
                                       DialogInterface.OnCancelListener cancelListener) {
         super(context, cancelable, cancelListener);
-        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+//        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         mCancelable = cancelable;
     }
 

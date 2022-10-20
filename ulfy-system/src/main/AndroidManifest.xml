@@ -14,7 +14,7 @@
     <application>
 
         <!-- 媒体选择器 -->
-        <activity android:name=".media_picker.MediaPickerActivity" />
+        <activity android:name=".media_picker.MediaPickerActivity" android:exported="false" />
 
         <!--
             网络状态监听会在在安卓7.0会失效。在5.0平台引入了一个新的监听方式

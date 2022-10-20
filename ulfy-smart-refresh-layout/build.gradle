@@ -3,12 +3,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion externalCompileSdkVersion
-    buildToolsVersion externalBuildToolsVersion
+    compileSdk CompileSdk
 
     defaultConfig {
-        minSdkVersion externalMinSdkVersion
-        targetSdkVersion externalTargetSdkVersion
+        minSdk MinSdk
+        targetSdk TargetSdk
         consumerProguardFiles 'proguard-rules.pro'
         testInstrumentationRunner TestRunner
     }
@@ -22,7 +21,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation externalAppBarLayout                 // 官方AppBarLayout升级版
+    implementation AppBarLayout                 // 官方AppBarLayout升级版
     //noinspection GradleDependency
     compileOnly 'androidx.annotation:annotation:1.0.0'
     //noinspection GradleDependency,GradleCompatible

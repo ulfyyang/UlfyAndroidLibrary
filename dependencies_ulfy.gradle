@@ -1,0 +1,23 @@
+dependencies {
+    implementation project(':ulfy-lib:ulfy-cache')                       // 对象缓存
+    implementation project(':ulfy-lib:ulfy-bus')                         // 事件总线
+    implementation project(':ulfy-lib:ulfy-task')                        // 任务引擎
+    implementation project(':ulfy-lib:ulfy-task-extension')              // 任务扩展包
+    implementation project(':ulfy-lib:ulfy-mvvm')                        // MVVM协议规范
+    implementation project(':ulfy-lib:ulfy-ui-injection')                // 界面注入
+    implementation project(':ulfy-lib:ulfy-ui-linkage')                  // 界面联动
+    implementation project(':ulfy-lib:ulfy-task-transponder')            // 任务响应器
+    implementation project(':ulfy-lib:ulfy-task-transponder-smart')      // Smart下拉刷新响应器
+    implementation project(':ulfy-lib:ulfy-adapter')                     // 编辑适配器
+    implementation project(':ulfy-lib:ulfy-time')                        // 时间跟踪
+    implementation project(':ulfy-lib:ulfy-download-manager')            // 下载管理器
+    implementation project(':ulfy-lib:ulfy-multi-domain-picker')         // 多域名选择器
+    implementation project(':ulfy-lib:ulfy-data-pre-loader')             // 数据预加载
+    implementation project(':ulfy-lib:ulfy-views')                       // 自定义控件
+    implementation project(':ulfy-lib:ulfy-dialog')                      // 弹出框
+    implementation project(':ulfy-lib:ulfy-image')                       // 图片处理
+    implementation project(':ulfy-lib:ulfy-system')                      // 系统综合工具
+    implementation project(':ulfy-lib:ulfy-okhttp')                      // 网络访问工具
+    implementation project(':ulfy-lib:ulfy-utils')                       // 工具处理集合
+    implementation project(':ulfy-lib:ulfy-resource')                    // 公共资源
+}

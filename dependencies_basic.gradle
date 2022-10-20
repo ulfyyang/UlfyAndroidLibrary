@@ -1,0 +1,23 @@
+dependencies {
+    implementation KotlinStdlib
+    implementation KotlinCoroutinesAndroid
+
+    implementation AndroidXCore
+    implementation AndroidXCoreKtx
+    implementation AndroidXActivity
+    implementation AndroidXAppCompat
+    implementation AndroidXMultiDex
+
+    implementation AndroidXCardView
+    implementation AndroidXConstraintLayout
+    implementation AndroidXRecyclerView
+    implementation AndroidXViewPager2
+    implementation AndroidMaterial
+
+    implementation AppBarLayoutBehavior
+    implementation AppBarLayout
+
+    implementation  AgentWeb
+    implementation  AgentWebFileChooser
+    implementation  AgentWebDownload
+}

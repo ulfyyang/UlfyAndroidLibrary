@@ -3,12 +3,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion externalCompileSdkVersion
-    buildToolsVersion externalBuildToolsVersion
+    compileSdk CompileSdk
 
     defaultConfig {
-        minSdkVersion externalMinSdkVersion
-        targetSdkVersion externalTargetSdkVersion
+        minSdk MinSdk
+        targetSdk TargetSdk
         consumerProguardFiles 'proguard-rules.pro'
         testInstrumentationRunner TestRunner
     }
@@ -21,8 +20,8 @@ android {
 }
 
 dependencies {
-    implementation externalAndroidAppCompatV7
-    implementation externalJodaTime
+    implementation AndroidXAppCompat
+    implementation JodaTime
     implementation AndroidXStartUp
     implementation project(':ulfy-lib:ulfy-cache')
     implementation project(':ulfy-lib:ulfy-task-extension')

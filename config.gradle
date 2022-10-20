@@ -1,27 +1,34 @@
 // Kotlin基础相关配置
 ext {
-    KotlinGradlePlugin = 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.32'
-    KotlinStdlib = 'org.jetbrains.kotlin:kotlin-stdlib:1.4.32'
-    KotlinCoroutinesAndroid = 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
-}
-
-// AndroidX/AndroidxKotlin相关配置
-ext {
-    AndroidXCore = 'androidx.core:core:1.6.0'
-    AndroidXCoreKtx = 'androidx.core:core-ktx:1.6.0'
-    AndroidXActivity = 'androidx.activity:activity:1.2.4'
-    AndroidXStartUp = 'androidx.startup:startup-runtime:1.1.1'
+    KotlinStdlib = 'org.jetbrains.kotlin:kotlin-stdlib:1.7.20'
+    KotlinCoroutinesAndroid = 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
 }
 
 // 编译相关配置
 ext {
-    // 根build.gradle配置
-    externalAndroidBuildGradlePlugin = 'com.android.tools.build:gradle:7.0.4'
-    // 模块build.gradle配置
-    externalCompileSdkVersion = 31
-    externalBuildToolsVersion = '31.0.0'
-    externalMinSdkVersion = 19
-    externalTargetSdkVersion = 29
+    CompileSdk = 33
+    MinSdk = 21         // 很多三方库都要求21了，所以这里也就定为21了
+    TargetSdk = 33
+}
+
+// AndroidX、AndroidxKotlin相关配置
+ext {
+    AndroidXCore = 'androidx.core:core:1.9.0'                                       // Kotlin支持核心包
+    AndroidXCoreKtx = 'androidx.core:core-ktx:1.9.0'                                // Kotlin支持扩展包
+    AndroidXActivity = 'androidx.activity:activity:1.6.0'                           // Activity扩展包
+    AndroidXAppCompat = 'androidx.appcompat:appcompat:1.5.1'                        // 组件支持库
+    AndroidXMultiDex = 'androidx.multidex:multidex:2.0.1'                           // 分包打包
+    AndroidXStartUp = 'androidx.startup:startup-runtime:1.1.1'                      // 组件启动入口
+
+    AndroidXCardView = 'androidx.cardview:cardview:1.0.0'                           // 卡片布局
+    AndroidXConstraintLayout = 'androidx.constraintlayout:constraintlayout:2.1.4'   // 约束布局
+    AndroidXRecyclerView = 'androidx.recyclerview:recyclerview:1.2.1'               // RecyclerView
+    AndroidXViewPager2 = 'androidx.viewpager2:viewpager2:1.0.0'                     // ViewPager2
+}
+
+// 其它谷歌库
+ext {
+    AndroidMaterial = 'com.google.android.material:material:1.6.1'                  // material design 库
 }
 
 // 测试相关库配置
@@ -30,108 +37,68 @@ ext {
     TestRunner = "androidx.test.runner.AndroidJUnitRunner"
     // Java测试库
     TestJunit = 'junit:junit:4.13.2'
-    TestKotlinCoroutines = 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1'
+    TestKotlinCoroutines = 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
     // Android测试库
     TestJunitExt = 'androidx.test.ext:junit:1.1.3'
     TestEspresso = 'androidx.test.espresso:espresso-core:3.4.0'
 }
 
+// 三方控件
 ext {
-    /**
-     * 优菲各个模块
-     */
-    externalUlfyCache = 'com.ulfy.android:cache:0.2.0'                                              // 对象缓存框架
-    externalUlfyBus = 'com.ulfy.android:bus:0.2.1'                                                  // 事件总线框架
-    externalUlfyTask = 'com.ulfy.android:task:0.2.0'                                                // 任务引擎框架
-    externalUlfyTaskExtension = 'com.ulfy.android:task-extension:0.2.0'                             // 任务扩展包
-    externalUlfyMVVM = 'com.ulfy.android:mvvm:0.2.0'                                                // mvvm规范
-    externalUlfyUiInjection = 'com.ulfy.android:ui-injection:0.2.1'                                 // 界面注入框架
-    externalUlfyUiLinkage = 'com.ulfy.android:ui-linkage:0.2.0'                                     // 界面联动框架
-    externalUlfyTaskTransponder = 'com.ulfy.android:task-transponder:0.2.3'                         // 任务响应器
-    externalUlfyTaskTransponderSmart = 'com.ulfy.android:task-transponder-smart:0.2.1'              // Smart下拉刷新支持
-    externalUlfyAdapter = 'com.ulfy.android:adapter:0.2.2'                                          // 适配器
-    externalUlfyTime = 'com.ulfy.android:time:0.2.0'                                                // 时间工具包
-    externalUlfyDownloadManager = 'com.ulfy.android:download-manager:0.2.1'                         // 文件下载管理器
-    externalMultiDomainPicker = 'com.ulfy.android:multi-domain-picker:0.2.0'                        // 多域名选择框架
-    externalDataPreLoader = 'com.ulfy.android:data-pre-loader:0.2.0'                                // 数据预加载框架
-    externalUlfyViews = 'com.ulfy.android:views:0.2.0'                                              // 自定义控件
-    externalUlfyDialog = 'com.ulfy.android:dialog:0.2.7'                                            // 弹出框框架
-    externalUlfyImage = 'com.ulfy.android:image:0.2.2'                                              // 图片处理
-    externalUlfySystem = 'com.ulfy.android:system:0.2.7'                                            // 系统模块
-    externalUlfyOkHttp = 'com.ulfy.android:okhttp:0.2.0'                                            // 网络模块
-    externalUlfyUtils = 'com.ulfy.android:utils:0.2.2'                                              // 工具模块
-    externalUlfyResource = 'com.ulfy.android:resource:0.2.0'                                        // 公共资源
-    externalUlfyUmeng = 'com.ulfy.android:umeng:0.2.0'                                              // 友盟分享封装
-    externalUlfyAgentweb = 'com.ulfy.android:agentweb:0.2.4'                                        // Agentweb封装
-    externalUlfyAgentWebFileChooser = 'com.ulfy.android:agentweb-filechooser:0.2.0'                 // 针对AgentWeb改进的文件选择器
+    ShaowLayout = 'com.github.lihangleo2:ShadowLayout:3.2.4'                        // 阴影布局
+    XBanner = 'com.github.xiaohaibin:XBanner:androidx_v1.2.6'                       // 轮播图
+    PhotoView = 'com.github.chrisbanes:PhotoView:2.3.0'                             // 图片放大预览(多年不更新)
+    ImageWatcher = 'com.github.iielse:imageviewer:1.1.5'                            // 仿微信大图预览(最新2.1.21，后续在解决冲突)
+    IosSwitch = 'com.github.zcweng:switch-button:0.0.3@aar'                         // 仿ISO开关(多年不更新)
+    ExpandableLayout = 'net.cachapa.expandablelayout:expandablelayout:2.9.2'        // 自动伸缩布局(多年不更新)
+    AgentWeb = 'com.github.Justson.AgentWeb:agentweb-core:v5.0.6-androidx'          // 加强版WebView
+    AgentWebFileChooser = 'com.github.Justson.AgentWeb:agentweb-filechooser:v5.0.6-androidx'    // 加强版WebView
+    AgentWebDownload = 'com.github.Justson:Downloader:v5.0.4-androidx'              // 加强版WebView
+    GifDrawable = 'pl.droidsonroids.gif:android-gif-drawable:1.2.25'                // 高性能gif加载控件
+    MagicIndicator = 'com.github.hackware1993:MagicIndicator:1.7.0'                 // 三方ViewPager滑动指示器
+    SmartRefreshLayout = 'com.ulfy.android:smart-refresh-layout:1.1.0'              // 下拉刷新：smart版 兼容性较好建议使用(升级代码变动较大，后续升级)
+    SmartRefreshHeader = 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0'         // 下拉刷新：smart版 内置的一些header样式
+    QuickSlideBar = 'com.bigkoo:quicksidebar:1.0.3'                                 // 联系人选择器右侧的字母列表控件(多年不更新)
+}
 
-    /**
-     * 谷歌官方支持库
-     */
-    externalAndroidAppCompatV7 = 'androidx.appcompat:appcompat:1.2.0'                               // 组件支持库
-    externalAndroidDesign = 'com.google.android.material:material:1.1.0'                            // material design 库
-    externalAppBarLayoutBehavior = 'com.github.yuruiyin:AppbarLayoutBehavior:v1.0.2'                // 解决AppBarLayout上拉回弹问题
-    externalAppBarLayout = 'io.github.iamyours:flingappbarlayout:1.0.7'                             // 官方AppBarLayout升级版
-    externalAndroidCardView = 'androidx.cardview:cardview:1.0.0'                                    // 卡片布局
-    externalConstraintLayout = 'androidx.constraintlayout:constraintlayout:2.0.4'                   // 约束布局
-    externalViewPager2 = 'androidx.viewpager2:viewpager2:1.0.0'                                     // ViewPager2
-    externalAndroidMultiDex = 'androidx.multidex:multidex:2.0.1'                                    // 分包打包
-    externalGoogleFindBugs = 'com.google.code.findbugs:jsr305:3.0.2'                                // 很多三方库依赖findbugs，不过版本不统一，如果编译出现findbugs版本冲突，则强制使用该版本
+// 核心功能库，核心功能库中的组件采用的版本号有可能会相互依赖，不要随意升级版本
+ext {
+    Glide = 'com.github.bumptech.glide:glide:4.14.2'                                // 图片加载：Glide
+    GlideAnnotationProcessor = 'com.github.bumptech.glide:compiler:4.14.2'          // 图片加载：注解处理器
+    GlideOkHttp = 'com.github.bumptech.glide:okhttp3-integration:4.14.2'            // 图片加载：添加该依赖Glide将采用okhttp作为加载引擎
+    OKHTTP = 'com.squareup.okhttp3:okhttp:3.9.1'                                    // 网络访问库：okhttp(最新为4.10.0，后续在升级解决冲突)
+    OKHTTPUrlConnection = 'com.squareup.okhttp3:okhttp-urlconnection:3.9.1'         // 网络访问库：提供cookie持久化1
+    OKHTTPLogging = 'com.squareup.okhttp3:logging-interceptor:3.9.1'                // 网络访问库：提供日志打印
+    OKHTTPPersistentCookieJar = 'com.github.franmontiel:PersistentCookieJar:v1.0.1' // 网络访问库：提供cookie持久化2(多年不更新，后续弃用)
+    FastJson = 'com.alibaba:fastjson:2.0.15.android'                                // JSON解析库：阿里巴巴
+    GSON = 'com.google.code.gson:gson:2.9.1'                                        // JSON解析库：谷歌
+    Guava = 'com.google.guava:guava:31.1-android'                                   // 谷歌基础工具包
+    JodaTime = 'joda-time:joda-time:2.12.0'                                         // 日期处理库
+    Permission = 'com.yanzhenjie:permission:1.1.2'                                  // 动态权限申请(多年不更新，最新版2.0.3，后续在升级解决冲突)
+    RxJava = 'io.reactivex.rxjava3:rxjava:3.1.5'                                    // RxJava
+    RxAndroid = 'io.reactivex.rxjava3:rxandroid:3.0.0'                              // RxAndroid
+}
 
+// 其它杂项功能
+ext {
+    AppRecovery = 'com.zxy.android:recovery:1.0.0'                                  // 程序崩溃恢复(多年不更新)
+    DebugLeakcanary = 'com.squareup.leakcanary:leakcanary-android:2.9.1'            // 内存溢出检测工具
+    ViewAnimation = 'com.github.florent37:viewanimator:1.1.0'                       // 动画库(作者已归档，多年为更新)
+    ZXing = 'cn.yipianfengye.android:zxing-library:2.2'                             // 二维码扫描与生成(多年未更新)
+    GifEnDeCoder = 'io.github.waynejo:androidndkgif:1.0.1'                          // 高性能Gif编解码库
+    Pinyin = 'com.belerweb:pinyin4j:2.5.0'                                          // 汉语转拼音（多年未更新)
+    TinyPinyin = 'com.github.promeg:tinypinyin:2.0.3'                               // 汉字转拼音
+    PictureCompressor = 'id.zelory:compressor:3.0.1'                                // 图片压缩
+    Aria = 'com.arialyy.aria:core:3.8.15'                                           // 下载引擎：Aria
+    AriaAnnotationProcesser = 'com.arialyy.aria:compiler:3.8.15'                    // 下载引擎：Aria预编译
+    OkDownload = 'com.liulishuo.okdownload:okdownload:1.0.8'                        // 下载引擎（OkDownload存在很多BUG，建议使用Aria）
+    OkDownloadSqlite = 'com.liulishuo.okdownload:sqlite:1.0.8'                      // 下载引擎：添加该依赖可提供断点下载功能
+    OkDownloadOkHttp = 'com.liulishuo.okdownload:okhttp:1.0.8'                      // 下载引擎：添加该依赖会采用okhttp作为网络工具
+}
 
-
-    /**
-     * 三方控件
-     */
-    externalShaowLayout = 'com.github.lihangleo2:ShadowLayout:3.1.9'                                // 阴影布局
-    externalXBanner = 'com.github.xiaohaibin:XBanner:androidx_v1.2.0'                               // 轮播图
-    externalPhotoView = 'com.github.chrisbanes:PhotoView:2.1.3'                                     // 图片放大预览
-    externalImageWatcher = 'com.github.iielse:ImageWatcher:1.1.5'                                   // 仿微信大图预览
-    externalIosSwitch = 'com.github.zcweng:switch-button:0.0.3@aar'                                 // 仿ISO开关
-    externalExpandableLayout = 'net.cachapa.expandablelayout:expandablelayout:2.9.2'                // 自动伸缩布局
-    externalAgentWeb = 'com.just.agentweb:agentweb:4.0.2'                                           // 加强版WebView
-    externalAgentWebDownload = 'com.just.agentweb:download:4.0.2'                                   // 加强版WebView
-    externalGifDrawable = 'pl.droidsonroids.gif:android-gif-drawable:1.2.16'                        // 高性能gif加载控件
-    externalMagicIndicator = 'com.github.hackware1993:MagicIndicator:1.7.0'                         // 三方ViewPager滑动指示器
-    externalPtrLoadMore = 'in.srain.cube:ptr-load-more:1.0.1'                                       // 下拉刷新：ptr版 有bug不建议使用
-    externalSmartRefreshLayout = 'com.ulfy.android:smart-refresh-layout:1.1.0'                      // 下拉刷新：smart版 兼容性较好建议使用
-    externalSmartRefreshHeader = 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0'                 // 下拉刷新：smart版 内置的一些header样式
-    externalQuickSlideBar = 'com.bigkoo:quicksidebar:1.0.3'                                         // 联系人选择器右侧的字母列表控件
-
-    /**
-     * 核心功能库
-     *      核心功能库中的组件采用的版本号有可能会相互依赖，不要随意升级版本
-     */
-    externalGlide = 'com.github.bumptech.glide:glide:4.12.0'                                         // 图片加载：Glide
-    externalGlideOkHttp = 'com.github.bumptech.glide:okhttp3-integration:4.12.0'                     // 图片加载：添加该依赖Glide将采用okhttp作为加载引擎
-    externalGlideAnnotationProcessor = 'com.github.bumptech.glide:compiler:4.12.0'                   // 图片加载：注解处理器
-    externalOKHTTP = 'com.squareup.okhttp3:okhttp:3.9.1'                                            // 网络访问库：okhttp
-    externalOkHttpUrlConnection = 'com.squareup.okhttp3:okhttp-urlconnection:3.9.1'                 // 网络访问库：提供cookie持久化1
-    externalOkHttpPersistentCookieJar = 'com.github.franmontiel:PersistentCookieJar:v1.0.1'         // 网络访问库：提供cookie持久化2
-    externalOkHttpLogging = 'com.squareup.okhttp3:logging-interceptor:3.9.1'                        // 网络访问库：提供日志打印
-    externalFastJson = 'com.alibaba:fastjson:1.1.70.android'                                        // JSON解析库：阿里巴巴
-    externalGSON = 'com.google.code.gson:gson:2.8.0'                                                // JSON解析库：谷歌
-    externalGuava = 'com.google.guava:guava:24.0-android'                                           // 谷歌基础工具包
-    externalJodaTime = 'joda-time:joda-time:2.9.9'                                                  // 日期处理库
-    externalPermission = 'com.yanzhenjie:permission:1.1.2'                                          // 动态权限申请
-    externalRxJava = 'io.reactivex.rxjava3:rxjava:3.0.11-RC3'                                       // RxJava
-    externalRxAndroid = 'io.reactivex.rxjava3:rxandroid:3.0.0'                                      // RxAndroid
-
-    /**
-     * 其它杂项功能
-     */
-    externalAppRecovery = 'com.zxy.android:recovery:0.1.6'                                          // 程序崩溃恢复
-    externalDebugLeakcanary = 'com.squareup.leakcanary:leakcanary-android:1.5'                      // 内存溢出检测工具
-    externalReleaseLeakcanary = 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'              // 内存溢出检测工具
-    externalViewAnimation = 'com.github.florent37:viewanimator:1.0.5'                               // 动画库
-    externalZXing = 'cn.yipianfengye.android:zxing-library:2.2'                                     // 二维码扫描与生成
-    externalGifEnDeCoder = 'com.waynejo:androidndkgif:0.3.3'                                        // 高性能Gif编解码库
-    externalPinyin = 'com.belerweb:pinyin4j:2.5.0'                                                  // 汉语转拼音
-    externalTinyPinyin = 'com.github.promeg:tinypinyin:2.0.3'                                       // 汉字转拼音
-    externalPictureCompressor = 'id.zelory:compressor:2.1.0'                                        // 图片压缩
-    externalAria = 'com.arialyy.aria:core:3.8.15'                                                   // 下载引擎：Aria
-    externalAriaAnnotationProcesser = 'com.arialyy.aria:compiler:3.8.15'                            // 下载引擎：Aria预编译
-    externalOkDownload = 'com.liulishuo.okdownload:okdownload:1.0.7'                                // 下载引擎（OkDownload存在很多BUG，建议使用Aria）
-    externalOkDownloadSqlite = 'com.liulishuo.okdownload:sqlite:1.0.7'                              // 下载引擎：添加该依赖可提供断点下载功能
-    externalOkDownloadOkHttp = 'com.liulishuo.okdownload:okhttp:1.0.7'                              // 下载引擎：添加该依赖会采用okhttp作为网络工具
+// 其它杂项功能
+ext {
+    AppBarLayoutBehavior = 'com.github.yuruiyin:AppbarLayoutBehavior:v1.0.2'        // 解决AppBarLayout上拉回弹问题(多年不更新，考虑移除)
+    AppBarLayout = 'io.github.iamyours:flingappbarlayout:1.0.7'                     // 官方AppBarLayout升级版(多年不更新，考虑移除)
+    GoogleFindBugs = 'com.google.code.findbugs:jsr305:3.0.2'                        // 很多三方库依赖findbugs，不过版本不统一，如果编译出现findbugs版本冲突，则强制使用该版本
 }

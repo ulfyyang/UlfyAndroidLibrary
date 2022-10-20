@@ -3,12 +3,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion externalCompileSdkVersion
-    buildToolsVersion externalBuildToolsVersion
+    compileSdk CompileSdk
 
     defaultConfig {
-        minSdkVersion externalMinSdkVersion
-        targetSdkVersion externalTargetSdkVersion
+        minSdk MinSdk
+        targetSdk TargetSdk
         consumerProguardFiles 'proguard-rules.pro'
         testInstrumentationRunner TestRunner
     }
@@ -22,9 +21,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation externalAndroidAppCompatV7
-    implementation externalSmartRefreshHeader
-    implementation externalGifDrawable
+    implementation AndroidXAppCompat
+    implementation SmartRefreshHeader
+    implementation GifDrawable
     implementation project(':ulfy-lib:ulfy-task')
     implementation project(':ulfy-lib:ulfy-smart-refresh-layout')
     testImplementation 'junit:junit:4.12'

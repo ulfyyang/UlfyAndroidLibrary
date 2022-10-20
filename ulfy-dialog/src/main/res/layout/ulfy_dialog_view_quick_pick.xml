@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
+    android:background="@drawable/shape_quick_pick"
     android:clickable="true"
     android:focusable="true"
-    android:background="@drawable/shape_quick_pick"
     android:orientation="vertical">
 
     <TextView
@@ -25,13 +25,11 @@
         android:background="#D8D8D8"
         android:visibility="gone" />
 
-    <com.ulfy.android.views.ListViewLayout
-        android:id="@+id/pickListLV"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/pickListRV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layoutDivider="#D8D8D8"
-        app:layoutDividerHeight="0.5dp" />
+        android:nestedScrollingEnabled="false" />
 
     <View
         android:layout_width="match_parent"

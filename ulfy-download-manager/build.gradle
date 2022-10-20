@@ -3,12 +3,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion externalCompileSdkVersion
-    buildToolsVersion externalBuildToolsVersion
+    compileSdk CompileSdk
 
     defaultConfig {
-        minSdkVersion externalMinSdkVersion
-        targetSdkVersion externalTargetSdkVersion
+        minSdk MinSdk
+        targetSdk TargetSdk
         consumerProguardFiles 'proguard-rules.pro'
         testInstrumentationRunner TestRunner
     }
@@ -21,9 +20,9 @@ android {
 }
 
 dependencies {
-    implementation externalRxJava                                       // RxJava
-    implementation externalAria                                         // 下载引擎
-    annotationProcessor externalAriaAnnotationProcesser                 // 下载引擎预编译
+    implementation RxJava                                       // RxJava
+    implementation Aria                                         // 下载引擎
+    annotationProcessor AriaAnnotationProcesser                 // 下载引擎预编译
     implementation AndroidXStartUp
     implementation project(':ulfy-lib:ulfy-cache')                      // 对象缓存包
     implementation project(':ulfy-lib:ulfy-bus')                        // 事件总线包

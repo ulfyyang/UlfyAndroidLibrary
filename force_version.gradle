@@ -1,0 +1,7 @@
+allprojects {
+    configurations.all {        // 强制指定版本库，避免兼容性问题
+        resolutionStrategy.force AndroidXCore, AndroidXCoreKtx, AndroidXActivity,
+                AndroidXAppCompat, AndroidXConstraintLayout, AndroidXRecyclerView,
+                AndroidXConstraintLayout, GoogleFindBugs
+    }
+}

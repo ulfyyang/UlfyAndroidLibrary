@@ -3,6 +3,7 @@ package com.ulfy.android.dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -22,6 +23,7 @@ public final class QuickPickCell extends FrameLayout implements IView {
     }
 
     private void init(Context context) {
+        setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         LayoutInflater.from(context).inflate(R.layout.ulfy_dialog_cell_quick_pick, this);
         itemTV = findViewById(R.id.itemTV);
     }

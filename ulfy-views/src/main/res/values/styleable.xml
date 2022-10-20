@@ -68,30 +68,6 @@
         <attr name="child_margin" format="dimension" />
     </declare-styleable>
 
-    <!-- 非复用GridView -->
-    <declare-styleable name="GridViewLayout">
-        <!-- 指定每行的列数 -->
-        <attr name="layoutColumnCount" format="integer" />
-        <!-- 指定分隔条 -->
-        <attr name="layoutDivider" format="color|reference"/>
-        <!-- 指定分隔条的高度 -->
-        <attr name="layoutDividerHeight" format="dimension"/>
-    </declare-styleable>
-
-    <!-- 非复用ListView -->
-    <declare-styleable name="ListViewLayout">
-        <!-- 指定分割线 -->
-        <attr name="layoutDivider"/>
-        <!-- 指定分割线高度 -->
-        <attr name="layoutDividerHeight"/>
-        <!-- 指定是否平局分配Cell的可用空间，采用gravity实现 -->
-        <attr name="layoutAverage" format="boolean" />
-        <!-- 指定占位的数量，设置该属性会自动设置为均分 -->
-        <attr name="layoutPlaceHolderCount" format="integer" />
-        <!-- 设置为自动缩放，当Cell的空间不足时会自动设置gravity为均分 -->
-        <attr name="layoutAutoScale" format="boolean" />
-    </declare-styleable>
-
     <!-- 形状布局 -->
     <declare-styleable name="ShapeLayout">
         <!-- 指定形状：矩形可指定四周的圆角 -->

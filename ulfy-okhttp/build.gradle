@@ -3,12 +3,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion externalCompileSdkVersion
-    buildToolsVersion externalBuildToolsVersion
+    compileSdk CompileSdk
 
     defaultConfig {
-        minSdkVersion externalMinSdkVersion
-        targetSdkVersion externalTargetSdkVersion
+        minSdk MinSdk
+        targetSdk TargetSdk
         consumerProguardFiles 'proguard-rules.pro'
         testInstrumentationRunner TestRunner
     }
@@ -21,11 +20,11 @@ android {
 }
 
 dependencies {
-    implementation externalOKHTTP
-    implementation externalOkHttpUrlConnection
-    implementation externalOkHttpPersistentCookieJar
-    implementation externalOkHttpLogging
-    implementation externalGuava
-    implementation externalFastJson
+    implementation OKHTTP
+    implementation OKHTTPUrlConnection
+    implementation OKHTTPPersistentCookieJar
+    implementation OKHTTPLogging
+    implementation Guava
+    implementation FastJson
     implementation AndroidXStartUp
 }

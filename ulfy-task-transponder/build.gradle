@@ -3,12 +3,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion externalCompileSdkVersion
-    buildToolsVersion externalBuildToolsVersion
+    compileSdk CompileSdk
 
     defaultConfig {
-        minSdkVersion externalMinSdkVersion
-        targetSdkVersion externalTargetSdkVersion
+        minSdk MinSdk
+        targetSdk TargetSdk
         consumerProguardFiles 'proguard-rules.pro'
         testInstrumentationRunner TestRunner
     }
@@ -21,9 +20,9 @@ android {
 }
 
 dependencies {
-    implementation externalAndroidDesign
-    implementation externalAndroidCardView
-    implementation externalGifDrawable
+    implementation AndroidMaterial
+    implementation AndroidXCardView
+    implementation GifDrawable
     implementation AndroidXStartUp
     implementation project(':ulfy-lib:ulfy-task')
     implementation project(':ulfy-lib:ulfy-mvvm')

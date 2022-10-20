@@ -118,7 +118,7 @@ public final class UiUtils {
 				toast = Toast.makeText(UtilsConfig.context, message.toString(), Toast.LENGTH_SHORT);
 				// 查找显示内容的TextView并设置可多行居中
 				ViewGroup contentVG = (ViewGroup) toast.getView();
-				if (contentVG.getChildCount() > 0) {
+				if (contentVG != null && contentVG.getChildCount() > 0) {
 					TextView messageTV = (TextView) contentVG.getChildAt(0);
 					messageTV.setGravity(Gravity.CENTER);
 				}

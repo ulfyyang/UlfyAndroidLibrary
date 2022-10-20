@@ -181,6 +181,8 @@ public class RecyclerAdapter<M extends IViewModel> extends RecyclerView.Adapter<
             return new HeaderFooterEmptyLoadingViewHolder(loadingView);
         } else {
             View view = UiUtils.createViewFromClazz(parent.getContext(), viewTypeHolder.getViewClazzByType(viewType));
+            // TODO: 这里有个遗留问题：因为没有利用parent，也没有考虑到布局自身的宽高属性，这里直接返回会导致宽高都为包裹内容布局。需要想个办法同步布局文件的布局属性
+            // TODO: 从UiUtils.createViewFromClazz这里着手，直接从根解决问题，不仅限于当前Adapter
             viewList.add(view);
             registerItemClickListenerIfNeed();
             return new ViewHolder(view);
