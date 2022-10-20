@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -19,7 +18,6 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.StyleRes;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
@@ -50,7 +48,7 @@ class BounceBottomSheetDialog extends Dialog implements IDialog {
     private VelocityTracker velocityTracker;
 
     public BounceBottomSheetDialog(Context context, String dialogId, boolean noBackground) {
-        this(context, 0);
+        super(context, 0);
         this.context = context;
         this.dialogId = dialogId;
         if (noBackground) {
@@ -61,13 +59,6 @@ class BounceBottomSheetDialog extends Dialog implements IDialog {
                 DialogRepository.getInstance().removeDialog(BounceBottomSheetDialog.this);
             }
         });
-    }
-
-    public BounceBottomSheetDialog(@NonNull Context context, @StyleRes int theme) {
-        super(context, getThemeResId(context, theme));
-        // We hide the title bar for any style configuration. Otherwise, there will be a gap
-        // above the bottom sheet when it is expanded.
-//        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
     }
 
     protected BounceBottomSheetDialog(@NonNull Context context, boolean cancelable,
@@ -296,21 +287,6 @@ class BounceBottomSheetDialog extends Dialog implements IDialog {
             mCanceledOnTouchOutsideSet = true;
         }
         return mCanceledOnTouchOutside;
-    }
-
-    private static int getThemeResId(Context context, int themeId) {
-        if (themeId == 0) {
-            // If the provided theme is 0, then retrieve the dialogTheme from our theme
-            TypedValue outValue = new TypedValue();
-            if (context.getTheme().resolveAttribute(
-                    R.attr.bottomSheetDialogTheme, outValue, true)) {
-                themeId = outValue.resourceId;
-            } else {
-                // bottomSheetDialogTheme is not provided; we default to our light theme
-                themeId = R.style.Theme_Design_Light_BottomSheetDialog;
-            }
-        }
-        return themeId;
     }
 
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetCallback
